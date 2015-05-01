@@ -91,14 +91,14 @@ public class MazeBoard {
         System.out.print("Free card: ");
         System.out.println(this.freeCard.getType());
     }
-    
+
     public void newGame() {
         int I_count, L_count, T_count, card_count, r, c;
         String I_card = "L";
         String L_card = "C";
         String T_card = "F";
         MazeCard newcard;
-        
+
         card_count = (this.size*this.size)+1;
         I_count = L_count = T_count = card_count/3; // +1 kvuli volne karte
         if (card_count%3 == 1) I_count += 1;
@@ -107,36 +107,131 @@ public class MazeBoard {
             L_count += 1;
         }
 
+
         // vlozeni nahodnych karet na zbyvajici policka
         // naplnim seznam novych karet
         ArrayList<MazeCard> card_list = new ArrayList<>();
-        for (int i=0; i<I_count; i++) {
-            newcard = MazeCard.create(I_card);
-            card_list.add(newcard);
-        }
         for (int i=0; i<L_count; i++) {
             newcard = MazeCard.create(L_card);
+            card_list.add(newcard);
+        }
+        for (int i=0; i<I_count; i++) {
+            newcard = MazeCard.create(I_card);
             card_list.add(newcard);
         }
         for (int i=0; i<T_count; i++) {
             newcard = MazeCard.create(T_card);
             card_list.add(newcard);
         }
+
+        // Vlozime L do vsetkych rohov a nastavime aj smer
+        MazeCard tmp = card_list.get(0);
+        tmp.turnRight();
+        tmp.turnRight();
+        this.board[0][0].PutCard(tmp);
+        card_list.remove(0);
+
+        tmp = card_list.get(0);
+        tmp.turnRight();
+        this.board[this.size-1][0].PutCard(tmp);
+        card_list.remove(0);
+
+        tmp = card_list.get(0);
+        tmp.turnRight();
+        tmp.turnRight();
+        tmp.turnRight();
+        this.board[0][this.size-1].PutCard(tmp);
+        card_list.remove(0);
+
+        tmp = card_list.get(0);
+        this.board[this.size-1][this.size-1].PutCard(tmp);
+        card_list.remove(0);
+
+        int n=0, k=0;
+        boolean goOn = false;
+        newcard = card_list.get(0);
+        for (int i=1; i <= this.size; i++){
+            for (int j=1; j <= this.size; j++){
+                for (k=0; k < card_list.size(); k++){
+                    if (card_list.get(k).getType() == T_card){
+                        newcard = card_list.get(k);
+                        goOn = true;
+                        break;
+                    }
+                }
+                if (goOn){
+                    if (i == 1 && j%2 == 1){
+                        tmp = get(i,j).getCard();
+                        if(tmp != null) { continue; }
+                        newcard.turnRight();
+                        newcard.turnRight();
+                        this.board[i-1][j-1].PutCard(newcard);
+                        card_list.remove(k);
+                    }
+                    if (i == this.size && j%2 == 1){
+                        tmp = get(i,j).getCard();
+                        if(tmp != null) { continue; }
+                        this.board[i-1][j-1].PutCard(newcard);
+                        card_list.remove(k);
+                    }
+                    if (i%2 == 1 && j == 1){
+                        tmp = get(i,j).getCard();
+                        if(tmp != null) { continue; }
+                        newcard.turnRight();
+                        this.board[i-1][j-1].PutCard(newcard);
+                        card_list.remove(k);
+                    }
+                    if (i%2 == 1 && j == this.size){
+                        tmp = get(i,j).getCard();
+                        if(tmp != null) { continue; }
+                        newcard.turnRight();
+                        newcard.turnRight();
+                        newcard.turnRight();
+                        this.board[i-1][j-1].PutCard(newcard);
+                        card_list.remove(k);
+                    }
+                }
+            }
+        }
+
         // zamicham seznam karet
         Collections.shuffle(card_list);
         for (r=1; r<=this.size; r++) {
             for (c=1; c<=this.size; c++) {
+
+                // Preskocime policke kde uz nieco je
+                tmp = get(r,c).getCard();
+                if(tmp != null) { continue; }
+
+                // Ziskame kartu
                 newcard = card_list.get(0);
+                // Otocime ju nahodone  (1 - 4x)
+                int randNum = 1 + (int)(Math.random() * ((5 - 1) + 1));
+                for (int i = 0; i <= randNum; i++){
+                    newcard.turnRight();
+                }
+
                 card_list.remove(0);
                 this.board[r-1][c-1].PutCard(newcard);
             }
         }
         newcard = card_list.get(0);
         card_list.remove(0);
+        // Otocime nahodne aj volnu kartu
+        int randNum = 1 + (int)(Math.random() * ((5 - 1) + 1));
+        for (int i = 0; i <= randNum; i++){
+            newcard.turnRight();
+        }
         this.freeCard = newcard;
-        
+
     }
 
+    public void rotateFreeCard() {
+        MazeCard tmpCard = getFreeCard();
+        tmpCard.turnRight();
+
+        this.freeCard = tmpCard;
+    }
             
     public MazeField get(int r, int c) {
         if (r<1 || c<1 || r>this.size || c>this.size) return null;
