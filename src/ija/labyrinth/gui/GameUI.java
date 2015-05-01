@@ -52,7 +52,7 @@ public class GameUI extends JFrame{
         this.currentCont.removeAll();
 
         try {
-            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_empty.png"));
+            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_game.png"));
             JLabel bg = new JLabel(new ImageIcon(bgImage));
             this.setContentPane(bg);
         } catch (IOException e) {
@@ -62,8 +62,8 @@ public class GameUI extends JFrame{
         CreateBoardUI newBoard = new CreateBoardUI(this.BoardSize);
         this.add(newBoard);
 
-        CreateScoreUI newScore = new CreateScoreUI();
-        this.add(newScore);
+       /* CreateScoreUI newScore = new CreateScoreUI();
+        this.add(newScore);*/
 
         this.pack();
         this.setVisible(true);
