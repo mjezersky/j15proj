@@ -15,6 +15,10 @@ import java.util.ArrayList;
 public class MazeBoard {
     private int size;
     private MazeField[][] board;
+    private Player[] players;
+    private int currPlayers = 0;
+    
+    private static int maxPlayers = 3; // default max pocet hracu
     
     private MazeCard freeCard = null;
     
@@ -27,7 +31,47 @@ public class MazeBoard {
                 newboard.board[r][c] = new MazeField(r+1, c+1);
             }
         }
+        newboard.players = new Player[MazeBoard.maxPlayers];
         return newboard;
+    }
+    
+    // prida hrace se jmenem
+    public void addPlayer(String name) {
+        if (this.currPlayers == MazeBoard.maxPlayers) {
+            System.out.println("Max players reached!");
+        }
+        else {
+            this.players[this.currPlayers] = new Player(name, this.currPlayers, this.board[0][0]);
+            this.currPlayers++;
+        }
+    }
+    
+    public String strRepr() {
+        // potreba implementace strRepr pro MazeField
+        String mbStr = "0000"; // nuly jako zacatek freeCard 
+        mbStr += freeCard.getType();
+        mbStr += Integer.toString(this.freeCard.getRotation());
+        for(int r = 0; r < this.size; r++) {
+            for(int c = 0; c < this.size; c++) {
+                mbStr += this.board[r][c].strRepr();
+            }
+        }
+        return mbStr;
+    }
+    
+    public void config(String cfgStr) {
+        MazeCard newcard; // nova karta podle cfgStr rrccTR
+        int r, c, rotation;
+        
+        r = Integer.parseInt(cfgStr.substring(0,2)) - 1; // -1 protoze r a c jsou indexovany od 1
+        c = Integer.parseInt(cfgStr.substring(2,4)) - 1;
+        newcard = MazeCard.create( String.valueOf(cfgStr.charAt(4)) );
+        rotation = Character.getNumericValue( cfgStr.charAt(5) );
+        for (int i = 0; i<rotation; i++) {
+            newcard.turnRight(); // provedu rotaci karty
+        }
+        if (r == -1 && c == -1) this.freeCard = newcard;
+        else this.board[r][c].PutCard(newcard);
     }
     
     public void print() {

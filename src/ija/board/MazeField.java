@@ -19,7 +19,19 @@ public class MazeField {
         this.col = col;
         this.card = null;
     }
-   
+    
+    public String strRepr() {
+        // potreba doplnit int rotation a metodu getRotation do MazeCard
+        // rotace se taky musi byt (rot+1)%4 pri otoceni doprava
+        String mfStr = ""; // rrccTR | row col Type Rotation
+        if (this.row<10) mfStr += "0";
+        mfStr += Integer.toString(this.row);
+        if (this.col<10) mfStr += "0";
+        mfStr += Integer.toString(this.col);
+        mfStr += this.card.getType();
+        mfStr += Integer.toString(this.card.getRotation());
+        return mfStr;
+    }
     public int row() { return this.row; }
     public int col() { return this.col; }
     public MazeCard getCard() { return this.card; }

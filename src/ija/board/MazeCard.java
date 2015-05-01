@@ -15,10 +15,12 @@ public class MazeCard {
     
     private String cardtype;
     private MazeCard.CANGO[] directions;
+    private int rotation; // doprava: 0 - 0 | 1 - 90 | 2 - 180 | 3 - 270
     
     public static MazeCard create(String type) {
         MazeCard newcard = new MazeCard();
         newcard.cardtype = type;
+        newcard.rotation = 0;
         switch (type) {
             case "C":
                 newcard.directions = new MazeCard.CANGO[2];
@@ -46,7 +48,12 @@ public class MazeCard {
         return this.cardtype;
     }
     
+    public int getRotation() {
+        return this.rotation;
+    }
+    
     public void turnRight() {
+        this.rotation = (this.rotation+1)%4;
         for(int i = 0; i < this.directions.length; i++) {
             switch (this.directions[i]) {
                 case LEFT:
