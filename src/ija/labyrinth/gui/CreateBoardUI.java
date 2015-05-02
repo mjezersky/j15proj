@@ -16,6 +16,8 @@ import java.io.IOException;
 public class CreateBoardUI extends JPanel {
 
     private int boardSize;
+    private int playersNum;
+    private int cardsNum;
     private static MazeBoard game;
     private ArrBtn[] arrBtn;
     private Rock[] rock;
@@ -32,10 +34,13 @@ public class CreateBoardUI extends JPanel {
             CARD21,CARD22,CARD23,CARD24,CARD25,CARD26;
 
     private JButton[] arrowBtn;
-    private JButton[] arrayBtn;
+    private JTextArea scorePanel;
 
-    public CreateBoardUI(int Size) {
-        this.boardSize = Size;
+
+    public CreateBoardUI(int bs, int ps, int cs) {
+        this.boardSize = bs;
+        this.playersNum = ps;
+        this.cardsNum = cs;
 
         game = MazeBoard.createMazeBoard(boardSize);
         game.newGame();
@@ -47,22 +52,15 @@ public class CreateBoardUI extends JPanel {
         getRock();
         getImages();
         createButtons();
+        createButtonsArray();
+        setKeys();
+        createScorePanel();
+        writeHelp();
 
         JPanel coverLab = new JPanel();
         coverLab.setBackground(new Color(0x000000));
         coverLab.setBounds(0,0,70,70);
         this.add(coverLab);
-
-        // HERE ARE THE KEY BINDINGS
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "rotate");
-        getActionMap().put("rotate", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                rotateFreeRock();
-            }
-        });
-
-        createButtonsArray();
 
         setFocusable(true);
         requestFocusInWindow();
@@ -145,7 +143,7 @@ public class CreateBoardUI extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     int r = getRow();
                     int c = getCol();
-                    System.out.println("Stlacil si: "+r+"-"+c);
+                    System.out.println("Stlacil si: " + r + "-" + c);
                 }
             });
 
@@ -235,11 +233,108 @@ public class CreateBoardUI extends JPanel {
     }
 
     // Otoci volny kamen o 90*
-    public void rotateFreeRock() {
+    private void rotateFreeRock() {
         game.rotateFreeCard();
         getRock();
         repaint();
     }
+
+    // Vypise hracov do Score:
+    private void createScorePanel() {
+
+        Font font = new Font("Verdana", Font.BOLD, 15);
+        Font fontPlayer = new Font("Verdana", Font.BOLD, 12);
+
+        JTextArea whoGo = new JTextArea("Hrac na tahu: ");
+        whoGo.setFont(font);
+        whoGo.setOpaque(false);
+        whoGo.setEditable(false);
+        whoGo.setBounds(830,365,140,23);
+        whoGo.setForeground(new Color(0xD74E00));
+        add(whoGo);
+
+        JTextArea goPlayer = new JTextArea("  Hrac1");
+        goPlayer.setFont(fontPlayer);
+        goPlayer.setOpaque(false);
+        goPlayer.setEditable(false);
+        goPlayer.setBounds(830,388,140,23);
+        goPlayer.setForeground(new Color(0xFFFFFF));
+        add(goPlayer);
+
+        JTextArea scoreP = new JTextArea("Score: ");
+        scoreP.setFont(font);
+        scoreP.setOpaque(false);
+        scoreP.setEditable(false);
+        scoreP.setBounds(830,410,140,23);
+        scoreP.setForeground(new Color(0xD74E00));
+        add(scoreP);
+
+        this.scorePanel = new JTextArea();
+        this.scorePanel.setBounds(830, 433, 140, 80);
+        this.scorePanel.setEditable(false);
+        this.scorePanel.setOpaque(false);
+        add(this.scorePanel);
+
+
+        this.scorePanel.setForeground(new Color(0xFFFFFF));
+        this.scorePanel.setFont(fontPlayer);
+
+        if (this.playersNum == 2){
+            this.scorePanel.append("  Hrac1\n");
+            this.scorePanel.append("  Hrac2\n");
+        }
+
+        if (this.playersNum == 3){
+            this.scorePanel.append("  Hrac1\n");
+            this.scorePanel.append("  Hrac2\n");
+            this.scorePanel.append("  Hrac3\n");
+        }
+
+        if (this.playersNum == 4){
+            this.scorePanel.append("  Hrac1\n");
+            this.scorePanel.append("  Hrac2\n");
+            this.scorePanel.append("  Hrac3\n");
+            this.scorePanel.append("  Hrac4\n");
+        }
+
+    }
+
+    // Nastavi tlacitka
+    private void setKeys() {
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "rotate");
+        getActionMap().put("rotate", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rotateFreeRock();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, 0), "quit");
+        getActionMap().put("quit", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+
+    // Napise napovedu.
+    private void writeHelp(){
+        Font fontH = new Font("Arial", Font.BOLD, 14);
+
+        JTextArea helpP = new JTextArea("NAPOVEDA: \n");
+        helpP.setBounds(830, 580, 180, 100);
+        helpP.setEditable(false);
+        helpP.setFont(fontH);
+        helpP.setOpaque(false);
+        helpP.setForeground(new Color(0x4C4C4C));
+        helpP.append("R - otoci volny kamen\n");
+        helpP.append("S - ulozi hru\n");
+        helpP.append("Q - ukonci hru\n");
+        this.add(helpP);
+    }
+
 
     // Vytvori neviditelne tlacitka nad hracou plochou
     // Bude potrebne na pohyb panacika
@@ -273,17 +368,17 @@ public class CreateBoardUI extends JPanel {
         }
 
         this.arrBtn = new ArrBtn[num];
-        this.arrayBtn = new JButton[num];
+        JButton[] arrayBtn = new JButton[num];
         int i = 0;
         for (int r = 1; r <= this.boardSize; r++) {
             for (int c = 1; c <= this.boardSize; c++) {
 
 
-                this.arrayBtn[i] = new JButton();
-                this.arrayBtn[i].setBounds(xPoint, yPoint, blockSize, blockSize);
-                this.arrayBtn[i].setBorderPainted(false);
-                this.arrayBtn[i].setOpaque(false);
-                this.arrayBtn[i].setContentAreaFilled(false);
+                arrayBtn[i] = new JButton();
+                arrayBtn[i].setBounds(xPoint, yPoint, blockSize, blockSize);
+                arrayBtn[i].setBorderPainted(false);
+                arrayBtn[i].setOpaque(false);
+                arrayBtn[i].setContentAreaFilled(false);
 
                 this.arrBtn[i] = new ArrBtn(r, c, arrayBtn[i]);
                 this.arrBtn[i].makeActionBtn();
