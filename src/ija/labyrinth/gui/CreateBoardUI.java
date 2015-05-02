@@ -324,12 +324,13 @@ public class CreateBoardUI extends JPanel {
         Font fontH = new Font("Arial", Font.BOLD, 14);
 
         JTextArea helpP = new JTextArea("NAPOVEDA: \n");
-        helpP.setBounds(830, 580, 180, 100);
+        helpP.setBounds(830, 565, 180, 100);
         helpP.setEditable(false);
         helpP.setFont(fontH);
         helpP.setOpaque(false);
         helpP.setForeground(new Color(0x4C4C4C));
         helpP.append("R - otoci volny kamen\n");
+        helpP.append("U - krok spat\n");
         helpP.append("S - ulozi hru\n");
         helpP.append("Q - ukonci hru\n");
         this.add(helpP);
