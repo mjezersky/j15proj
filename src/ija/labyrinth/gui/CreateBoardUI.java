@@ -17,6 +17,7 @@ public class CreateBoardUI extends JPanel {
 
     private int boardSize;
     private int playersNum;
+
     private int cardsNum;
     private static MazeBoard game;
     private ArrBtn[] arrBtn;
@@ -27,27 +28,23 @@ public class CreateBoardUI extends JPanel {
     private BufferedImage L1, L2;
     private BufferedImage F1, F2, F3, F4;
     private BufferedImage deckFree;
-    private ImageIcon AL1, AL2, AR1, AR2, AU1, AU2, AD1, AD2;
-    private ImageIcon AL1s, AL2s, AR1s, AR2s, AU1s, AU2s, AD1s, AD2s;
-    private BufferedImage CARD1, CARD2, CARD3,CARD4,CARD5,CARD6,CARD7,CARD8,CARD9,CARD10,
-            CARD11,CARD12,CARD13,CARD14,CARD15,CARD16,CARD17,CARD18,CARD19,CARD20,
-            CARD21,CARD22,CARD23,CARD24,CARD25,CARD26;
-
+    private ImageIcon[] arrowIco;
+    private BufferedImage[] cardIco;
     private JButton[] arrowBtn;
-    private JTextArea scorePanel;
 
 
-    public CreateBoardUI(int bs, int ps, int cs) {
+    public CreateBoardUI(int bs, int pn, int cn, String[] names) {
         this.boardSize = bs;
-        this.playersNum = ps;
-        this.cardsNum = cs;
+        this.playersNum = pn;
+        this.cardsNum = cn;
+        String[] playerNames = names;
 
         game = MazeBoard.createMazeBoard(boardSize);
         game.newGame();
         game.print();
 
         setSize(1045, 700);
-        setBackground(new Color(57, 57, 57));
+        setBackground(new Color(255, 255, 255));
 
         getRock();
         getImages();
@@ -65,6 +62,7 @@ public class CreateBoardUI extends JPanel {
         setFocusable(true);
         requestFocusInWindow();
 
+        setOpaque(true);
         setVisible(true);
         setLayout(null);
 
@@ -96,11 +94,18 @@ public class CreateBoardUI extends JPanel {
             yPoint = 64;
         }
 
-        g.drawImage(deckFree, 820, 50, 160, 160, this);
-        g.drawImage(this.freeRock.icon(), 865, 94, 70, 70, this);
+        g.drawImage(deckFree, 820, 30, 160, 160, this);
+        g.drawImage(this.freeRock.icon(), 865, 74, 70, 70, this);
 
-        g.drawImage(deckFree, 820, 200, 160, 160, this);
-        g.drawImage(CARD7, 865, 244, 70, 70, this);
+        g.drawImage(deckFree, 820, 180, 160, 160, this);
+        g.drawImage(cardIco[5], 865, 224, 70, 70, this);
+
+        BufferedImage charIco = null;
+        try {
+            charIco = ImageIO.read(getClass().getResource("/images/chars/char03.png"));
+        } catch (IOException e) {e.printStackTrace();}
+
+        g.drawImage(charIco, 865, 352, 70, 70, this);
 
         int i = 0;
         for (int r = 1; r <= this.boardSize; r++) {
@@ -146,9 +151,6 @@ public class CreateBoardUI extends JPanel {
                     System.out.println("Stlacil si: " + r + "-" + c);
                 }
             });
-
-
-
         }
     }
 
@@ -249,52 +251,44 @@ public class CreateBoardUI extends JPanel {
         whoGo.setFont(font);
         whoGo.setOpaque(false);
         whoGo.setEditable(false);
-        whoGo.setBounds(830,365,140,23);
+        whoGo.setBounds(833,330,140,23);
         whoGo.setForeground(new Color(0xD74E00));
         add(whoGo);
-
-        JTextArea goPlayer = new JTextArea("  Hrac1");
-        goPlayer.setFont(fontPlayer);
-        goPlayer.setOpaque(false);
-        goPlayer.setEditable(false);
-        goPlayer.setBounds(830,388,140,23);
-        goPlayer.setForeground(new Color(0xFFFFFF));
-        add(goPlayer);
 
         JTextArea scoreP = new JTextArea("Score: ");
         scoreP.setFont(font);
         scoreP.setOpaque(false);
         scoreP.setEditable(false);
-        scoreP.setBounds(830,410,140,23);
+        scoreP.setBounds(833,430,140,23);
         scoreP.setForeground(new Color(0xD74E00));
         add(scoreP);
 
-        this.scorePanel = new JTextArea();
-        this.scorePanel.setBounds(830, 433, 140, 80);
-        this.scorePanel.setEditable(false);
-        this.scorePanel.setOpaque(false);
-        add(this.scorePanel);
+        JTextArea scorePanel = new JTextArea();
+        scorePanel.setBounds(833, 453, 140, 80);
+        scorePanel.setEditable(false);
+        scorePanel.setOpaque(false);
+        add(scorePanel);
 
 
-        this.scorePanel.setForeground(new Color(0xFFFFFF));
-        this.scorePanel.setFont(fontPlayer);
+        scorePanel.setForeground(new Color(0xFFFFFF));
+        scorePanel.setFont(fontPlayer);
 
         if (this.playersNum == 2){
-            this.scorePanel.append("  Hrac1\n");
-            this.scorePanel.append("  Hrac2\n");
+            scorePanel.append("  Hrac1\n");
+            scorePanel.append("  Hrac2\n");
         }
 
         if (this.playersNum == 3){
-            this.scorePanel.append("  Hrac1\n");
-            this.scorePanel.append("  Hrac2\n");
-            this.scorePanel.append("  Hrac3\n");
+            scorePanel.append("  Hrac1\n");
+            scorePanel.append("  Hrac2\n");
+            scorePanel.append("  Hrac3\n");
         }
 
         if (this.playersNum == 4){
-            this.scorePanel.append("  Hrac1\n");
-            this.scorePanel.append("  Hrac2\n");
-            this.scorePanel.append("  Hrac3\n");
-            this.scorePanel.append("  Hrac4\n");
+            scorePanel.append("  Hrac1\n");
+            scorePanel.append("  Hrac2\n");
+            scorePanel.append("  Hrac3\n");
+            scorePanel.append("  Hrac4\n");
         }
 
     }
@@ -314,7 +308,21 @@ public class CreateBoardUI extends JPanel {
         getActionMap().put("quit", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+
+                if(result == JOptionPane.YES_OPTION){
+                    System.exit(0);
+                }else{/* Vrati do hry*/ }
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "save");
+        getActionMap().put("save", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                JFileChooser saveFile = new JFileChooser();
+
+                saveFile.showSaveDialog(null);
             }
         });
     }
@@ -330,8 +338,8 @@ public class CreateBoardUI extends JPanel {
         helpP.setOpaque(false);
         helpP.setForeground(new Color(0x4C4C4C));
         helpP.append("R - otoci volny kamen\n");
-        helpP.append("U - krok spat\n");
         helpP.append("S - ulozi hru\n");
+        helpP.append("U - krok spat\n");
         helpP.append("Q - ukonci hru\n");
         this.add(helpP);
     }
@@ -409,19 +417,19 @@ public class CreateBoardUI extends JPanel {
             this.arrowBtn = new JButton[num];
 
             this.arrowBtn[0] = new JButton();
-            this.arrowBtn[0].setIcon(AD1);
-            this.arrowBtn[0].setRolloverIcon(AD2);
+            this.arrowBtn[0].setIcon(arrowIco[7]);
+            this.arrowBtn[0].setRolloverIcon(arrowIco[8]);
             this.arrowBtn[0].setBounds(350, 115, 50, 50);
             this.arrowBtn[0].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    moveLine(1,2);
+                    moveLine(1, 2);
                 }
             });
 
             this.arrowBtn[1] = new JButton();
-            this.arrowBtn[1].setIcon(AD1);
-            this.arrowBtn[1].setRolloverIcon(AD2);
+            this.arrowBtn[1].setIcon(arrowIco[7]);
+            this.arrowBtn[1].setRolloverIcon(arrowIco[8]);
             this.arrowBtn[1].setBounds(495, 115, 50, 50);
             this.arrowBtn[1].addActionListener(new ActionListener() {
                 @Override
@@ -431,8 +439,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[2] = new JButton();
-            this.arrowBtn[2].setIcon(AL1);
-            this.arrowBtn[2].setRolloverIcon(AL2);
+            this.arrowBtn[2].setIcon(arrowIco[1]);
+            this.arrowBtn[2].setRolloverIcon(arrowIco[2]);
             this.arrowBtn[2].setBounds(632, 250, 50, 50);
             this.arrowBtn[2].addActionListener(new ActionListener() {
                 @Override
@@ -442,8 +450,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[3] = new JButton();
-            this.arrowBtn[3].setIcon(AL1);
-            this.arrowBtn[3].setRolloverIcon(AL2);
+            this.arrowBtn[3].setIcon(arrowIco[1]);
+            this.arrowBtn[3].setRolloverIcon(arrowIco[2]);
             this.arrowBtn[3].setBounds(632, 395, 50, 50);
             this.arrowBtn[3].addActionListener(new ActionListener() {
                 @Override
@@ -453,8 +461,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[4] = new JButton();
-            this.arrowBtn[4].setIcon(AU1);
-            this.arrowBtn[4].setRolloverIcon(AU2);
+            this.arrowBtn[4].setIcon(arrowIco[5]);
+            this.arrowBtn[4].setRolloverIcon(arrowIco[6]);
             this.arrowBtn[4].setBounds(495, 533, 50, 50);
             this.arrowBtn[4].addActionListener(new ActionListener() {
                 @Override
@@ -464,8 +472,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[5] = new JButton();
-            this.arrowBtn[5].setIcon(AU1);
-            this.arrowBtn[5].setRolloverIcon(AU2);
+            this.arrowBtn[5].setIcon(arrowIco[5]);
+            this.arrowBtn[5].setRolloverIcon(arrowIco[6]);
             this.arrowBtn[5].setBounds(350, 533, 50, 50);
             this.arrowBtn[5].addActionListener(new ActionListener() {
                 @Override
@@ -475,8 +483,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[6] = new JButton();
-            this.arrowBtn[6].setIcon(AR1);
-            this.arrowBtn[6].setRolloverIcon(AR2);
+            this.arrowBtn[6].setIcon(arrowIco[3]);
+            this.arrowBtn[6].setRolloverIcon(arrowIco[4]);
             this.arrowBtn[6].setBounds(216, 395, 50, 50);
             this.arrowBtn[6].addActionListener(new ActionListener() {
                 @Override
@@ -486,8 +494,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[7] = new JButton();
-            this.arrowBtn[7].setIcon(AR1);
-            this.arrowBtn[7].setRolloverIcon(AR2);
+            this.arrowBtn[7].setIcon(arrowIco[3]);
+            this.arrowBtn[7].setRolloverIcon(arrowIco[4]);
             this.arrowBtn[7].setBounds(216, 250, 50, 50);
             this.arrowBtn[7].addActionListener(new ActionListener() {
                 @Override
@@ -503,19 +511,19 @@ public class CreateBoardUI extends JPanel {
             this.arrowBtn = new JButton[num];
 
             this.arrowBtn[0] = new JButton();
-            this.arrowBtn[0].setIcon(AD1);
-            this.arrowBtn[0].setRolloverIcon(AD2);
+            this.arrowBtn[0].setIcon(arrowIco[7]);
+            this.arrowBtn[0].setRolloverIcon(arrowIco[8]);
             this.arrowBtn[0].setBounds(280, 40, 50, 50);
             this.arrowBtn[0].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    moveLine(1,2);
+                    moveLine(1, 2);
                 }
             });
 
             this.arrowBtn[1] = new JButton();
-            this.arrowBtn[1].setIcon(AD1);
-            this.arrowBtn[1].setRolloverIcon(AD2);
+            this.arrowBtn[1].setIcon(arrowIco[7]);
+            this.arrowBtn[1].setRolloverIcon(arrowIco[8]);
             this.arrowBtn[1].setBounds(423, 40, 50, 50);
             this.arrowBtn[1].addActionListener(new ActionListener() {
                 @Override
@@ -525,8 +533,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[2] = new JButton();
-            this.arrowBtn[2].setIcon(AD1);
-            this.arrowBtn[2].setRolloverIcon(AD2);
+            this.arrowBtn[2].setIcon(arrowIco[7]);
+            this.arrowBtn[2].setRolloverIcon(arrowIco[8]);
             this.arrowBtn[2].setBounds(568, 40, 50, 50);
             this.arrowBtn[2].addActionListener(new ActionListener() {
                 @Override
@@ -536,19 +544,19 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[3] = new JButton();
-            this.arrowBtn[3].setIcon(AL1);
-            this.arrowBtn[3].setRolloverIcon(AL2);
+            this.arrowBtn[3].setIcon(arrowIco[1]);
+            this.arrowBtn[3].setRolloverIcon(arrowIco[2]);
             this.arrowBtn[3].setBounds(705, 180, 50, 50);
             this.arrowBtn[3].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    moveLine(2,7);
+                    moveLine(2, 7);
                 }
             });
 
             this.arrowBtn[4] = new JButton();
-            this.arrowBtn[4].setIcon(AL1);
-            this.arrowBtn[4].setRolloverIcon(AL2);
+            this.arrowBtn[4].setIcon(arrowIco[1]);
+            this.arrowBtn[4].setRolloverIcon(arrowIco[2]);
             this.arrowBtn[4].setBounds(705, 325, 50, 50);
             this.arrowBtn[4].addActionListener(new ActionListener() {
                 @Override
@@ -558,8 +566,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[5] = new JButton();
-            this.arrowBtn[5].setIcon(AL1);
-            this.arrowBtn[5].setRolloverIcon(AL2);
+            this.arrowBtn[5].setIcon(arrowIco[1]);
+            this.arrowBtn[5].setRolloverIcon(arrowIco[2]);
             this.arrowBtn[5].setBounds(705, 467, 50, 50);
             this.arrowBtn[5].addActionListener(new ActionListener() {
                 @Override
@@ -569,8 +577,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[6] = new JButton();
-            this.arrowBtn[6].setIcon(AU1);
-            this.arrowBtn[6].setRolloverIcon(AU2);
+            this.arrowBtn[6].setIcon(arrowIco[5]);
+            this.arrowBtn[6].setRolloverIcon(arrowIco[6]);
             this.arrowBtn[6].setBounds(568, 605, 50, 50);
             this.arrowBtn[6].addActionListener(new ActionListener() {
                 @Override
@@ -580,8 +588,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[7] = new JButton();
-            this.arrowBtn[7].setIcon(AU1);
-            this.arrowBtn[7].setRolloverIcon(AU2);
+            this.arrowBtn[7].setIcon(arrowIco[5]);
+            this.arrowBtn[7].setRolloverIcon(arrowIco[6]);
             this.arrowBtn[7].setBounds(423, 605, 50, 50);
             this.arrowBtn[7].addActionListener(new ActionListener() {
                 @Override
@@ -591,8 +599,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[8] = new JButton();
-            this.arrowBtn[8].setIcon(AU1);
-            this.arrowBtn[8].setRolloverIcon(AU2);
+            this.arrowBtn[8].setIcon(arrowIco[5]);
+            this.arrowBtn[8].setRolloverIcon(arrowIco[6]);
             this.arrowBtn[8].setBounds(280, 605, 50, 50);
             this.arrowBtn[8].addActionListener(new ActionListener() {
                 @Override
@@ -602,8 +610,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[9] = new JButton();
-            this.arrowBtn[9].setIcon(AR1);
-            this.arrowBtn[9].setRolloverIcon(AR2);
+            this.arrowBtn[9].setIcon(arrowIco[3]);
+            this.arrowBtn[9].setRolloverIcon(arrowIco[4]);
             this.arrowBtn[9].setBounds(143, 467, 50, 50);
             this.arrowBtn[9].addActionListener(new ActionListener() {
                 @Override
@@ -613,8 +621,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[10] = new JButton();
-            this.arrowBtn[10].setIcon(AR1);
-            this.arrowBtn[10].setRolloverIcon(AR2);
+            this.arrowBtn[10].setIcon(arrowIco[3]);
+            this.arrowBtn[10].setRolloverIcon(arrowIco[4]);
             this.arrowBtn[10].setBounds(143, 325, 50, 50);
             this.arrowBtn[10].addActionListener(new ActionListener() {
                 @Override
@@ -624,8 +632,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[11] = new JButton();
-            this.arrowBtn[11].setIcon(AR1);
-            this.arrowBtn[11].setRolloverIcon(AR2);
+            this.arrowBtn[11].setIcon(arrowIco[3]);
+            this.arrowBtn[11].setRolloverIcon(arrowIco[4]);
             this.arrowBtn[11].setBounds(143, 180, 50, 50);
             this.arrowBtn[11].addActionListener(new ActionListener() {
                 @Override
@@ -641,8 +649,8 @@ public class CreateBoardUI extends JPanel {
             this.arrowBtn = new JButton[num];
 
             this.arrowBtn[0] = new JButton();
-            this.arrowBtn[0].setIcon(AD1s);
-            this.arrowBtn[0].setRolloverIcon(AD2s);
+            this.arrowBtn[0].setIcon(arrowIco[15]);
+            this.arrowBtn[0].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[0].setBounds(278, 80, 30, 30);
             this.arrowBtn[0].addActionListener(new ActionListener() {
                 @Override
@@ -652,8 +660,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[1] = new JButton();
-            this.arrowBtn[1].setIcon(AD1s);
-            this.arrowBtn[1].setRolloverIcon(AD2s);
+            this.arrowBtn[1].setIcon(arrowIco[15]);
+            this.arrowBtn[1].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[1].setBounds(382, 80, 30, 30);
             this.arrowBtn[1].addActionListener(new ActionListener() {
                 @Override
@@ -663,8 +671,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[2] = new JButton();
-            this.arrowBtn[2].setIcon(AD1s);
-            this.arrowBtn[2].setRolloverIcon(AD2s);
+            this.arrowBtn[2].setIcon(arrowIco[15]);
+            this.arrowBtn[2].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[2].setBounds(486, 80, 30, 30);
             this.arrowBtn[2].addActionListener(new ActionListener() {
                 @Override
@@ -674,8 +682,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[3] = new JButton();
-            this.arrowBtn[3].setIcon(AD1s);
-            this.arrowBtn[3].setRolloverIcon(AD2s);
+            this.arrowBtn[3].setIcon(arrowIco[15]);
+            this.arrowBtn[3].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[3].setBounds(590, 80, 30, 30);
             this.arrowBtn[3].addActionListener(new ActionListener() {
                 @Override
@@ -685,8 +693,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[4] = new JButton();
-            this.arrowBtn[4].setIcon(AL1s);
-            this.arrowBtn[4].setRolloverIcon(AL2s);
+            this.arrowBtn[4].setIcon(arrowIco[9]);
+            this.arrowBtn[4].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[4].setBounds(687, 177, 30, 30);
             this.arrowBtn[4].addActionListener(new ActionListener() {
                 @Override
@@ -696,8 +704,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[5] = new JButton();
-            this.arrowBtn[5].setIcon(AL1s);
-            this.arrowBtn[5].setRolloverIcon(AL2s);
+            this.arrowBtn[5].setIcon(arrowIco[9]);
+            this.arrowBtn[5].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[5].setBounds(687, 282, 30, 30);
             this.arrowBtn[5].addActionListener(new ActionListener() {
                 @Override
@@ -707,8 +715,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[6] = new JButton();
-            this.arrowBtn[6].setIcon(AL1s);
-            this.arrowBtn[6].setRolloverIcon(AL2s);
+            this.arrowBtn[6].setIcon(arrowIco[9]);
+            this.arrowBtn[6].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[6].setBounds(687, 385, 30, 30);
             this.arrowBtn[6].addActionListener(new ActionListener() {
                 @Override
@@ -718,8 +726,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[7] = new JButton();
-            this.arrowBtn[7].setIcon(AL1s);
-            this.arrowBtn[7].setRolloverIcon(AL2s);
+            this.arrowBtn[7].setIcon(arrowIco[9]);
+            this.arrowBtn[7].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[7].setBounds(687, 489, 30, 30);
             this.arrowBtn[7].addActionListener(new ActionListener() {
                 @Override
@@ -729,8 +737,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[8] = new JButton();
-            this.arrowBtn[8].setIcon(AU1s);
-            this.arrowBtn[8].setRolloverIcon(AU2s);
+            this.arrowBtn[8].setIcon(arrowIco[13]);
+            this.arrowBtn[8].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[8].setBounds(590, 590, 30, 30);
             this.arrowBtn[8].addActionListener(new ActionListener() {
                 @Override
@@ -740,8 +748,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[9] = new JButton();
-            this.arrowBtn[9].setIcon(AU1s);
-            this.arrowBtn[9].setRolloverIcon(AU1s);
+            this.arrowBtn[9].setIcon(arrowIco[13]);
+            this.arrowBtn[9].setRolloverIcon(arrowIco[13]);
             this.arrowBtn[9].setBounds(486, 590, 30, 30);
             this.arrowBtn[9].addActionListener(new ActionListener() {
                 @Override
@@ -751,8 +759,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[10] = new JButton();
-            this.arrowBtn[10].setIcon(AU1s);
-            this.arrowBtn[10].setRolloverIcon(AU2s);
+            this.arrowBtn[10].setIcon(arrowIco[13]);
+            this.arrowBtn[10].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[10].setBounds(382, 590, 30, 30);
             this.arrowBtn[10].addActionListener(new ActionListener() {
                 @Override
@@ -762,8 +770,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[11] = new JButton();
-            this.arrowBtn[11].setIcon(AU1s);
-            this.arrowBtn[11].setRolloverIcon(AU2s);
+            this.arrowBtn[11].setIcon(arrowIco[13]);
+            this.arrowBtn[11].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[11].setBounds(278, 590, 30, 30);
             this.arrowBtn[11].addActionListener(new ActionListener() {
                 @Override
@@ -773,8 +781,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[12] = new JButton();
-            this.arrowBtn[12].setIcon(AR1s);
-            this.arrowBtn[12].setRolloverIcon(AR2s);
+            this.arrowBtn[12].setIcon(arrowIco[11]);
+            this.arrowBtn[12].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[12].setBounds(182, 489, 30, 30);
             this.arrowBtn[12].addActionListener(new ActionListener() {
                 @Override
@@ -784,8 +792,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[13] = new JButton();
-            this.arrowBtn[13].setIcon(AR1s);
-            this.arrowBtn[13].setRolloverIcon(AR2s);
+            this.arrowBtn[13].setIcon(arrowIco[11]);
+            this.arrowBtn[13].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[13].setBounds(182, 385, 30, 30);
             this.arrowBtn[13].addActionListener(new ActionListener() {
                 @Override
@@ -795,8 +803,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[14] = new JButton();
-            this.arrowBtn[14].setIcon(AR1s);
-            this.arrowBtn[14].setRolloverIcon(AR2s);
+            this.arrowBtn[14].setIcon(arrowIco[11]);
+            this.arrowBtn[14].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[14].setBounds(182, 282, 30, 30);
             this.arrowBtn[14].addActionListener(new ActionListener() {
                 @Override
@@ -806,8 +814,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[15] = new JButton();
-            this.arrowBtn[15].setIcon(AR1s);
-            this.arrowBtn[15].setRolloverIcon(AR2s);
+            this.arrowBtn[15].setIcon(arrowIco[11]);
+            this.arrowBtn[15].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[15].setBounds(182, 177, 30, 30);
             this.arrowBtn[15].addActionListener(new ActionListener() {
                 @Override
@@ -823,19 +831,19 @@ public class CreateBoardUI extends JPanel {
             this.arrowBtn = new JButton[num];
 
             this.arrowBtn[0] = new JButton();
-            this.arrowBtn[0].setIcon(AD1s);
-            this.arrowBtn[0].setRolloverIcon(AD2s);
+            this.arrowBtn[0].setIcon(arrowIco[15]);
+            this.arrowBtn[0].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[0].setBounds(227, 30, 30, 30);
             this.arrowBtn[0].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    moveLine(1,2);
+                    moveLine(1, 2);
                 }
             });
 
             this.arrowBtn[1] = new JButton();
-            this.arrowBtn[1].setIcon(AD1s);
-            this.arrowBtn[1].setRolloverIcon(AD2s);
+            this.arrowBtn[1].setIcon(arrowIco[15]);
+            this.arrowBtn[1].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[1].setBounds(331, 30, 30, 30);
             this.arrowBtn[1].addActionListener(new ActionListener() {
                 @Override
@@ -845,8 +853,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[2] = new JButton();
-            this.arrowBtn[2].setIcon(AD1s);
-            this.arrowBtn[2].setRolloverIcon(AD2s);
+            this.arrowBtn[2].setIcon(arrowIco[15]);
+            this.arrowBtn[2].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[2].setBounds(435, 30, 30, 30);
             this.arrowBtn[2].addActionListener(new ActionListener() {
                 @Override
@@ -856,19 +864,19 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[3] = new JButton();
-            this.arrowBtn[3].setIcon(AD1s);
-            this.arrowBtn[3].setRolloverIcon(AD2s);
+            this.arrowBtn[3].setIcon(arrowIco[15]);
+            this.arrowBtn[3].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[3].setBounds(539, 30, 30, 30);
             this.arrowBtn[3].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    moveLine(1,8);
+                    moveLine(1, 8);
                 }
             });
 
             this.arrowBtn[4] = new JButton();
-            this.arrowBtn[4].setIcon(AD1s);
-            this.arrowBtn[4].setRolloverIcon(AD2s);
+            this.arrowBtn[4].setIcon(arrowIco[15]);
+            this.arrowBtn[4].setRolloverIcon(arrowIco[16]);
             this.arrowBtn[4].setBounds(642, 30, 30, 30);
             this.arrowBtn[4].addActionListener(new ActionListener() {
                 @Override
@@ -878,8 +886,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[5] = new JButton();
-            this.arrowBtn[5].setIcon(AL1s);
-            this.arrowBtn[5].setRolloverIcon(AL2s);
+            this.arrowBtn[5].setIcon(arrowIco[9]);
+            this.arrowBtn[5].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[5].setBounds(737, 125, 30, 30);
             this.arrowBtn[5].addActionListener(new ActionListener() {
                 @Override
@@ -889,8 +897,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[6] = new JButton();
-            this.arrowBtn[6].setIcon(AL1s);
-            this.arrowBtn[6].setRolloverIcon(AL2s);
+            this.arrowBtn[6].setIcon(arrowIco[9]);
+            this.arrowBtn[6].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[6].setBounds(737, 229, 30, 30);
             this.arrowBtn[6].addActionListener(new ActionListener() {
                 @Override
@@ -900,8 +908,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[7] = new JButton();
-            this.arrowBtn[7].setIcon(AL1s);
-            this.arrowBtn[7].setRolloverIcon(AL2s);
+            this.arrowBtn[7].setIcon(arrowIco[9]);
+            this.arrowBtn[7].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[7].setBounds(737, 333, 30, 30);
             this.arrowBtn[7].addActionListener(new ActionListener() {
                 @Override
@@ -911,8 +919,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[8] = new JButton();
-            this.arrowBtn[8].setIcon(AL1s);
-            this.arrowBtn[8].setRolloverIcon(AL2s);
+            this.arrowBtn[8].setIcon(arrowIco[9]);
+            this.arrowBtn[8].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[8].setBounds(737, 435, 30, 30);
             this.arrowBtn[8].addActionListener(new ActionListener() {
                 @Override
@@ -922,8 +930,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[9] = new JButton();
-            this.arrowBtn[9].setIcon(AL1s);
-            this.arrowBtn[9].setRolloverIcon(AL2s);
+            this.arrowBtn[9].setIcon(arrowIco[9]);
+            this.arrowBtn[9].setRolloverIcon(arrowIco[10]);
             this.arrowBtn[9].setBounds(737, 539, 30, 30);
             this.arrowBtn[9].addActionListener(new ActionListener() {
                 @Override
@@ -933,8 +941,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[10] = new JButton();
-            this.arrowBtn[10].setIcon(AU1s);
-            this.arrowBtn[10].setRolloverIcon(AU2s);
+            this.arrowBtn[10].setIcon(arrowIco[13]);
+            this.arrowBtn[10].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[10].setBounds(642, 639, 30, 30);
             this.arrowBtn[10].addActionListener(new ActionListener() {
                 @Override
@@ -944,8 +952,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[11] = new JButton();
-            this.arrowBtn[11].setIcon(AU1s);
-            this.arrowBtn[11].setRolloverIcon(AU2s);
+            this.arrowBtn[11].setIcon(arrowIco[13]);
+            this.arrowBtn[11].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[11].setBounds(539, 639, 30, 30);
             this.arrowBtn[11].addActionListener(new ActionListener() {
                 @Override
@@ -955,8 +963,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[12] = new JButton();
-            this.arrowBtn[12].setIcon(AU1s);
-            this.arrowBtn[12].setRolloverIcon(AU2s);
+            this.arrowBtn[12].setIcon(arrowIco[13]);
+            this.arrowBtn[12].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[12].setBounds(435, 639, 30, 30);
             this.arrowBtn[12].addActionListener(new ActionListener() {
                 @Override
@@ -966,8 +974,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[13] = new JButton();
-            this.arrowBtn[13].setIcon(AU1s);
-            this.arrowBtn[13].setRolloverIcon(AU2s);
+            this.arrowBtn[13].setIcon(arrowIco[13]);
+            this.arrowBtn[13].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[13].setBounds(331, 639, 30, 30);
             this.arrowBtn[13].addActionListener(new ActionListener() {
                 @Override
@@ -977,8 +985,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[14] = new JButton();
-            this.arrowBtn[14].setIcon(AU1s);
-            this.arrowBtn[14].setRolloverIcon(AU2s);
+            this.arrowBtn[14].setIcon(arrowIco[13]);
+            this.arrowBtn[14].setRolloverIcon(arrowIco[14]);
             this.arrowBtn[14].setBounds(227, 639, 30, 30);
             this.arrowBtn[14].addActionListener(new ActionListener() {
                 @Override
@@ -988,8 +996,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[15] = new JButton();
-            this.arrowBtn[15].setIcon(AR1s);
-            this.arrowBtn[15].setRolloverIcon(AR2s);
+            this.arrowBtn[15].setIcon(arrowIco[11]);
+            this.arrowBtn[15].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[15].setBounds(130, 539, 30, 30);
             this.arrowBtn[15].addActionListener(new ActionListener() {
                 @Override
@@ -999,8 +1007,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[16] = new JButton();
-            this.arrowBtn[16].setIcon(AR1s);
-            this.arrowBtn[16].setRolloverIcon(AR2s);
+            this.arrowBtn[16].setIcon(arrowIco[11]);
+            this.arrowBtn[16].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[16].setBounds(130, 435, 30, 30);
             this.arrowBtn[16].addActionListener(new ActionListener() {
                 @Override
@@ -1010,8 +1018,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[17] = new JButton();
-            this.arrowBtn[17].setIcon(AR1s);
-            this.arrowBtn[17].setRolloverIcon(AR2s);
+            this.arrowBtn[17].setIcon(arrowIco[11]);
+            this.arrowBtn[17].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[17].setBounds(130, 333, 30, 30);
             this.arrowBtn[17].addActionListener(new ActionListener() {
                 @Override
@@ -1021,8 +1029,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[18] = new JButton();
-            this.arrowBtn[18].setIcon(AR1s);
-            this.arrowBtn[18].setRolloverIcon(AR2s);
+            this.arrowBtn[18].setIcon(arrowIco[11]);
+            this.arrowBtn[18].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[18].setBounds(130, 229, 30, 30);
             this.arrowBtn[18].addActionListener(new ActionListener() {
                 @Override
@@ -1032,8 +1040,8 @@ public class CreateBoardUI extends JPanel {
             });
 
             this.arrowBtn[19] = new JButton();
-            this.arrowBtn[19].setIcon(AR1s);
-            this.arrowBtn[19].setRolloverIcon(AR2s);
+            this.arrowBtn[19].setIcon(arrowIco[11]);
+            this.arrowBtn[19].setRolloverIcon(arrowIco[12]);
             this.arrowBtn[19].setBounds(130, 125, 30, 30);
             this.arrowBtn[19].addActionListener(new ActionListener() {
                 @Override
@@ -1045,11 +1053,10 @@ public class CreateBoardUI extends JPanel {
         }
 
         for (int i = 0; i < num; i++){
-            // this.arrowBtn[i].setBackground(new Color(0x2E1200));
-            // this.arrowBtn[i].setFocusPainted(false);
-            // this.arrowBtn[i].setContentAreaFilled(false);
-            // this.arrowBtn[i].setOpaque(true);
-            // this.arrowBtn[i].setBorderPainted(false);
+            //this.arrowBtn[i].setFocusPainted(false);
+            this.arrowBtn[i].setBorderPainted(false);
+            this.arrowBtn[i].setOpaque(true);
+            this.arrowBtn[i].setContentAreaFilled(false);
             this.add(arrowBtn[i]);
         }
 
@@ -1072,51 +1079,51 @@ public class CreateBoardUI extends JPanel {
 
             this.deckFree = ImageIO.read(getClass().getResource("/images/deckFree.png"));
 
-            this.AL1 = new ImageIcon(getClass().getResource("/images/arrows/l_1_50.png"));
-            this.AL2 = new ImageIcon(getClass().getResource("/images/arrows/l_2_50.png"));
-            this.AR1 = new ImageIcon(getClass().getResource("/images/arrows/r_1_50.png"));
-            this.AR2 = new ImageIcon(getClass().getResource("/images/arrows/r_2_50.png"));
-            this.AU1 = new ImageIcon(getClass().getResource("/images/arrows/up_1_50.png"));
-            this.AU2 = new ImageIcon(getClass().getResource("/images/arrows/up_2_50.png"));
-            this.AD1 = new ImageIcon(getClass().getResource("/images/arrows/d_1_50.png"));
-            this.AD2 = new ImageIcon(getClass().getResource("/images/arrows/d_2_50.png"));
-            this.AL1s = new ImageIcon(getClass().getResource("/images/arrows/l_1_30.png"));
-            this.AL2s = new ImageIcon(getClass().getResource("/images/arrows/l_2_30.png"));
-            this.AR1s = new ImageIcon(getClass().getResource("/images/arrows/r_1_30.png"));
-            this.AR2s = new ImageIcon(getClass().getResource("/images/arrows/r_2_30.png"));
-            this.AU1s = new ImageIcon(getClass().getResource("/images/arrows/up_1_30.png"));
-            this.AU2s = new ImageIcon(getClass().getResource("/images/arrows/up_2_30.png"));
-            this.AD1s = new ImageIcon(getClass().getResource("/images/arrows/d_1_30.png"));
-            this.AD2s = new ImageIcon(getClass().getResource("/images/arrows/d_2_30.png"));
+            this.arrowIco = new ImageIcon[17];
+            this.arrowIco[1] = new ImageIcon(getClass().getResource("/images/arrows/l_1_50.png"));
+            this.arrowIco[2] = new ImageIcon(getClass().getResource("/images/arrows/l_2_50.png"));
+            this.arrowIco[3] = new ImageIcon(getClass().getResource("/images/arrows/r_1_50.png"));
+            this.arrowIco[4] = new ImageIcon(getClass().getResource("/images/arrows/r_2_50.png"));
+            this.arrowIco[5] = new ImageIcon(getClass().getResource("/images/arrows/up_1_50.png"));
+            this.arrowIco[6] = new ImageIcon(getClass().getResource("/images/arrows/up_2_50.png"));
+            this.arrowIco[7] = new ImageIcon(getClass().getResource("/images/arrows/d_1_50.png"));
+            this.arrowIco[8] = new ImageIcon(getClass().getResource("/images/arrows/d_2_50.png"));
+            this.arrowIco[9] = new ImageIcon(getClass().getResource("/images/arrows/l_1_30.png"));
+            this.arrowIco[10] = new ImageIcon(getClass().getResource("/images/arrows/l_2_30.png"));
+            this.arrowIco[11] = new ImageIcon(getClass().getResource("/images/arrows/r_1_30.png"));
+            this.arrowIco[12] = new ImageIcon(getClass().getResource("/images/arrows/r_2_30.png"));
+            this.arrowIco[13] = new ImageIcon(getClass().getResource("/images/arrows/up_1_30.png"));
+            this.arrowIco[14] = new ImageIcon(getClass().getResource("/images/arrows/up_2_30.png"));
+            this.arrowIco[15] = new ImageIcon(getClass().getResource("/images/arrows/d_1_30.png"));
+            this.arrowIco[16] = new ImageIcon(getClass().getResource("/images/arrows/d_2_30.png"));
 
-            this.CARD1 = ImageIO.read(getClass().getResource("/images/cards/card01.png"));
-            this.CARD2 = ImageIO.read(getClass().getResource("/images/cards/card02.png"));
-            this.CARD3 = ImageIO.read(getClass().getResource("/images/cards/card03.png"));
-            this.CARD4 = ImageIO.read(getClass().getResource("/images/cards/card04.png"));
-            this.CARD5 = ImageIO.read(getClass().getResource("/images/cards/card05.png"));
-            this.CARD6 = ImageIO.read(getClass().getResource("/images/cards/card06.png"));
-            this.CARD7 = ImageIO.read(getClass().getResource("/images/cards/card07.png"));
-            this.CARD8 = ImageIO.read(getClass().getResource("/images/cards/card08.png"));
-            this.CARD9 = ImageIO.read(getClass().getResource("/images/cards/card09.png"));
-            this.CARD10 = ImageIO.read(getClass().getResource("/images/cards/card10.png"));
-            this.CARD11 = ImageIO.read(getClass().getResource("/images/cards/card11.png"));
-            this.CARD12 = ImageIO.read(getClass().getResource("/images/cards/card12.png"));
-            this.CARD13 = ImageIO.read(getClass().getResource("/images/cards/card13.png"));
-            this.CARD14 = ImageIO.read(getClass().getResource("/images/cards/card14.png"));
-            this.CARD15 = ImageIO.read(getClass().getResource("/images/cards/card15.png"));
-            this.CARD16 = ImageIO.read(getClass().getResource("/images/cards/card16.png"));
-            this.CARD17 = ImageIO.read(getClass().getResource("/images/cards/card17.png"));
-            this.CARD18 = ImageIO.read(getClass().getResource("/images/cards/card18.png"));
-            this.CARD19 = ImageIO.read(getClass().getResource("/images/cards/card19.png"));
-            this.CARD20 = ImageIO.read(getClass().getResource("/images/cards/card20.png"));
-            this.CARD21 = ImageIO.read(getClass().getResource("/images/cards/card21.png"));
-            this.CARD22 = ImageIO.read(getClass().getResource("/images/cards/card22.png"));
-            this.CARD23 = ImageIO.read(getClass().getResource("/images/cards/card23.png"));
-            this.CARD24 = ImageIO.read(getClass().getResource("/images/cards/card24.png"));
-            this.CARD25 = ImageIO.read(getClass().getResource("/images/cards/card25.png"));
-            this.CARD26 = ImageIO.read(getClass().getResource("/images/cards/card26.png"));
-
-
+            this.cardIco = new BufferedImage[27];
+            this.cardIco[1] = ImageIO.read(getClass().getResource("/images/cards/card01.png"));
+            this.cardIco[2] = ImageIO.read(getClass().getResource("/images/cards/card02.png"));
+            this.cardIco[3] = ImageIO.read(getClass().getResource("/images/cards/card03.png"));
+            this.cardIco[4] = ImageIO.read(getClass().getResource("/images/cards/card04.png"));
+            this.cardIco[5] = ImageIO.read(getClass().getResource("/images/cards/card05.png"));
+            this.cardIco[6] = ImageIO.read(getClass().getResource("/images/cards/card06.png"));
+            this.cardIco[7] = ImageIO.read(getClass().getResource("/images/cards/card07.png"));
+            this.cardIco[8] = ImageIO.read(getClass().getResource("/images/cards/card08.png"));
+            this.cardIco[9] = ImageIO.read(getClass().getResource("/images/cards/card09.png"));
+            this.cardIco[10] = ImageIO.read(getClass().getResource("/images/cards/card10.png"));
+            this.cardIco[11] = ImageIO.read(getClass().getResource("/images/cards/card11.png"));
+            this.cardIco[12] = ImageIO.read(getClass().getResource("/images/cards/card12.png"));
+            this.cardIco[13] = ImageIO.read(getClass().getResource("/images/cards/card13.png"));
+            this.cardIco[14] = ImageIO.read(getClass().getResource("/images/cards/card14.png"));
+            this.cardIco[15] = ImageIO.read(getClass().getResource("/images/cards/card15.png"));
+            this.cardIco[16] = ImageIO.read(getClass().getResource("/images/cards/card16.png"));
+            this.cardIco[17] = ImageIO.read(getClass().getResource("/images/cards/card17.png"));
+            this.cardIco[18] = ImageIO.read(getClass().getResource("/images/cards/card18.png"));
+            this.cardIco[19] = ImageIO.read(getClass().getResource("/images/cards/card19.png"));
+            this.cardIco[20] = ImageIO.read(getClass().getResource("/images/cards/card20.png"));
+            this.cardIco[21] = ImageIO.read(getClass().getResource("/images/cards/card21.png"));
+            this.cardIco[22] = ImageIO.read(getClass().getResource("/images/cards/card22.png"));
+            this.cardIco[23] = ImageIO.read(getClass().getResource("/images/cards/card23.png"));
+            this.cardIco[24] = ImageIO.read(getClass().getResource("/images/cards/card24.png"));
+            this.cardIco[25] = ImageIO.read(getClass().getResource("/images/cards/card25.png"));
+            this.cardIco[26] = ImageIO.read(getClass().getResource("/images/cards/card26.png"));
 
         } catch (IOException e) {
             e.printStackTrace();
