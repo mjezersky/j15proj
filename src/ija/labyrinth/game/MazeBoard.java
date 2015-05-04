@@ -327,12 +327,20 @@ public class MazeBoard {
     
     
     private void shiftUpdate(int row, int col, int offset, boolean modRow) {
+        int pRow, pCol;
         for (int i=0; i<this.currPlayers; i++) {
-            if (modRow && this.players[i].getCol() == col) {
-                this.players[i].moveTo(this.players[i].getRow()+offset, col);
+            pRow = this.players[i].getRow();
+            pCol = this.players[i].getCol();
+            if (modRow && pCol == col) {
+                pRow += offset;
+                if (pRow < 1) pRow = this.size;
+                else if (pRow > this.size) pRow = 1;
+                this.players[i].moveTo(pRow, col);
             }
-            else if (!modRow && this.players[i].getRow() == row) {
-                this.players[i].moveTo(row, this.players[i].getCol()+offset);
+            else if (!modRow && pRow == row) {
+                if (pCol < 1) pCol = this.size;
+                else if (pCol > this.size) pCol = 1;
+                this.players[i].moveTo(row, pCol+offset);
             }
         }
     }
