@@ -165,7 +165,7 @@ public class CreateBoardUI extends JPanel {
     }
 
     private void getPlayerOnTurn(){
-        this.actualPlayer = game.actualTurn();
+        this.actualPlayer = game.nextTurn();
         this.madeMove = false;
     }
 
@@ -173,7 +173,6 @@ public class CreateBoardUI extends JPanel {
         if(this.madeMove){
             if(this.actualPlayer.canMove(r, c)){
                 this.actualPlayer.moveTo(r, c);
-                game.nextTurn();
 
                 getPlayerOnTurn();
                 getRock();
