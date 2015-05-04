@@ -1,9 +1,5 @@
 package ija.labyrinth.gui;
 
-import ija.labyrinth.gui.GameUI;
-
-import com.oracle.xmlns.internal.webservices.jaxws_databinding.JavaMethod;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +24,7 @@ public class NewGameUI extends JPanel {
 
         setSize(1050, 700);
 
-        JButton startGame = new JButton();
+        /*JButton startGame = new JButton();
         startGame.setIcon(new ImageIcon(getClass().getResource("/images/spust_btn.png")));
         startGame.setRolloverIcon(new ImageIcon(getClass().getResource("/images/spust_btn2.png")));
         startGame.setBounds(750,550,210,60);
@@ -41,7 +37,7 @@ public class NewGameUI extends JPanel {
                 checkSettings();
             }
         });
-        add(startGame);
+        add(startGame);*/
 
         choosePlayers();
         chooseBoardSize();
@@ -55,7 +51,7 @@ public class NewGameUI extends JPanel {
         setLayout(null);
     }
 
-    public void checkSettings(){
+    public boolean checkSettings(){
 
         setPlayerNames();
         setBoardSize();
@@ -91,9 +87,13 @@ public class NewGameUI extends JPanel {
         }
 
         else {
-            GameUI startIt = new GameUI();
-            startIt.startNewGame(getBoardSize(), getPlayersNum(), getCardNum(), getPlayersNames());
+            //GameUI startIt = new GameUI();
+            //startIt.mainWindow();
+            //startIt.startNewGame(getBoardSize(), getPlayersNum(), getCardNum(), getPlayersNames(), null);
+            return true;
         }
+
+        return false;
     }
 
     private void choosePlayers(){
@@ -174,17 +174,17 @@ public class NewGameUI extends JPanel {
             i++;
         }
         if (!this.player2.getText().equals("")){
-            this.playersNames[i] = this.player1.getText();
+            this.playersNames[i] = this.player2.getText();
             this.playersNum++;
             i++;
         }
         if (!this.player3.getText().equals("")){
-            this.playersNames[i] = this.player1.getText();
+            this.playersNames[i] = this.player3.getText();
             this.playersNum++;
             i++;
         }
         if (!this.player4.getText().equals("")){
-            this.playersNames[i] = this.player1.getText();
+            this.playersNames[i] = this.player4.getText();
             this.playersNum++;
             i++;
         }
@@ -221,7 +221,7 @@ public class NewGameUI extends JPanel {
         }
 
         if (this.seven.isSelected()) {
-            this.boardSize = 8;
+            this.boardSize = 7;
             num++;
         }
 

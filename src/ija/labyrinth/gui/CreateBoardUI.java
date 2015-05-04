@@ -3,6 +3,7 @@ package ija.labyrinth.gui;
 import ija.labyrinth.game.MazeBoard;
 import ija.labyrinth.game.MazeCard;
 import ija.labyrinth.game.MazeField;
+import ija.labyrinth.game.Player;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,12 +12,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.*;
 
 public class CreateBoardUI extends JPanel {
 
     private int boardSize;
     private int playersNum;
+    private String[] playerNames;
+    private Player[] p;
+    private Player actualPlayer;
+    private boolean madeMove;
 
     private int cardsNum;
     private static MazeBoard game;
@@ -28,20 +33,26 @@ public class CreateBoardUI extends JPanel {
     private BufferedImage L1, L2;
     private BufferedImage F1, F2, F3, F4;
     private BufferedImage deckFree;
+    private BufferedImage deckPlayer;
     private ImageIcon[] arrowIco;
     private BufferedImage[] cardIco;
     private JButton[] arrowBtn;
 
 
-    public CreateBoardUI(int bs, int pn, int cn, String[] names) {
+    public CreateBoardUI(int bs, int pn, int cn, String[] names, MazeBoard gameIn) {
         this.boardSize = bs;
         this.playersNum = pn;
         this.cardsNum = cn;
-        String[] playerNames = names;
+        this.playerNames = names;
 
-        game = MazeBoard.createMazeBoard(boardSize);
-        game.newGame();
-        game.print();
+        if (gameIn == null){
+            game = MazeBoard.createMazeBoard(boardSize);
+            game.newGame();
+            game.print();
+        } else {
+            game = gameIn;
+            game.print();
+        }
 
         setSize(1045, 700);
         setBackground(new Color(255, 255, 255));
@@ -50,9 +61,14 @@ public class CreateBoardUI extends JPanel {
         getImages();
         createButtons();
         createButtonsArray();
+
+        addPlayers(playerNames);
+        getPlayerOnTurn();
+
         setKeys();
         createScorePanel();
         writeHelp();
+
 
         JPanel coverLab = new JPanel();
         coverLab.setBackground(new Color(0x000000));
@@ -100,19 +116,25 @@ public class CreateBoardUI extends JPanel {
         g.drawImage(deckFree, 820, 180, 160, 160, this);
         g.drawImage(cardIco[5], 865, 224, 70, 70, this);
 
-        BufferedImage charIco = null;
-        try {
-            charIco = ImageIO.read(getClass().getResource("/images/chars/char03.png"));
-        } catch (IOException e) {e.printStackTrace();}
-
-        g.drawImage(charIco, 865, 352, 70, 70, this);
+        g.drawImage(deckPlayer, 865, 352, 70, 70, this);
+        g.drawImage(actualPlayer.getIcon(), 865, 352, 70, 70, this);
 
         int i = 0;
+        int x,y;
         for (int r = 1; r <= this.boardSize; r++) {
             for (int c = 1; c <= this.boardSize; c++) {
 
                 i++;
                 g.drawImage(this.rock[i].icon(), xPoint, yPoint, blockSize, blockSize, this);
+
+                for(int pl = 0; pl < this.playersNum; pl++){
+                    y = p[pl].getCol();
+                    x = p[pl].getRow();
+
+                    if (x == r && y == c){
+                        g.drawImage(p[pl].getIcon(),xPoint,yPoint,blockSize,blockSize,this);
+                    }
+                }
 
                 xPoint += blockSize + 2;
                 if (xPoint > maxSize) {
@@ -122,6 +144,43 @@ public class CreateBoardUI extends JPanel {
                     if (this.boardSize == 11) { xPoint = 164; }
                     yPoint += blockSize + 2;
                 }
+            }
+        }
+
+    }
+
+    private void addPlayers(String[] name){
+
+        p = new Player[this.playersNum];
+        for ( int i=0; i < this.playersNum; i++){
+            game.addPlayer(playerNames[i]);
+            this.p[i] = game.getPlayer(i);
+            this.p[i].makeIcon();
+            if(i == 1){ p[i].moveTo(1,this.boardSize);}
+            if(i == 2){ p[i].moveTo(this.boardSize, 1);}
+            if(i == 3){ p[i].moveTo(this.boardSize, this.boardSize);}
+
+        }
+
+    }
+
+    private void getPlayerOnTurn(){
+        this.actualPlayer = game.actualTurn();
+        this.madeMove = false;
+    }
+
+    private void movePlayer(int r, int c){
+        if(this.madeMove){
+            if(this.actualPlayer.canMove(r, c)){
+                this.actualPlayer.moveTo(r, c);
+                game.nextTurn();
+
+                getPlayerOnTurn();
+                this.madeMove = false;
+
+                getRock();
+                repaint();
+
             }
         }
     }
@@ -149,6 +208,7 @@ public class CreateBoardUI extends JPanel {
                     int r = getRow();
                     int c = getCol();
                     System.out.println("Stlacil si: " + r + "-" + c);
+                    movePlayer(r, c);
                 }
             });
         }
@@ -225,13 +285,16 @@ public class CreateBoardUI extends JPanel {
     // Posunie cely stlpec alebo riadok a vlozi volny kamen
     private void moveLine(int r, int c){
 
-        MazeField mf = game.get(r, c);
-        System.out.print(mf+"**\n");
-        game.shift(mf);
-        game.print();
+        if(!this.madeMove){
+            MazeField mf = game.get(r, c);
+            System.out.print(mf+"**\n");
+            game.shift(mf);
+            game.print();
 
-        getRock();
-        repaint();
+            getRock();
+            repaint();
+            this.madeMove = true;
+        }
     }
 
     // Otoci volny kamen o 90*
@@ -245,7 +308,7 @@ public class CreateBoardUI extends JPanel {
     private void createScorePanel() {
 
         Font font = new Font("Verdana", Font.BOLD, 15);
-        Font fontPlayer = new Font("Verdana", Font.BOLD, 12);
+        Font fontPlayer = new Font("Verdana", Font.BOLD, 14);
 
         JTextArea whoGo = new JTextArea("Hrac na tahu: ");
         whoGo.setFont(font);
@@ -253,7 +316,7 @@ public class CreateBoardUI extends JPanel {
         whoGo.setEditable(false);
         whoGo.setBounds(833,330,140,23);
         whoGo.setForeground(new Color(0xD74E00));
-        add(whoGo);
+        this.add(whoGo);
 
         JTextArea scoreP = new JTextArea("Score: ");
         scoreP.setFont(font);
@@ -261,34 +324,20 @@ public class CreateBoardUI extends JPanel {
         scoreP.setEditable(false);
         scoreP.setBounds(833,430,140,23);
         scoreP.setForeground(new Color(0xD74E00));
-        add(scoreP);
+        this.add(scoreP);
 
         JTextArea scorePanel = new JTextArea();
         scorePanel.setBounds(833, 453, 140, 80);
         scorePanel.setEditable(false);
         scorePanel.setOpaque(false);
-        add(scorePanel);
+        this.add(scorePanel);
 
 
         scorePanel.setForeground(new Color(0xFFFFFF));
         scorePanel.setFont(fontPlayer);
 
-        if (this.playersNum == 2){
-            scorePanel.append("  Hrac1\n");
-            scorePanel.append("  Hrac2\n");
-        }
-
-        if (this.playersNum == 3){
-            scorePanel.append("  Hrac1\n");
-            scorePanel.append("  Hrac2\n");
-            scorePanel.append("  Hrac3\n");
-        }
-
-        if (this.playersNum == 4){
-            scorePanel.append("  Hrac1\n");
-            scorePanel.append("  Hrac2\n");
-            scorePanel.append("  Hrac3\n");
-            scorePanel.append("  Hrac4\n");
+        for(int i=0; i < this.playersNum; i++ ){
+            scorePanel.append("    "+ this.playerNames[i]+"\n");
         }
 
     }
@@ -308,7 +357,7 @@ public class CreateBoardUI extends JPanel {
         getActionMap().put("quit", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?", "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
                 if(result == JOptionPane.YES_OPTION){
                     System.exit(0);
@@ -321,8 +370,15 @@ public class CreateBoardUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 JFileChooser saveFile = new JFileChooser();
+                saveFile.setDialogTitle("Uložiť hru");
 
-                saveFile.showSaveDialog(null);
+                int selectFile = saveFile.showSaveDialog(null);
+                if (selectFile == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = saveFile.getSelectedFile();  //Subor kde sa bude ukladat
+                    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+                    saveGameSettings(fileToSave);
+                }
+
             }
         });
     }
@@ -342,6 +398,24 @@ public class CreateBoardUI extends JPanel {
         helpP.append("U - krok spat\n");
         helpP.append("Q - ukonci hru\n");
         this.add(helpP);
+    }
+
+    private void saveGameSettings(File save){
+
+        String saveStr = "";
+        if (this.boardSize<10) saveStr += "0";
+        saveStr += Integer.toString(this.boardSize);
+        saveStr += game.strRepr();
+
+        Writer writer = null;
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(save)));
+            writer.write(saveStr);
+        } catch (IOException ex) {
+            System.out.println("Save error: cannot write to file");
+        } finally {
+            try { if (writer!=null) writer.close();} catch (Exception ex) {}
+        }
     }
 
 
@@ -1078,6 +1152,7 @@ public class CreateBoardUI extends JPanel {
             this.F4 = ImageIO.read(getClass().getResource("/images/rocks/F_4_70.png"));
 
             this.deckFree = ImageIO.read(getClass().getResource("/images/deckFree.png"));
+            this.deckPlayer = ImageIO.read(getClass().getResource("/images/playerDeck.png"));
 
             this.arrowIco = new ImageIcon[17];
             this.arrowIco[1] = new ImageIcon(getClass().getResource("/images/arrows/l_1_50.png"));

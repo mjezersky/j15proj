@@ -1,5 +1,7 @@
 package ija.labyrinth.gui;
 
+import ija.labyrinth.game.MazeBoard;
+
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -9,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class GameUI extends JFrame implements WindowListener{
@@ -16,12 +20,14 @@ public class GameUI extends JFrame implements WindowListener{
     private BufferedImage bgImage;
     private Container currentCont;
 
+    private static MazeBoard game;
+    private static int gameSize;
+
     public GameUI(){
         this.mainWindow();
-        this.menuButtons();
     }
 
-    private void mainWindow(){
+    public void mainWindow(){
 
         this.setTitle("Labyrinth - IJA Projekt 2015");
         this.setSize(1050, 700);
@@ -44,9 +50,6 @@ public class GameUI extends JFrame implements WindowListener{
         this.setVisible(true);
     }
 
-
-
-
     @Override
     public void windowClosing(WindowEvent e) {
         int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
@@ -57,7 +60,7 @@ public class GameUI extends JFrame implements WindowListener{
     }
 
 
-    public void startNewGame(int bs, int pn, int cn, String[] playersNames){
+    public void startNewGame(int bs, int pn, int cn, String[] playersNames, MazeBoard gameIn){
 
         this.currentCont = this.getContentPane();
         this.currentCont.removeAll();
@@ -74,115 +77,10 @@ public class GameUI extends JFrame implements WindowListener{
         System.out.print("Pocet kariet je nastaveny na: " + cn + "\n");
         System.out.print("Pocet hracov je nastaveny na: " + pn + "\n");
 
-        CreateBoardUI newBoard = new CreateBoardUI(bs, pn, cn, playersNames);
+        CreateBoardUI newBoard = new CreateBoardUI(bs, pn, cn, playersNames, null);
         this.add(newBoard);
 
         this.pack();
-        this.setVisible(true);
-    }
-
-    private void showNewGameSettings(){
-
-        this.currentCont = this.getContentPane();
-        this.currentCont.removeAll();
-
-        try {
-            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_newgame.png"));
-            JLabel bg = new JLabel(new ImageIcon(bgImage));
-            this.setContentPane(bg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        final NewGameUI newGame = new NewGameUI();
-        this.add(newGame);
-
-        JButton backBtn = new JButton();
-        backBtn.setIcon(new ImageIcon(getClass().getResource("/images/navrat_btn.png")));
-        backBtn.setRolloverIcon(new ImageIcon(getClass().getResource("/images/navrat2_btn.png")));
-        backBtn.setBounds(100,550,210,60);
-        backBtn.setBorderPainted(false);
-        backBtn.setFocusPainted(false);
-        backBtn.setContentAreaFilled(false);
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showMenu(e);
-            }
-        });
-        this.add(backBtn);
-
-
-
-        this.add(backBtn);
-        this.pack();
-        this.setVisible(true);
-
-    }
-
-    private void showMenuLoadGame(){
-
-        this.currentCont = this.getContentPane();
-        this.currentCont.removeAll();
-
-        try {
-            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_empty.png"));
-            JLabel bg = new JLabel(new ImageIcon(bgImage));
-            this.setContentPane(bg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JButton backBtn = new JButton();
-        backBtn.setIcon(new ImageIcon(getClass().getResource("/images/navrat_btn.png")));
-        backBtn.setRolloverIcon(new ImageIcon(getClass().getResource("/images/navrat2_btn.png")));
-        backBtn.setBounds(100,550,210,60);
-        backBtn.setBorderPainted(false);
-        backBtn.setFocusPainted(false);
-        backBtn.setContentAreaFilled(false);
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showMenu(e);
-            }
-        });
-
-        this.add(backBtn);
-        this.pack();
-        this.setVisible(true);
-    }
-
-    private void showMenuHelp(){
-
-        this.currentCont = this.getContentPane();
-        this.currentCont.removeAll();
-
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        try {
-            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_help.png"));
-            JLabel bg = new JLabel(new ImageIcon(bgImage));
-            this.setContentPane(bg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JButton backBtn = new JButton();
-        backBtn.setIcon(new ImageIcon(getClass().getResource("/images/navrat_btn.png")));
-        backBtn.setRolloverIcon(new ImageIcon(getClass().getResource("/images/navrat2_btn.png")));
-        backBtn.setBounds(100, 550, 210, 60);
-        backBtn.setBorderPainted(false);
-        backBtn.setFocusPainted(false);
-        backBtn.setContentAreaFilled(false);
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showMenu(e);
-            }
-        });
-
-        this.add(backBtn);
-        //this.pack();
         this.setVisible(true);
     }
 
@@ -199,7 +97,7 @@ public class GameUI extends JFrame implements WindowListener{
         menuNewGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                newGame(e);
+                showNewGame(e);
             }
         });
         menuNewGame.setBounds(100, 320, 210, 60);
@@ -261,17 +159,148 @@ public class GameUI extends JFrame implements WindowListener{
         this.mainWindow();
     }
 
-    private void newGame(ActionEvent e){
-        this.showNewGameSettings();
+    private void showNewGame(ActionEvent e){
 
+        this.currentCont = this.getContentPane();
+        this.currentCont.removeAll();
+
+        try {
+            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_newgame.png"));
+            JLabel bg = new JLabel(new ImageIcon(bgImage));
+            this.setContentPane(bg);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        final NewGameUI newGame = new NewGameUI();
+        this.add(newGame);
+
+        JButton backBtn = new JButton();
+        backBtn.setIcon(new ImageIcon(getClass().getResource("/images/navrat_btn.png")));
+        backBtn.setRolloverIcon(new ImageIcon(getClass().getResource("/images/navrat2_btn.png")));
+        backBtn.setBounds(100,550,210,60);
+        backBtn.setBorderPainted(false);
+        backBtn.setFocusPainted(false);
+        backBtn.setContentAreaFilled(false);
+        backBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showMenu(e);
+            }
+        });
+        this.add(backBtn);
+
+        JButton startGame = new JButton();
+        startGame.setIcon(new ImageIcon(getClass().getResource("/images/spust_btn.png")));
+        startGame.setRolloverIcon(new ImageIcon(getClass().getResource("/images/spust_btn2.png")));
+        startGame.setBounds(750,550,210,60);
+        startGame.setBorderPainted(false);
+        startGame.setFocusPainted(false);
+        startGame.setContentAreaFilled(false);
+        startGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (newGame.checkSettings()){
+                    startNewGame(newGame.getBoardSize(), newGame.getPlayersNum(),
+                            newGame.getCardNum(), newGame.getPlayersNames(), null);
+                }
+            }
+        });
+        add(startGame);
+
+        this.pack();
+        this.setVisible(true);
     }
 
     private void showLoadGame (ActionEvent e){
-        this.showMenuLoadGame();
+        //this.showMenuLoadGame();
+
+        JFileChooser openFile = new JFileChooser();
+        openFile.setDialogTitle("Načítaj hru");
+
+        int selectFile = openFile.showOpenDialog(null);
+        if (selectFile == JFileChooser.APPROVE_OPTION) {
+            File fileToOpen = openFile.getSelectedFile();  //Subor na nacitanie
+            System.out.println("Open file: " + fileToOpen.getAbsolutePath());
+
+            String loadStr = "";
+            FileReader reader = null;
+            try {
+                reader = new FileReader(fileToOpen);
+                char[] chars = new char[(int) fileToOpen.length()];
+                reader.read(chars);
+                loadStr = new String(chars);
+            } catch (IOException exc) {
+                System.out.println("Load error: cannot read file");
+            } finally {
+                try {if (reader!=null) reader.close();} catch (Exception ex) {}
+            }
+
+            System.out.println("loading");
+            System.out.println(loadStr);
+            if ( (loadStr.length()<2) ) {
+                System.out.println("Load error: invalid save file");
+                return;
+            }
+
+            int gSize;
+            try { gSize = Integer.parseInt(loadStr.substring(0,2)); }
+            catch (NumberFormatException ex) {
+                System.out.println("Load error: invalid save file");
+                return;
+            }
+
+            if ( (loadStr.length()-2) != (gSize*gSize+1)*6 ) { // n*n + freeCard
+                System.out.println("Load error: corrupted save file");
+                return;
+            }
+            game = MazeBoard.createMazeBoard(gSize);
+            gameSize = gSize;
+            for (int i=2; i<loadStr.length(); i+=6) {
+                game.config(loadStr.substring(i, i+6));
+            }
+
+            String[] playerNames;
+            playerNames = new String[2];
+            playerNames[0] = "Maros";
+            playerNames[1] = "Matous";
+
+            this.startNewGame(gSize, 2, 12, playerNames, game);
+
+        }
     }
 
     private void showAbout(ActionEvent e){
-        this.showMenuHelp();
+        this.currentCont = this.getContentPane();
+        this.currentCont.removeAll();
+
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        try {
+            bgImage = ImageIO.read(getClass().getResource("/images/bgImage_help.png"));
+            JLabel bg = new JLabel(new ImageIcon(bgImage));
+            this.setContentPane(bg);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        JButton backBtn = new JButton();
+        backBtn.setIcon(new ImageIcon(getClass().getResource("/images/navrat_btn.png")));
+        backBtn.setRolloverIcon(new ImageIcon(getClass().getResource("/images/navrat2_btn.png")));
+        backBtn.setBounds(100,550,210,60);
+        backBtn.setBorderPainted(false);
+        backBtn.setFocusPainted(false);
+        backBtn.setContentAreaFilled(false);
+        backBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showMenu(e);
+            }
+        });
+
+        this.add(backBtn);
+        //this.pack();
+        this.setVisible(true);
     }
 
     // Nevyuzivaju sa, ale musia byt kvoli WindowListener

@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ija.board;
+package ija.labyrinth.game;
+
+import ija.labyrinth.game.MazeCard;
+import ija.labyrinth.game.MazeField;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -17,11 +20,12 @@ public class MazeBoard {
     private MazeField[][] board;
     private Player[] players;
     private int currPlayers = 0;
-    
-    private static int maxPlayers = 3; // default max pocet hracu
-    
+    private int turn;
+
+    private static int maxPlayers = 4; // default max pocet hracu
+
     private MazeCard freeCard = null;
-    
+
     public static MazeBoard createMazeBoard(int n) {
         MazeBoard newboard = new MazeBoard();
         newboard.size = n;
@@ -34,18 +38,36 @@ public class MazeBoard {
         newboard.players = new Player[MazeBoard.maxPlayers];
         return newboard;
     }
-    
+
+    // vraci hrace na tahu
+    public Player actualTurn() {
+        this.turn = (this.turn+1)%currPlayers;
+        return this.players[this.turn];
+    }
+
+    public void nextTurn(){
+        this.turn++;
+    }
+
     // prida hrace se jmenem
     public void addPlayer(String name) {
         if (this.currPlayers == MazeBoard.maxPlayers) {
-            System.out.println("Max players reached!");
+            System.out.println("Error - MazeBoard.addPlayer: max players reached!");
         }
         else {
-            this.players[this.currPlayers] = new Player(name, this.currPlayers, this.board[0][0]);
+            this.players[this.currPlayers] = new Player(name, this.currPlayers, this.board[0][0], this);
             this.currPlayers++;
         }
     }
-    
+
+    public Player getPlayer(int playerNo) {
+        if (playerNo < 0 || playerNo > currPlayers-1) {
+            System.out.println("Error - MazeBoard.getPlayerRow: player number not in range");
+            return null;
+        }
+        return this.players[playerNo];
+    }
+
     public String strRepr() {
         // potreba implementace strRepr pro MazeField
         String mbStr = "0000"; // nuly jako zacatek freeCard 
@@ -58,11 +80,11 @@ public class MazeBoard {
         }
         return mbStr;
     }
-    
+
     public void config(String cfgStr) {
         MazeCard newcard; // nova karta podle cfgStr rrccTR
         int r, c, rotation;
-        
+
         r = Integer.parseInt(cfgStr.substring(0,2)) - 1; // -1 protoze r a c jsou indexovany od 1
         c = Integer.parseInt(cfgStr.substring(2,4)) - 1;
         newcard = MazeCard.create( String.valueOf(cfgStr.charAt(4)) );
@@ -73,7 +95,7 @@ public class MazeBoard {
         if (r == -1 && c == -1) this.freeCard = newcard;
         else this.board[r][c].PutCard(newcard);
     }
-    
+
     public void print() {
         MazeCard tmpcard;
         for(int r = 0; r < this.size; r++) {
@@ -84,15 +106,20 @@ public class MazeBoard {
                     return;
                 }
                 System.out.print(tmpcard.getType());
+                System.out.print(tmpcard.getRotation());
                 if (c != this.size-1) System.out.print(" ");
             }
             System.out.print("\n");
         }
         System.out.print("Free card: ");
-        System.out.println(this.freeCard.getType());
+        System.out.print(this.freeCard.getType());
+        System.out.print(this.freeCard.getRotation());
+        System.out.print("\n");
     }
 
     public void newGame() {
+        turn = -1;
+
         int I_count, L_count, T_count, card_count, r, c;
         String I_card = "L";
         String L_card = "C";
@@ -232,12 +259,12 @@ public class MazeBoard {
 
         this.freeCard = tmpCard;
     }
-            
+
     public MazeField get(int r, int c) {
         if (r<1 || c<1 || r>this.size || c>this.size) return null;
         return this.board[r-1][c-1];
     }
-            
+
     public MazeCard getFreeCard() { return this.freeCard; }
 
     public void shift(MazeField mf) {
