@@ -1,6 +1,6 @@
 package ija.labyrinth.game;
 
-import ija.labyrinth.game.MazeField;
+import ija.labyrinth.game.cards.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,9 +12,11 @@ import java.util.Collections;
 public class Player {
 
     private int number;
+    private int score;
     private MazeField location;
     private MazeBoard board;
     private String name;
+    private TreasureCard currCard;
 
     private BufferedImage charIcon;
     private BufferedImage[] character;
@@ -25,14 +27,27 @@ public class Player {
         this.location = location;
         this.name = name;
         this.board = board;
+        this.currCard = null;
+        this.score = 0;
 
         setImagesIcon();
     }
 
+    public int getScore() { return this.score; }
+    public TreasureCard getCard() { return this.currCard; }
     public String getName() { return this.name; }
     public int getNum() { return this.number; }
     public BufferedImage getIcon(){ return this.charIcon; }
-
+    
+    
+    public void pullCard() { 
+        if (this.board.getPack() == null) {
+            System.out.println("Error - Player.pullCard: board.pack is null");
+            return;
+        }
+        this.currCard = this.board.getPack().takeCard();
+    }
+    
     public int getRow() {
         if (this.location == null) {
             System.out.println("Error - Player.getRow: location is null");
@@ -56,6 +71,13 @@ public class Player {
             return;
         }
         this.location = this.board.get(row, col);
+        if (this.currCard != null) {
+            if (this.location.equals(this.currCard.getLocation())) {
+                this.score += 1;
+                this.pullCard();
+            }
+        }
+        
     }
 
     private boolean isPathValid(MazeField target) {

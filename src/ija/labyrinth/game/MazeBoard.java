@@ -5,6 +5,7 @@
  */
 package ija.labyrinth.game;
 
+import ija.labyrinth.game.cards.CardPack;
 import ija.labyrinth.game.MazeCard;
 import ija.labyrinth.game.MazeField;
 
@@ -21,6 +22,7 @@ public class MazeBoard {
     private Player[] players;
     private int currPlayers = 0;
     private int turn;
+    private CardPack pack;
 
     private static int maxPlayers = 4; // default max pocet hracu
 
@@ -38,6 +40,9 @@ public class MazeBoard {
         newboard.players = new Player[MazeBoard.maxPlayers];
         return newboard;
     }
+    
+    public void createPack(int packSize) { this.pack = new CardPack(packSize); }
+    public CardPack getPack() { return this.pack; }
 
     // vraci hrace na tahu
     public Player nextTurn() {
