@@ -41,11 +41,12 @@ public class MazeBoard {
 
     // vraci hrace na tahu
     public Player actualTurn() {
-        this.turn = (this.turn+1)%currPlayers;
-        return this.players[this.turn];
+        System.out.println(this.turn);
+        return this.players[(this.turn+1)%currPlayers];
     }
 
     public void nextTurn(){
+        System.out.print(this.turn+"-");
         this.turn++;
     }
 

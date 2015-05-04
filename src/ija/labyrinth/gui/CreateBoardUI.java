@@ -116,8 +116,8 @@ public class CreateBoardUI extends JPanel {
         g.drawImage(deckFree, 820, 180, 160, 160, this);
         g.drawImage(cardIco[5], 865, 224, 70, 70, this);
 
-        g.drawImage(deckPlayer, 865, 352, 70, 70, this);
-        g.drawImage(actualPlayer.getIcon(), 865, 352, 70, 70, this);
+        g.drawImage(deckPlayer, 865, 360, 70, 70, this);
+        g.drawImage(actualPlayer.getIcon(), 865, 360, 70, 70, this);
 
         int i = 0;
         int x,y;
@@ -176,11 +176,8 @@ public class CreateBoardUI extends JPanel {
                 game.nextTurn();
 
                 getPlayerOnTurn();
-                this.madeMove = false;
-
                 getRock();
                 repaint();
-
             }
         }
     }
@@ -207,7 +204,6 @@ public class CreateBoardUI extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     int r = getRow();
                     int c = getCol();
-                    System.out.println("Stlacil si: " + r + "-" + c);
                     movePlayer(r, c);
                 }
             });
@@ -310,7 +306,7 @@ public class CreateBoardUI extends JPanel {
         Font font = new Font("Verdana", Font.BOLD, 15);
         Font fontPlayer = new Font("Verdana", Font.BOLD, 14);
 
-        JTextArea whoGo = new JTextArea("Hrac na tahu: ");
+        JTextArea whoGo = new JTextArea("Hráč na ťahu: ");
         whoGo.setFont(font);
         whoGo.setOpaque(false);
         whoGo.setEditable(false);

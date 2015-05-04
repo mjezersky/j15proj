@@ -5,9 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Created by Maros Janota (xjanot01) on 3.5.2015.
- */
+
 public class NewGameUI extends JPanel {
 
     private JTextField player1, player2, player3, player4;
@@ -23,21 +21,6 @@ public class NewGameUI extends JPanel {
     public NewGameUI(){
 
         setSize(1050, 700);
-
-        /*JButton startGame = new JButton();
-        startGame.setIcon(new ImageIcon(getClass().getResource("/images/spust_btn.png")));
-        startGame.setRolloverIcon(new ImageIcon(getClass().getResource("/images/spust_btn2.png")));
-        startGame.setBounds(750,550,210,60);
-        startGame.setBorderPainted(false);
-        startGame.setFocusPainted(false);
-        startGame.setContentAreaFilled(false);
-        startGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                checkSettings();
-            }
-        });
-        add(startGame);*/
 
         choosePlayers();
         chooseBoardSize();
