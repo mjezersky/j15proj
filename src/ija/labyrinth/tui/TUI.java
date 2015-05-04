@@ -1,7 +1,7 @@
-package ija;
+package ija.labyrinth.tui;
 
-import ija.board.MazeBoard;
-import ija.board.MazeField;
+import ija.labyrinth.game.MazeBoard;
+import ija.labyrinth.game.MazeField;
 import java.util.Scanner;
 import java.io.*;
 
