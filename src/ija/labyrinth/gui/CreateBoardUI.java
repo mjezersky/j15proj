@@ -1,9 +1,7 @@
 package ija.labyrinth.gui;
 
-import ija.labyrinth.game.MazeBoard;
-import ija.labyrinth.game.MazeCard;
-import ija.labyrinth.game.MazeField;
-import ija.labyrinth.game.Player;
+import ija.labyrinth.game.*;
+import ija.labyrinth.game.cards.TreasureCard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -18,14 +17,13 @@ public class CreateBoardUI extends JPanel {
 
     private int boardSize;
     private int playersNum;
+    private int cardsNum;
     private String[] playerNames;
     private Player[] p;
     private Player actualPlayer;
     private boolean madeMove;
 
-    private int cardsNum;
     private static MazeBoard game;
-    private ArrBtn[] arrBtn;
     private Rock[] rock;
     private Rock freeRock;
 
@@ -34,19 +32,23 @@ public class CreateBoardUI extends JPanel {
     private BufferedImage F1, F2, F3, F4;
     private BufferedImage deckFree;
     private BufferedImage deckPlayer;
+    private BufferedImage deckScore;
     private ImageIcon[] arrowIco;
     private BufferedImage[] cardIco;
     private JButton[] arrowBtn;
+
+    private JTextArea scorePanel;
 
 
     public CreateBoardUI(int bs, int pn, int cn, String[] names, MazeBoard gameIn) {
         this.boardSize = bs;
         this.playersNum = pn;
-        this.cardsNum = cn;
         this.playerNames = names;
+        this.cardsNum = cn;
 
         if (gameIn == null){
             game = MazeBoard.createMazeBoard(boardSize);
+            game.setCardsNum(cardsNum);
             game.newGame();
             game.print();
         } else {
@@ -64,9 +66,10 @@ public class CreateBoardUI extends JPanel {
 
         addPlayers(playerNames);
         getPlayerOnTurn();
+        createScorePanel();
+
 
         setKeys();
-        createScorePanel();
         writeHelp();
 
 
@@ -114,10 +117,12 @@ public class CreateBoardUI extends JPanel {
         g.drawImage(this.freeRock.icon(), 865, 74, 70, 70, this);
 
         g.drawImage(deckFree, 820, 180, 160, 160, this);
-        g.drawImage(cardIco[5], 865, 224, 70, 70, this);
+        g.drawImage(this.actualPlayer.getCard().getCardIcon(), 865, 224, 70, 70, this);
 
-        g.drawImage(deckPlayer, 865, 360, 70, 70, this);
-        g.drawImage(actualPlayer.getIcon(), 865, 360, 70, 70, this);
+        g.drawImage(deckPlayer, 865, 355, 70, 70, this);
+        g.drawImage(this.actualPlayer.getIcon(), 865, 355, 70, 70, this);
+
+        g.drawImage(deckScore, 833, 453, 140, 80, this);
 
         int i = 0;
         int x,y;
@@ -134,6 +139,11 @@ public class CreateBoardUI extends JPanel {
                     if (x == r && y == c){
                         g.drawImage(p[pl].getIcon(),xPoint,yPoint,blockSize,blockSize,this);
                     }
+                }
+
+                if(actualPlayer.getCard().getLocation().row() == r &&
+                        actualPlayer.getCard().getLocation().col() == c){
+                    g.drawImage(actualPlayer.getCard().getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
                 }
 
                 xPoint += blockSize + 2;
@@ -156,6 +166,7 @@ public class CreateBoardUI extends JPanel {
             game.addPlayer(playerNames[i]);
             this.p[i] = game.getPlayer(i);
             this.p[i].makeIcon();
+            //this.p[i].pullCard();
             if(i == 1){ p[i].moveTo(1,this.boardSize);}
             if(i == 2){ p[i].moveTo(this.boardSize, 1);}
             if(i == 3){ p[i].moveTo(this.boardSize, this.boardSize);}
@@ -174,6 +185,7 @@ public class CreateBoardUI extends JPanel {
             if(this.actualPlayer.canMove(r, c)){
                 this.actualPlayer.moveTo(r, c);
 
+                getScore();
                 getPlayerOnTurn();
                 getRock();
                 repaint();
@@ -309,7 +321,7 @@ public class CreateBoardUI extends JPanel {
         whoGo.setFont(font);
         whoGo.setOpaque(false);
         whoGo.setEditable(false);
-        whoGo.setBounds(833,330,140,23);
+        whoGo.setBounds(833, 330, 140, 23);
         whoGo.setForeground(new Color(0xD74E00));
         this.add(whoGo);
 
@@ -317,25 +329,39 @@ public class CreateBoardUI extends JPanel {
         scoreP.setFont(font);
         scoreP.setOpaque(false);
         scoreP.setEditable(false);
-        scoreP.setBounds(833,430,140,23);
+        scoreP.setBounds(833, 432, 140, 23);
         scoreP.setForeground(new Color(0xD74E00));
         this.add(scoreP);
 
-        JTextArea scorePanel = new JTextArea();
-        scorePanel.setBounds(833, 453, 140, 80);
-        scorePanel.setEditable(false);
-        scorePanel.setOpaque(false);
-        this.add(scorePanel);
+        this.scorePanel = new JTextArea();
+        this.scorePanel.setBounds(833, 458, 140, 80);
+        this.scorePanel.setEditable(false);
+        this.scorePanel.setOpaque(false);
+        this.add(this.scorePanel);
 
 
-        scorePanel.setForeground(new Color(0xFFFFFF));
-        scorePanel.setFont(fontPlayer);
+        this.scorePanel.setForeground(new Color(0xFFFFFF));
+        this.scorePanel.setFont(fontPlayer);
 
-        for(int i=0; i < this.playersNum; i++ ){
-            scorePanel.append("    "+ this.playerNames[i]+"\n");
-        }
-
+        getScore();
     }
+
+    private void getScore(){
+        boolean end = false;
+        this.scorePanel.setText("");
+        this.scorePanel.setBackground(new Color(0x64290A));
+        for(int i=0; i < this.playersNum; i++ ){
+            int score = this.p[i].getScore();
+            this.scorePanel.append("    "+score+" - "+this.p[i].getName()+"\n");
+            if(score == this.cardsNum/this.playersNum){
+                end = true;
+            }
+        }
+        if (end){
+            gameOver();
+        }
+    }
+
 
     // Nastavi tlacitka
     private void setKeys() {
@@ -376,6 +402,31 @@ public class CreateBoardUI extends JPanel {
 
             }
         });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_U, 0), "tmp");
+        getActionMap().put("tmp", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                gameOver();
+            }
+        });
+    }
+
+    private void gameOver(){
+        ImageIcon winIco = new ImageIcon(actualPlayer.getIcon());
+        Object[] options = {"OK"};
+        int n = JOptionPane.showOptionDialog(new JFrame(),
+                "Víťaz je : " + actualPlayer.getName(), "Koniec hry",
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.QUESTION_MESSAGE, winIco
+                , options, options[0]);
+
+        JFrame top = (JFrame) getTopLevelAncestor();
+        System.out.print(top);
+        top.dispose();
+
+        GameUI newgame = new GameUI();
+        newgame.mainWindow();
     }
 
     // Napise napovedu.
@@ -396,8 +447,9 @@ public class CreateBoardUI extends JPanel {
     }
 
     private void saveGameSettings(File save){
+        GameData.save(game, save);
 
-        String saveStr = "";
+        /*String saveStr = "";
         if (this.boardSize<10) saveStr += "0";
         saveStr += Integer.toString(this.boardSize);
         saveStr += game.strRepr();
@@ -410,7 +462,7 @@ public class CreateBoardUI extends JPanel {
             System.out.println("Save error: cannot write to file");
         } finally {
             try { if (writer!=null) writer.close();} catch (Exception ex) {}
-        }
+        }*/
     }
 
 
@@ -445,7 +497,7 @@ public class CreateBoardUI extends JPanel {
             num = 121;
         }
 
-        this.arrBtn = new ArrBtn[num];
+        ArrBtn[] arrBtn = new ArrBtn[num];
         JButton[] arrayBtn = new JButton[num];
         int i = 0;
         for (int r = 1; r <= this.boardSize; r++) {
@@ -458,8 +510,8 @@ public class CreateBoardUI extends JPanel {
                 arrayBtn[i].setOpaque(false);
                 arrayBtn[i].setContentAreaFilled(false);
 
-                this.arrBtn[i] = new ArrBtn(r, c, arrayBtn[i]);
-                this.arrBtn[i].makeActionBtn();
+                arrBtn[i] = new ArrBtn(r, c, arrayBtn[i]);
+                arrBtn[i].makeActionBtn();
 
                 this.add(arrayBtn[i]);
                 i++;
@@ -1148,6 +1200,7 @@ public class CreateBoardUI extends JPanel {
 
             this.deckFree = ImageIO.read(getClass().getResource("/images/deckFree.png"));
             this.deckPlayer = ImageIO.read(getClass().getResource("/images/playerDeck.png"));
+            this.deckScore = ImageIO.read(getClass().getResource("/images/scoreDeck.png"));
 
             this.arrowIco = new ImageIcon[17];
             this.arrowIco[1] = new ImageIcon(getClass().getResource("/images/arrows/l_1_50.png"));

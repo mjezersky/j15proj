@@ -34,6 +34,11 @@ public class NewGameUI extends JPanel {
         setLayout(null);
     }
 
+    public String[] getPlayersNames() { return this.playersNames; }
+    public int getPlayersNum(){ return this.playersNum; }
+    public int getBoardSize() {return this.boardSize; }
+    public int getCardNum() { return this.cardNum; }
+
     public boolean checkSettings(){
 
         setPlayerNames();
@@ -223,8 +228,5 @@ public class NewGameUI extends JPanel {
         }
     }
 
-    public String[] getPlayersNames() { return this.playersNames; }
-    public int getPlayersNum(){ return this.playersNum; }
-    public int getBoardSize() {return this.boardSize; }
-    public int getCardNum() { return this.cardNum; }
+
 }

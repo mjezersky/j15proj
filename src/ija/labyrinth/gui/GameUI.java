@@ -1,5 +1,6 @@
 package ija.labyrinth.gui;
 
+import ija.labyrinth.game.GameData;
 import ija.labyrinth.game.MazeBoard;
 
 import javax.swing.ImageIcon;
@@ -77,7 +78,7 @@ public class GameUI extends JFrame implements WindowListener{
         System.out.print("Pocet kariet je nastaveny na: " + cn + "\n");
         System.out.print("Pocet hracov je nastaveny na: " + pn + "\n");
 
-        CreateBoardUI newBoard = new CreateBoardUI(bs, pn, cn, playersNames, null);
+        CreateBoardUI newBoard = new CreateBoardUI(bs, pn, cn, playersNames, gameIn);
         this.add(newBoard);
 
         this.pack();
@@ -155,7 +156,7 @@ public class GameUI extends JFrame implements WindowListener{
     }
 
 
-    private void showMenu (ActionEvent e){
+    public void showMenu (ActionEvent e){
         this.mainWindow();
     }
 
@@ -223,50 +224,20 @@ public class GameUI extends JFrame implements WindowListener{
             File fileToOpen = openFile.getSelectedFile();  //Subor na nacitanie
             System.out.println("Open file: " + fileToOpen.getAbsolutePath());
 
-            String loadStr = "";
-            FileReader reader = null;
-            try {
-                reader = new FileReader(fileToOpen);
-                char[] chars = new char[(int) fileToOpen.length()];
-                reader.read(chars);
-                loadStr = new String(chars);
-            } catch (IOException exc) {
-                System.out.println("Load error: cannot read file");
-            } finally {
-                try {if (reader!=null) reader.close();} catch (Exception ex) {}
+            MazeBoard loadGame;
+            loadGame = GameData.load(fileToOpen);
+
+            if(loadGame != null){
+
+                GameUI.game = loadGame;
+
+                String[] playerNames;
+                playerNames = new String[2];
+                playerNames[0] = "Maros";
+                playerNames[1] = "Matous";
+
+                this.startNewGame(5, 2, 12, playerNames, game);
             }
-
-            System.out.println("loading");
-            System.out.println(loadStr);
-            if ( (loadStr.length()<2) ) {
-                System.out.println("Load error: invalid save file");
-                return;
-            }
-
-            int gSize;
-            try { gSize = Integer.parseInt(loadStr.substring(0,2)); }
-            catch (NumberFormatException ex) {
-                System.out.println("Load error: invalid save file");
-                return;
-            }
-
-            if ( (loadStr.length()-2) != (gSize*gSize+1)*6 ) { // n*n + freeCard
-                System.out.println("Load error: corrupted save file");
-                return;
-            }
-            game = MazeBoard.createMazeBoard(gSize);
-            gameSize = gSize;
-            for (int i=2; i<loadStr.length(); i+=6) {
-                game.config(loadStr.substring(i, i+6));
-            }
-
-            String[] playerNames;
-            playerNames = new String[2];
-            playerNames[0] = "Maros";
-            playerNames[1] = "Matous";
-
-            this.startNewGame(gSize, 2, 12, playerNames, game);
-
         }
     }
 
