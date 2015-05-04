@@ -29,5 +29,14 @@ public class TreasureCard {
     }
     
     public int getId() { return this.identifier; }
+    
     public MazeField getLocation() { return this.location; }
+    
+    public void moveTo(MazeField mf) {
+        if (mf == null) {
+            System.out.println("Error - TreasureCard.moveTo: target location is null");
+            return;
+        }
+        this.location = mf;
+    }
 }
