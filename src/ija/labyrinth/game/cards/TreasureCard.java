@@ -28,5 +28,6 @@ public class TreasureCard {
         return this.location.equals(tc.location);
     }
     
+    public int getId() { return this.identifier; }
     public MazeField getLocation() { return this.location; }
 }
