@@ -6,8 +6,6 @@
 package ija.labyrinth.game;
 
 import ija.labyrinth.game.cards.*;
-import ija.labyrinth.game.MazeCard;
-import ija.labyrinth.game.MazeField;
 
 import java.util.Collections;
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class MazeBoard {
     private int turn;
     private CardPack pack;
 
-    private static int maxPlayers = 4; // default max pocet hracu
+    private static final int maxPlayers = 4; // default max pocet hracu
 
     private MazeCard freeCard = null;
 
@@ -52,14 +50,17 @@ public class MazeBoard {
     }
 
     // prida hrace se jmenem
-    public void addPlayer(String name) {
+    public Player addPlayer(String name) {
+        Player newPlayer = null;
         if (this.currPlayers == MazeBoard.maxPlayers) {
             System.out.println("Error - MazeBoard.addPlayer: max players reached!");
         }
         else {
-            this.players[this.currPlayers] = new Player(name, this.currPlayers, this.board[0][0], this);
+            newPlayer = new Player(name, this.currPlayers, this.board[0][0], this);
+            this.players[this.currPlayers] = newPlayer;
             this.currPlayers++;
         }
+        return newPlayer;
     }
 
     public Player getPlayer(int playerNo) {
@@ -231,13 +232,13 @@ public class MazeBoard {
         this.board[this.size-1][this.size-1].PutCard(tmp);
         card_list.remove(0);
 
-        int n=0, k=0;
+        int k;
         boolean goOn = false;
         newcard = card_list.get(0);
         for (int i=1; i <= this.size; i++){
             for (int j=1; j <= this.size; j++){
                 for (k=0; k < card_list.size(); k++){
-                    if (card_list.get(k).getType() == T_card){
+                    if (card_list.get(k).getType().equals(T_card)){
                         newcard = card_list.get(k);
                         goOn = true;
                         break;
@@ -323,6 +324,18 @@ public class MazeBoard {
     }
 
     public MazeCard getFreeCard() { return this.freeCard; }
+    
+    
+    private void shiftUpdate(int row, int col, int offset, boolean modRow) {
+        for (int i=0; i<this.currPlayers; i++) {
+            if (modRow && this.players[i].getCol() == col) {
+                this.players[i].moveTo(this.players[i].getRow()+offset, col);
+            }
+            else if (!modRow && this.players[i].getRow() == row) {
+                this.players[i].moveTo(row, this.players[i].getCol()+offset);
+            }
+        }
+    }
 
     public void shift(MazeField mf) {
         if (mf == null) return;
@@ -334,6 +347,7 @@ public class MazeBoard {
             }
             this.board[0][mf.col()-1].PutCard(this.freeCard);
             this.freeCard = tmpcard;
+            this.shiftUpdate(mf.row(), mf.col(), 1, true);
         }
         else if (mf.row()==this.size && mf.col()%2==0) {
             tmpcard = this.board[0][mf.col()-1].getCard();
@@ -342,6 +356,7 @@ public class MazeBoard {
             }
             this.board[this.size-1][mf.col()-1].PutCard(this.freeCard);
             this.freeCard = tmpcard;
+            this.shiftUpdate(mf.row(), mf.col(), -1, true);
         }
         else if (mf.row()%2==0 && mf.col()==1) {
             tmpcard = this.board[mf.row()-1][this.size-1].getCard();
@@ -350,6 +365,7 @@ public class MazeBoard {
             }
             this.board[mf.row()-1][0].PutCard(this.freeCard);
             this.freeCard = tmpcard;
+            this.shiftUpdate(mf.row(), mf.col(), 1, false);
         }
         else if (mf.row()%2==0 && mf.col()==this.size) {
             tmpcard = this.board[mf.row()-1][0].getCard();
@@ -358,6 +374,7 @@ public class MazeBoard {
             }
             this.board[mf.row()-1][this.size-1].PutCard(this.freeCard);
             this.freeCard = tmpcard;
+            this.shiftUpdate(mf.row(), mf.col(), -1, false);
         }
     }
 }

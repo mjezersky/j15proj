@@ -31,7 +31,8 @@ public class TUI {
     }
     
     private static void test() {
-        TUI.game.addPlayer("joza");
+        Player p1 = TUI.game.addPlayer("joza");
+        p1.moveTo(2, 2);
         TUI.game.addPlayer("pepa");
     }
     
@@ -61,6 +62,7 @@ public class TUI {
     }
     
     private static void makeNewGame() {
+        TUI.game = MazeBoard.createMazeBoard(TUI.gameSize);
         TUI.game.newGame();
         TUI.game.createPack(12);
     }
