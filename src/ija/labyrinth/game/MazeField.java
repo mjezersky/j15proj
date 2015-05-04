@@ -7,7 +7,7 @@ package ija.labyrinth.game;
 
 /**
  *
- * 
+ *
  */
 public class MazeField {
     private int row;

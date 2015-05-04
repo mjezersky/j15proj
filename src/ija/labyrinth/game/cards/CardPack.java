@@ -10,7 +10,9 @@ public class CardPack {
     private int size;
     private ArrayList<TreasureCard> pack;
     private MazeBoard board;
-    
+
+
+
     @Override
     public String toString() {
         // SS_card_*
@@ -20,12 +22,12 @@ public class CardPack {
         }
         return tmp;
     }
-    
+
     public CardPack(int packSize, MazeBoard board) {
         this.pack = new ArrayList<>();
         this.size = packSize;
         this.board = board;
-        
+
         ArrayList<MazeField> fieldList = new ArrayList<>();
         for (int r=1; r<=this.board.size(); r++) {
             for (int c=1; c<=this.board.size(); c++) {
@@ -33,7 +35,7 @@ public class CardPack {
             }
         }
         Collections.shuffle(fieldList);
-        
+
         for (int i = 0; i < packSize; i++) {
             TreasureCard newCard = new TreasureCard(i, fieldList.get(i));
             this.pack.add(newCard);
@@ -41,7 +43,7 @@ public class CardPack {
         if (packSize > 0) Collections.shuffle(this.pack);
         fieldList.clear();
     }
-        
+
     public boolean strConfig(String cfg) {
         if (cfg.length()<2) {
             System.err.println("Error - CardPack.strConfig: bad string");
@@ -52,12 +54,12 @@ public class CardPack {
             System.err.println("Error - CardPack.strConfig: incomplete string");
             return false;
         }
-        
+
         this.size = cfgSize;
         int id, row, col;
         TreasureCard newcard;
         this.pack.clear();
-        
+
         for (int i=2; i<cfg.length(); i+=6) {
             id = Integer.valueOf(cfg.substring(i, i+2));
             row = Integer.valueOf(cfg.substring(i+2, i+4));
@@ -65,14 +67,14 @@ public class CardPack {
             newcard = new TreasureCard(id, this.board.get(row,col));
             this.pack.add(newcard);
         }
-        
+
         return true;
     }
-    
+
     public int getSize() { return this.size; }
-    
+
     public TreasureCard takeCard() {
-        
+
         if (this.size <= 0) {
             System.err.println("Error - CardPack.pop(): pack is empty");
             return null;

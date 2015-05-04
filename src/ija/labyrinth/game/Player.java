@@ -18,6 +18,7 @@ public class Player {
     private String name;
     private TreasureCard currCard;
 
+    private int charIcoNum;
     private BufferedImage charIcon;
     private BufferedImage[] character;
     private ArrayList<BufferedImage> char_pack;
@@ -30,10 +31,10 @@ public class Player {
         this.currCard = null;
         this.score = 0;
         this.pullCard();
-        
+
         setImagesIcon();
     }
-    
+
     Player(String name, int number, MazeField location, MazeBoard board, TreasureCard initCard, int initScore) {
         this.number = number;
         this.location = location;
@@ -41,17 +42,17 @@ public class Player {
         this.board = board;
         this.currCard = initCard;
         this.score = initScore;
-        
+
         setImagesIcon();
     }
-    
+
     @Override
-    public String toString() { 
+    public String toString() {
         // NNrrccSS_card_LL_name_
         String tmp = "";
         if (this.number < 10) tmp += "0";
         tmp += Integer.toString(this.number); // NN
-        
+
         int row, col;
         row = this.location.row();
         if (row < 10) tmp += "0";
@@ -59,36 +60,36 @@ public class Player {
         col = this.location.col();
         if (col < 10) tmp += "0";
         tmp += Integer.toString(col); // cc
-        
+
         if (this.score < 10) tmp += "0";
         tmp += Integer.toString(this.score); // SS
-        
+
         tmp += this.currCard.toString(); // _card_
-        
+
         int nameLen = this.name.length();
         if (nameLen < 10) tmp += "0";
         tmp += Integer.toString(nameLen); // LL
-        
+
         tmp += this.name; // _name_
-        
+
         return tmp;
     }
-    
+
 
     public int getScore() { return this.score; }
     public TreasureCard getCard() { return this.currCard; }
     public String getName() { return this.name; }
     public int getNum() { return this.number; }
     public BufferedImage getIcon(){ return this.charIcon; }
-    
-    private void pullCard() { 
+
+    private void pullCard() {
         if (this.board.getPack() == null) {
             System.out.println("Error - Player.pullCard: board.pack is null");
             return;
         }
         this.currCard = this.board.getPack().takeCard();
     }
-    
+
     public int getRow() {
         if (this.location == null) {
             System.out.println("Error - Player.getRow: location is null");
@@ -118,7 +119,7 @@ public class Player {
                 this.pullCard();
             }
         }
-        
+
     }
 
     private boolean isPathValid(MazeField target) {
@@ -183,10 +184,18 @@ public class Player {
     // Nahodne vybere zo zoznamu jednu postavicku
     public void makeIcon(){
 
-        Collections.shuffle(this.char_pack);
-
         this.charIcon = this.char_pack.get(0);
         this.char_pack.remove(0);
+    }
+
+    public int getCharIcoNum(){
+        for (int i = 0; i < 8; i++){
+            if (this.character[i] == this.charIcon){
+                System.out.println("Hrac ma obrazok " + i);
+                return i;
+            }
+        }
+        return 10;
     }
 
     // Nacitam vsetky dostupne postavicky
@@ -209,8 +218,6 @@ public class Player {
 
         this.char_pack = new ArrayList<>();
         this.char_pack.addAll(Arrays.asList(this.character).subList(0, 8));
-
+        Collections.shuffle(this.char_pack);
     }
-
-
 }

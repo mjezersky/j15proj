@@ -21,6 +21,7 @@ public class MazeBoard {
     private int currPlayers = 0;
     private int turn;
     private CardPack pack;
+    private int cardsNum = 0;
 
     private static final int maxPlayers = 4; // default max pocet hracu
 
@@ -38,11 +39,15 @@ public class MazeBoard {
         newboard.players = new Player[MazeBoard.maxPlayers];
         return newboard;
     }
-    
+
     public CardPack getPack() { return this.pack; }
     public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
     public int size() { return this.size; }
-    
+
+    public void setCardsNum(int num) {
+        this.cardsNum = num;
+    }
+
     // vraci hrace na tahu
     public Player nextTurn() {
         this.turn = (this.turn+1)%currPlayers;
@@ -70,7 +75,7 @@ public class MazeBoard {
         }
         return this.players[playerNo];
     }
-    
+
     @Override
     public String toString() {
         String mbStr = "";
@@ -103,8 +108,8 @@ public class MazeBoard {
 
         r = Integer.parseInt(cfg.substring(0,2)) - 1; // -1 protoze r a c jsou indexovany od 1
         c = Integer.parseInt(cfg.substring(2,4)) - 1;
-        newcard = MazeCard.create( String.valueOf(cfg.charAt(4)) );
-        rotation = Character.getNumericValue( cfg.charAt(5) );
+        newcard = MazeCard.create(String.valueOf(cfg.charAt(4)));
+        rotation = Character.getNumericValue(cfg.charAt(5));
         for (int i = 0; i<rotation; i++) {
             newcard.turnRight(); // provedu rotaci karty
         }
@@ -112,33 +117,33 @@ public class MazeBoard {
         else this.board[r][c].PutCard(newcard);
         return true;
     }
-    
+
     public boolean strConfigPack(String cfg) {
         this.pack = new CardPack(0, this);
         return this.pack.strConfig(cfg);
     }
-    
+
     public boolean strConfigPlayer(String cfg) {
         TreasureCard card;
         int num, row, col, nameLen, score;
         String name, cardStr;
-        
+
         cardStr = cfg.substring(8, 14);
         num = Integer.valueOf(cardStr.substring(0, 2));
         row = Integer.valueOf(cardStr.substring(2, 4));
         col = Integer.valueOf(cardStr.substring(4, 6));
         card = new TreasureCard(num, this.get(row,col));
-        
+
         num = Integer.valueOf(cfg.substring(0, 2));
         row = Integer.valueOf(cfg.substring(2, 4));
         col = Integer.valueOf(cfg.substring(4, 6));
         score = Integer.valueOf(cfg.substring(6, 8));
         nameLen = Integer.valueOf(cfg.substring(14, 16));
         name = cfg.substring(16, 16+nameLen);
-        
+
         this.players[currPlayers] = new Player(name, num, this.get(row, col), this, card, score);
         this.currPlayers++;
-        
+
         return true;
     }
 
@@ -177,6 +182,7 @@ public class MazeBoard {
 
     public void newGame() {
         turn = -1;
+        createPack(this.cardsNum);
 
         int I_count, L_count, T_count, card_count, r, c;
         String I_card = "L";
@@ -324,17 +330,17 @@ public class MazeBoard {
     }
 
     public MazeCard getFreeCard() { return this.freeCard; }
-    
-    
+
+
     private void shiftUpdate(int row, int col, int offset, boolean modRow) {
         int pRow, pCol, cRow, cCol;
-        
+
         for (int i=0; i<this.currPlayers; i++) {
             pRow = this.players[i].getRow();
             pCol = this.players[i].getCol();
             cRow = this.players[i].getCard().getLocation().row();
             cCol = this.players[i].getCard().getLocation().col();
-            
+
             if (modRow && pCol == col) {
                 pRow += offset;
                 if (pRow < 1) pRow = this.size;
@@ -347,7 +353,7 @@ public class MazeBoard {
                 else if (pCol > this.size) pCol = 1;
                 this.players[i].moveTo(row, pCol);
             }
-            
+
             if (modRow && cCol == col) {
                 cRow += offset;
                 if (cRow < 1) cRow = this.size;
@@ -359,8 +365,8 @@ public class MazeBoard {
                 if (cCol < 1) cCol = this.size;
                 else if (cCol > this.size) cCol = 1;
                 this.players[i].getCard().moveTo(this.get(row, cCol));
-            }  
-            
+            }
+
         }
     }
 
