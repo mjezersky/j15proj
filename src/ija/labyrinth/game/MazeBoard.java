@@ -5,7 +5,7 @@
  */
 package ija.labyrinth.game;
 
-import ija.labyrinth.game.cards.CardPack;
+import ija.labyrinth.game.cards.*;
 import ija.labyrinth.game.MazeCard;
 import ija.labyrinth.game.MazeField;
 
@@ -41,9 +41,10 @@ public class MazeBoard {
         return newboard;
     }
     
-    public void createPack(int packSize) { this.pack = new CardPack(packSize); }
     public CardPack getPack() { return this.pack; }
-
+    public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
+    public int size() { return this.size; }
+    
     // vraci hrace na tahu
     public Player nextTurn() {
         this.turn = (this.turn+1)%currPlayers;
@@ -68,33 +69,76 @@ public class MazeBoard {
         }
         return this.players[playerNo];
     }
-
-    public String strRepr() {
-        // potreba implementace strRepr pro MazeField
-        String mbStr = "0000"; // nuly jako zacatek freeCard 
+    
+    @Override
+    public String toString() {
+        String mbStr = "";
+        if (this.size<10) mbStr += "0";
+        mbStr += Integer.toString(this.size);
+        mbStr += "0000"; // nuly jako zacatek freeCard 
         mbStr += freeCard.getType();
         mbStr += Integer.toString(this.freeCard.getRotation());
         for(int r = 0; r < this.size; r++) {
             for(int c = 0; c < this.size; c++) {
-                mbStr += this.board[r][c].strRepr();
+                mbStr += this.board[r][c].toString();
             }
+        }
+        mbStr += "#";
+        mbStr += this.pack.toString();
+        for (int i=0; i<this.currPlayers; i++) {
+            mbStr += "#";
+            mbStr += this.players[i].toString();
         }
         return mbStr;
     }
 
-    public void config(String cfgStr) {
+    public boolean strConfigBoard(String cfg) {
+        if (cfg.length()!=6) {
+            System.out.println("Error - MazeBoard.strConfigBoard: bad string");
+            return false;
+        }
         MazeCard newcard; // nova karta podle cfgStr rrccTR
         int r, c, rotation;
 
-        r = Integer.parseInt(cfgStr.substring(0,2)) - 1; // -1 protoze r a c jsou indexovany od 1
-        c = Integer.parseInt(cfgStr.substring(2,4)) - 1;
-        newcard = MazeCard.create( String.valueOf(cfgStr.charAt(4)) );
-        rotation = Character.getNumericValue( cfgStr.charAt(5) );
+        r = Integer.parseInt(cfg.substring(0,2)) - 1; // -1 protoze r a c jsou indexovany od 1
+        c = Integer.parseInt(cfg.substring(2,4)) - 1;
+        newcard = MazeCard.create( String.valueOf(cfg.charAt(4)) );
+        rotation = Character.getNumericValue( cfg.charAt(5) );
         for (int i = 0; i<rotation; i++) {
             newcard.turnRight(); // provedu rotaci karty
         }
         if (r == -1 && c == -1) this.freeCard = newcard;
         else this.board[r][c].PutCard(newcard);
+        return true;
+    }
+    
+    public boolean strConfigPack(String cfg) {
+        this.pack = new CardPack(0, this);
+        return this.pack.strConfig(cfg);
+    }
+    
+    public boolean strConfigPlayer(String cfg) {
+        TreasureCard card;
+        int num, row, col, nameLen, score;
+        String name, cardStr;
+        
+        cardStr = cfg.substring(8, 14);
+        num = Integer.valueOf(cardStr.substring(0, 2));
+        row = Integer.valueOf(cardStr.substring(2, 4));
+        col = Integer.valueOf(cardStr.substring(4, 6));
+        card = new TreasureCard(num, this.get(row,col));
+        
+        num = Integer.valueOf(cfg.substring(0, 2));
+        row = Integer.valueOf(cfg.substring(2, 4));
+        col = Integer.valueOf(cfg.substring(4, 6));
+        score = Integer.valueOf(cfg.substring(6, 8));
+        nameLen = Integer.valueOf(cfg.substring(14, 16));
+        name = cfg.substring(16, 16+nameLen);
+        
+        this.players[currPlayers] = new Player(name, num, this.get(row, col), this, card, score);
+        this.currPlayers++;
+        
+        return true;
     }
 
     public void print() {
@@ -116,6 +160,18 @@ public class MazeBoard {
         System.out.print(this.freeCard.getType());
         System.out.print(this.freeCard.getRotation());
         System.out.print("\n");
+        System.out.print("Players:");
+        for (int i=0; i<this.currPlayers; i++) {
+            System.out.print(" ");
+            System.out.print(this.players[i].toString());
+        }
+        System.out.print("\n");
+        if (this.pack != null) {
+            System.out.print("Cards: ");
+            System.out.print(this.pack.toString());
+            System.out.print("\n");
+        }
+        else System.out.println("Cards: NULL");
     }
 
     public void newGame() {

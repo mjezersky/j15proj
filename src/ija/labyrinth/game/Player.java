@@ -29,9 +29,51 @@ public class Player {
         this.board = board;
         this.currCard = null;
         this.score = 0;
-
+        this.pullCard();
+        
         setImagesIcon();
     }
+    
+    Player(String name, int number, MazeField location, MazeBoard board, TreasureCard initCard, int initScore) {
+        this.number = number;
+        this.location = location;
+        this.name = name;
+        this.board = board;
+        this.currCard = initCard;
+        this.score = initScore;
+        
+        setImagesIcon();
+    }
+    
+    @Override
+    public String toString() { 
+        // NNrrccSS_card_LL_name_
+        String tmp = "";
+        if (this.number < 10) tmp += "0";
+        tmp += Integer.toString(this.number); // NN
+        
+        int row, col;
+        row = this.location.row();
+        if (row < 10) tmp += "0";
+        tmp += Integer.toString(row); // rr
+        col = this.location.col();
+        if (col < 10) tmp += "0";
+        tmp += Integer.toString(col); // cc
+        
+        if (this.score < 10) tmp += "0";
+        tmp += Integer.toString(this.score); // SS
+        
+        tmp += this.currCard.toString(); // _card_
+        
+        int nameLen = this.name.length();
+        if (nameLen < 10) tmp += "0";
+        tmp += Integer.toString(nameLen); // LL
+        
+        tmp += this.name; // _name_
+        
+        return tmp;
+    }
+    
 
     public int getScore() { return this.score; }
     public TreasureCard getCard() { return this.currCard; }
@@ -39,8 +81,7 @@ public class Player {
     public int getNum() { return this.number; }
     public BufferedImage getIcon(){ return this.charIcon; }
     
-    
-    public void pullCard() { 
+    private void pullCard() { 
         if (this.board.getPack() == null) {
             System.out.println("Error - Player.pullCard: board.pack is null");
             return;

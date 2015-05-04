@@ -24,7 +24,8 @@ public class MazeField {
         return (this.row == field.row() && this.col == field.col() && this.card.equals(field.getCard()));
     }
 
-    public String strRepr() {
+    @Override
+    public String toString() {
         // potreba doplnit int rotation a metodu getRotation do MazeCard
         // rotace se taky musi byt (rot+1)%4 pri otoceni doprava
         String mfStr = ""; // rrccTR | row col Type Rotation
