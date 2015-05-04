@@ -338,9 +338,10 @@ public class MazeBoard {
                 this.players[i].moveTo(pRow, col);
             }
             else if (!modRow && pRow == row) {
+                pCol += offset;
                 if (pCol < 1) pCol = this.size;
                 else if (pCol > this.size) pCol = 1;
-                this.players[i].moveTo(row, pCol+offset);
+                this.players[i].moveTo(row, pCol);
             }
         }
     }
