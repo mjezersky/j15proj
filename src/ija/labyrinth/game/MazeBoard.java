@@ -42,7 +42,7 @@ public class MazeBoard {
     public int getTurn() { return this.turn; }
     public CardPack getPack() { return this.pack; }
     public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
-    public int size() { return this.size; }
+    public int getSize() { return this.size; }
 
 
     // vraci hrace na tahu
