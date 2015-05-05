@@ -5,6 +5,8 @@ import ija.labyrinth.game.cards.TreasureCard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +39,7 @@ public class CreateBoardUI extends JPanel {
     private BufferedImage[] cardIco;
     private JButton[] arrowBtn;
 
-    private JTextArea scorePanel;
+    private JTextPane scorePanel;
 
 
     public CreateBoardUI(int bs, int pn, int cn, String[] names, MazeBoard gameIn) {
@@ -185,8 +187,9 @@ public class CreateBoardUI extends JPanel {
             if(this.actualPlayer.canMove(r, c)){
                 this.actualPlayer.moveTo(r, c);
 
-                getScore();
+                getScore();     // Pre overenie vyhry
                 getPlayerOnTurn();
+                getScore();     // Pre vyznacenie hraca na tahu
                 getRock();
                 repaint();
             }
@@ -333,7 +336,7 @@ public class CreateBoardUI extends JPanel {
         scoreP.setForeground(new Color(0xD74E00));
         this.add(scoreP);
 
-        this.scorePanel = new JTextArea();
+        this.scorePanel = new JTextPane();
         this.scorePanel.setBounds(833, 458, 140, 80);
         this.scorePanel.setEditable(false);
         this.scorePanel.setOpaque(false);
@@ -347,12 +350,31 @@ public class CreateBoardUI extends JPanel {
     }
 
     private void getScore(){
+
+        SimpleAttributeSet go = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(go, "Verdana");
+        StyleConstants.setForeground(go, new Color(0xFDA820));
+
+        SimpleAttributeSet goNo = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(goNo, "Verdana");
+        StyleConstants.setForeground(goNo, new Color(0xFFFFFF));
+
         boolean end = false;
         this.scorePanel.setText("");
-        this.scorePanel.setBackground(new Color(0x64290A));
         for(int i=0; i < this.playersNum; i++ ){
             int score = this.p[i].getScore();
-            this.scorePanel.append("    "+score+" - "+this.p[i].getName()+"\n");
+            if(p[i].getName() == actualPlayer.getName()){
+                System.out.print("ide "+actualPlayer.getName());
+                int size = this.scorePanel.getDocument().getLength();
+                try {
+                    this.scorePanel.getDocument().insertString(size,"    "+score+" - "+this.p[i].getName()+"\n",go);
+                } catch (Exception e) {}
+            } else {
+                int size = this.scorePanel.getDocument().getLength();
+                try {
+                    this.scorePanel.getDocument().insertString(size,"    "+score+" - "+this.p[i].getName()+"\n",goNo);
+                } catch (Exception e) {}
+            }
             if(score == this.cardsNum/this.playersNum){
                 end = true;
             }

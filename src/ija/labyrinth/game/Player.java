@@ -22,6 +22,7 @@ public class Player {
     private BufferedImage charIcon;
     private BufferedImage[] character;
     private ArrayList<BufferedImage> char_pack;
+    private boolean loaded = false;
 
     Player(String name, int number, MazeField location, MazeBoard board) {
         this.number = number;
@@ -32,7 +33,10 @@ public class Player {
         this.score = 0;
         this.pullCard();
 
-        setImagesIcon();
+        if(!loaded){
+            setImagesIcon();
+        }
+
     }
 
     Player(String name, int number, MazeField location, MazeBoard board, TreasureCard initCard, int initScore) {
@@ -43,7 +47,9 @@ public class Player {
         this.currCard = initCard;
         this.score = initScore;
 
-        setImagesIcon();
+        if(!loaded){
+            setImagesIcon();
+        }
     }
 
     @Override
@@ -200,6 +206,8 @@ public class Player {
 
     // Nacitam vsetky dostupne postavicky
     private void setImagesIcon(){
+
+        this.loaded = true;
 
         character = new BufferedImage[8];
 
