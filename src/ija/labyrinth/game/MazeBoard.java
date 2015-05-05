@@ -21,7 +21,6 @@ public class MazeBoard {
     private int currPlayers = 0;
     private int turn;
     private CardPack pack;
-    private int cardsNum = 0;
 
     private static final int maxPlayers = 4; // default max pocet hracu
 
@@ -40,13 +39,11 @@ public class MazeBoard {
         return newboard;
     }
 
+    public int getTurn() { return this.turn; }
     public CardPack getPack() { return this.pack; }
     public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
     public int size() { return this.size; }
 
-    public void setCardsNum(int num) {
-        this.cardsNum = num;
-    }
 
     // vraci hrace na tahu
     public Player nextTurn() {
@@ -79,6 +76,8 @@ public class MazeBoard {
     @Override
     public String toString() {
         String mbStr = "";
+        if (this.turn >= 0 && this.turn<10) mbStr += "0";
+        mbStr += Integer.toString(this.turn);
         if (this.size<10) mbStr += "0";
         mbStr += Integer.toString(this.size);
         mbStr += "0000"; // nuly jako zacatek freeCard 
@@ -182,7 +181,6 @@ public class MazeBoard {
 
     public void newGame() {
         turn = -1;
-        createPack(this.cardsNum);
 
         int I_count, L_count, T_count, card_count, r, c;
         String I_card = "L";

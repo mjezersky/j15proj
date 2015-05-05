@@ -36,10 +36,13 @@ public class GameData {
         GameData.ssbIndex = -1;
     }
     
-    public static boolean canUndo() { return GameData.ssbIndex > -1; }
+    public static boolean canUndo() { return GameData.ssbIndex > 0; }
     public static boolean canRedo() { return GameData.ssbIndex < GameData.ssbMaxIndex; }
     
     public static void store(MazeBoard game) {
+        System.out.println("STORE");
+        System.out.println(ssbIndex);
+        System.out.println(ssbSize-1);
         if (GameData.ssbIndex < GameData.ssbSize-1) { // vlkadam
             GameData.ssbIndex++;
             GameData.ssbMaxIndex = GameData.ssbIndex; // virtualni konec bufferu bude na nove vlozenem prvku
@@ -56,22 +59,28 @@ public class GameData {
     
     
     public static MazeBoard undo(MazeBoard game) {
+        System.out.println("UNDO");
         MazeBoard nGame = GameData.undo();
         if (nGame == null) return game;
+        System.out.println("OK");
         return nGame;
     }
     
     public static MazeBoard undo() {
+        MazeBoard game;
         if (GameData.canUndo()) {
             GameData.ssbIndex--;
-            return GameData.loadStrConfig(GameData.saveStrBuffer[GameData.ssbIndex]);
+            game = GameData.loadStrConfig(GameData.saveStrBuffer[GameData.ssbIndex]);
+            return game;
         }
         return null;
     }
     
     public static MazeBoard redo(MazeBoard game) {
+        System.out.println("REDO");
         MazeBoard nGame = GameData.redo();
         if (nGame == null) return game;
+        System.out.println("OK");
         return nGame;
     }
     
@@ -111,15 +120,22 @@ public class GameData {
         String boardString = loadParts[0];
         String packString = loadParts[1];
 
+        int currTurn;
+        try { currTurn = Integer.parseInt(boardString.substring(0,2)); }
+        catch (NumberFormatException e) {
+            System.out.println("Error - GameData.load: invalid save file");
+            return null;
+        }
+        
         int gSize;
-        try { gSize = Integer.parseInt(boardString.substring(0,2)); }
+        try { gSize = Integer.parseInt(boardString.substring(2,4)); }
         catch (NumberFormatException e) {
             System.out.println("Error - GameData.load: invalid save file");
             return null;
         }
 
         MazeBoard game = MazeBoard.createMazeBoard(gSize);
-        for (int i=2; i<boardString.length(); i+=6) {
+        for (int i=4; i<boardString.length(); i+=6) {
             if (!game.strConfigBoard(boardString.substring(i, i+6))) {
                 System.out.println("Error - GameData.load: strConfigBoard bad data");
                 return null;
@@ -137,6 +153,11 @@ public class GameData {
                 return null;
             }
         }
+        
+        for (int i=-1; i<currTurn; i++) { // turn defaultne zacina na -1
+            game.nextTurn();
+        }
+        
         return game;
     }
 
@@ -170,5 +191,14 @@ public class GameData {
         loadStr = loadStr.substring(32);
         return loadStrConfig(loadStr);
 
+    }
+    
+    public static void printReport() {
+        System.out.println(ssbSize);
+        System.out.println(ssbIndex);
+        System.out.println(ssbMaxIndex);
+        for (int i=0; i<=ssbMaxIndex; i++) {
+            System.out.println(GameData.saveStrBuffer[i]);
+        }
     }
 }

@@ -30,15 +30,20 @@ public class TUI {
             System.out.println("Load OK");
         }
         else System.out.println("Load FAILED");
+        GameData.initBuffer(3);
     }
     
     private static void test() {
+        test2();
+    }
+    
+    private static void test2() {
         Player p1 = TUI.game.addPlayer("joza");
         p1.moveTo(2, 2);
         TUI.game.addPlayer("pepa");
     }
     
-    private static void test2() {
+    private static void test3() {
         Player plr;
         TUI.load("savegame.txt");
         TUI.game.addPlayer("joza");
@@ -67,10 +72,22 @@ public class TUI {
         TUI.game = MazeBoard.createMazeBoard(TUI.gameSize);
         TUI.game.newGame();
         TUI.game.createPack(12);
+        GameData.initBuffer(3);
+    }
+    
+    private static void red() {
+        TUI.game = GameData.redo(TUI.game);
+    }
+    
+    private static void und() {
+        TUI.game = GameData.undo(TUI.game);
     }
     
     private static void command(String cmd) {
         if (cmd.equals("n")) TUI.makeNewGame();
+        else if (cmd.equals("b")) GameData.printReport();
+        else if (cmd.equals("u")) TUI.und();
+        else if (cmd.equals("i")) TUI.red();
         else if (cmd.equals("test")) TUI.test();
         else if (cmd.equals("save")) TUI.save("savegame.txt");
         else if (cmd.equals("load")) TUI.load("savegame.txt");
@@ -81,7 +98,7 @@ public class TUI {
                     int c = Character.getNumericValue(cmd.charAt(2));
                     MazeField mf = TUI.game.get(r, c);
                     TUI.game.shift(mf);
-                    
+                    GameData.store(TUI.game);
             }
             else if (cmd.charAt(0)=='r') {
                     int r = Character.getNumericValue(cmd.charAt(1));

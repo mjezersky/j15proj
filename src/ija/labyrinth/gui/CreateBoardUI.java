@@ -50,8 +50,8 @@ public class CreateBoardUI extends JPanel {
 
         if (gameIn == null){
             game = MazeBoard.createMazeBoard(boardSize);
-            game.setCardsNum(cardsNum);
             game.newGame();
+            game.createPack(cardsNum);
             game.print();
         } else {
             game = gameIn;
