@@ -58,6 +58,8 @@ public class CreateBoardUI extends JPanel {
             game.print();
         }
 
+        GameData.initBuffer(3);
+
         setSize(1045, 700);
         setBackground(new Color(255, 255, 255));
 
@@ -192,6 +194,7 @@ public class CreateBoardUI extends JPanel {
                 getScore();     // Pre vyznacenie hraca na tahu
                 getRock();
                 repaint();
+                GameData.store(game);
             }
         }
     }
@@ -425,13 +428,49 @@ public class CreateBoardUI extends JPanel {
             }
         });
 
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_U, 0), "tmp");
-        getActionMap().put("tmp", new AbstractAction() {
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_U, 0), "undo");
+        getActionMap().put("undo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                undoMove();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_I, 0), "redo");
+        getActionMap().put("redo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                redoMove();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "win");
+        getActionMap().put("win", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 gameOver();
             }
         });
+    }
+
+    private void saveGameSettings(File save){
+        GameData.save(game, save);
+    }
+
+    private void undoMove(){
+        game = GameData.undo(game);
+        getPlayerOnTurn();
+        getScore();
+        getRock();
+        repaint();
+    }
+
+    private void redoMove(){
+        game = GameData.redo(game);
+        getPlayerOnTurn();
+        getScore();
+        getRock();
+        repaint();
     }
 
     private void gameOver(){
@@ -455,38 +494,19 @@ public class CreateBoardUI extends JPanel {
     private void writeHelp(){
         Font fontH = new Font("Arial", Font.BOLD, 14);
 
-        JTextArea helpP = new JTextArea("NAPOVEDA: \n");
+        JTextArea helpP = new JTextArea("NÁPOVEDA: \n");
         helpP.setBounds(830, 565, 180, 100);
         helpP.setEditable(false);
         helpP.setFont(fontH);
         helpP.setOpaque(false);
         helpP.setForeground(new Color(0x4C4C4C));
-        helpP.append("R - otoci volny kamen\n");
-        helpP.append("S - ulozi hru\n");
-        helpP.append("U - krok spat\n");
-        helpP.append("Q - ukonci hru\n");
+        helpP.append("R - otočí voľný kameň\n");
+        helpP.append("S - uloží hru\n");
+        helpP.append("U - krok späť\n");
+        helpP.append(" I - krok vpred\n");
+        helpP.append("Q - ukončí hru\n");
         this.add(helpP);
     }
-
-    private void saveGameSettings(File save){
-        GameData.save(game, save);
-
-        /*String saveStr = "";
-        if (this.boardSize<10) saveStr += "0";
-        saveStr += Integer.toString(this.boardSize);
-        saveStr += game.strRepr();
-
-        Writer writer = null;
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(save)));
-            writer.write(saveStr);
-        } catch (IOException ex) {
-            System.out.println("Save error: cannot write to file");
-        } finally {
-            try { if (writer!=null) writer.close();} catch (Exception ex) {}
-        }*/
-    }
-
 
     // Vytvori neviditelne tlacitka nad hracou plochou
     // Bude potrebne na pohyb panacika
