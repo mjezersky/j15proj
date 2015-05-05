@@ -16,7 +16,9 @@ public class CardPack {
     @Override
     public String toString() {
         // SS_card_*
-        String tmp = Integer.toString(this.size);
+        String tmp = "";
+        if (this.size < 10) tmp += "0";
+        tmp += Integer.toString(this.size);
         for (int i=0; i<this.pack.size(); i++) {
             tmp+=this.pack.get(i).toString();
         }

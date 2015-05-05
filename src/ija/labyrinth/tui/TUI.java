@@ -16,13 +16,15 @@ public class TUI {
     private static int gameSize;
 
     private static void save(String filename) {
-        if (GameData.save(game, filename)) System.out.println("Save OK");
+        File file = new File(filename);
+        if (GameData.save(game, file)) System.out.println("Save OK");
         else System.out.println("Save FAILED");
     }
     
     private static void load(String filename) {
         MazeBoard lg;
-        lg = GameData.load(filename);
+        File file = new File(filename);
+        lg = GameData.load(file);
         if (lg!=null) {
             TUI.game = lg;
             System.out.println("Load OK");
