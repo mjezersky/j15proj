@@ -43,6 +43,7 @@ public class MazeBoard {
     public CardPack getPack() { return this.pack; }
     public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
     public int getSize() { return this.size; }
+    public int getPlayerCount() { return this.currPlayers; }
 
 
     // vraci hrace na tahu
