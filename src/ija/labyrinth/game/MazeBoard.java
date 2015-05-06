@@ -165,6 +165,8 @@ public class MazeBoard {
         System.out.print("Free card: ");
         System.out.print(this.freeCard.getType());
         System.out.print(this.freeCard.getRotation());
+        System.out.print(" Turn: ");
+        System.out.print(this.getTurn()); 
         System.out.print("\n");
         System.out.println("Players:");
         for (int i=0; i<this.currPlayers; i++) {
