@@ -31,8 +31,8 @@ public class CardPack {
         this.board = board;
 
         ArrayList<MazeField> fieldList = new ArrayList<>();
-        for (int r=1; r<=this.board.size(); r++) {
-            for (int c=1; c<=this.board.size(); c++) {
+        for (int r=1; r<=this.board.getSize(); r++) {
+            for (int c=1; c<=this.board.getSize(); c++) {
                 fieldList.add(this.board.get(r, c));
             }
         }
