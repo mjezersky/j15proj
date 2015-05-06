@@ -6,6 +6,9 @@ import ija.labyrinth.game.MazeBoard;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.OceanTheme;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +16,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 public class GameUI extends JFrame implements WindowListener{
@@ -24,11 +26,16 @@ public class GameUI extends JFrame implements WindowListener{
     private static MazeBoard game;
     private static int gameSize;
 
+    final static String LOOKANDFEEL = "System";
+    final static String THEME = "Test";
+
     public GameUI(){
         this.mainWindow();
     }
 
     public void mainWindow(){
+        initLookAndFeel();
+        JFrame.setDefaultLookAndFeelDecorated(true);
 
         this.setTitle("Labyrinth - IJA Projekt 2015");
         this.setSize(1050, 700);
@@ -236,7 +243,7 @@ public class GameUI extends JFrame implements WindowListener{
                 playerNames[0] = "Maros";
                 playerNames[1] = "Matous";
 
-                this.startNewGame(5, 2, 12, playerNames, game);
+                this.startNewGame(game.getSize(), game.getPlayerCount(), game.getPack().getSize(), null, game);
             }
         }
     }
@@ -305,13 +312,84 @@ public class GameUI extends JFrame implements WindowListener{
 
     }
 
+    private static void initLookAndFeel() {
+        String lookAndFeel = null;
+
+        if (LOOKANDFEEL != null) {
+            if (LOOKANDFEEL.equals("Metal")) {
+                lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+                //  an alternative way to set the Metal L&F is to replace the
+                // previous line with:
+                // lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
+
+            }
+
+            else if (LOOKANDFEEL.equals("System")) {
+                lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+            }
+
+            else if (LOOKANDFEEL.equals("Motif")) {
+                lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+            }
+
+            else if (LOOKANDFEEL.equals("GTK")) {
+                lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+            }
+
+            else {
+                System.err.println("Unexpected value of LOOKANDFEEL specified: "
+                        + LOOKANDFEEL);
+                lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+            }
+
+            try {
+
+
+                UIManager.setLookAndFeel(lookAndFeel);
+
+                // If L&F = "Metal", set the theme
+
+                if (LOOKANDFEEL.equals("Metal")) {
+                    if (THEME.equals("DefaultMetal"))
+                        MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
+                    else
+                        MetalLookAndFeel.setCurrentTheme(new OceanTheme());
+
+                    UIManager.setLookAndFeel(new MetalLookAndFeel());
+                }
+            }
+
+            catch (ClassNotFoundException e) {
+                System.err.println("Couldn't find class for specified look and feel:"
+                        + lookAndFeel);
+                System.err.println("Did you include the L&F library in the class path?");
+                System.err.println("Using the default look and feel.");
+            }
+
+            catch (UnsupportedLookAndFeelException e) {
+                System.err.println("Can't use the specified look and feel ("
+                        + lookAndFeel
+                        + ") on this platform.");
+                System.err.println("Using the default look and feel.");
+            }
+
+            catch (Exception e) {
+                System.err.println("Couldn't get specified look and feel ("
+                        + lookAndFeel
+                        + "), for some reason.");
+                System.err.println("Using the default look and feel.");
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main(String[] args) {
         //Set Look and Feel
-        try {UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}
+        /*try {UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}
         catch (ClassNotFoundException e) {}
         catch (InstantiationException e) {}
         catch (IllegalAccessException e) {}
-        catch (UnsupportedLookAndFeelException e) {}
+        catch (UnsupportedLookAndFeelException e) {}*/
 
         new GameUI().setVisible(true);
     }

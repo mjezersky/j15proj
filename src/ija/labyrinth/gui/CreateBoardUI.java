@@ -2,6 +2,7 @@ package ija.labyrinth.gui;
 
 import ija.labyrinth.game.*;
 import ija.labyrinth.game.cards.TreasureCard;
+import jdk.nashorn.internal.runtime.regexp.joni.CodeRangeBuffer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class CreateBoardUI extends JPanel {
     private Player[] p;
     private Player actualPlayer;
     private boolean madeMove;
+    private boolean winnerSet = false;
 
     private static MazeBoard game;
     private Rock[] rock;
@@ -55,37 +57,39 @@ public class CreateBoardUI extends JPanel {
             game.print();
         } else {
             game = gameIn;
-            game.print();
+            for(int i = 0; i < this.playersNum; i++){
+                playerNames = new String[playersNum];
+                playerNames[i] = game.getPlayer(i).getName();
+            }
+
         }
 
         GameData.initBuffer(3);
 
+
         setSize(1045, 700);
-        setBackground(new Color(255, 255, 255));
+        setBackground(new Color(0, 0, 0, 0));
 
         getRock();
         getImages();
         createButtons();
         createButtonsArray();
 
-        addPlayers(playerNames);
+        addPlayers();
         getPlayerOnTurn();
         createScorePanel();
 
+        GameData.store(game);
+        game.print();
 
         setKeys();
         writeHelp();
 
 
-        JPanel coverLab = new JPanel();
-        coverLab.setBackground(new Color(0x000000));
-        coverLab.setBounds(0,0,70,70);
-        this.add(coverLab);
-
         setFocusable(true);
         requestFocusInWindow();
 
-        setOpaque(true);
+        setOpaque(false);
         setVisible(true);
         setLayout(null);
 
@@ -163,7 +167,11 @@ public class CreateBoardUI extends JPanel {
 
     }
 
-    private void addPlayers(String[] name){
+    public void getNames(String[] names){
+        playerNames = names;
+    }
+
+    private void addPlayers(){
 
         p = new Player[this.playersNum];
         for ( int i=0; i < this.playersNum; i++){
@@ -187,6 +195,7 @@ public class CreateBoardUI extends JPanel {
     private void movePlayer(int r, int c){
         if(this.madeMove){
             if(this.actualPlayer.canMove(r, c)){
+                GameData.store(game);
                 this.actualPlayer.moveTo(r, c);
 
                 getScore();     // Pre overenie vyhry
@@ -194,9 +203,31 @@ public class CreateBoardUI extends JPanel {
                 getScore();     // Pre vyznacenie hraca na tahu
                 getRock();
                 repaint();
-                GameData.store(game);
+
             }
         }
+    }
+
+    // Posunie cely stlpec alebo riadok a vlozi volny kamen
+    private void moveLine(int r, int c){
+
+        if(!this.madeMove){
+            MazeField mf = game.get(r, c);
+            System.out.print(mf+"**\n");
+            game.shift(mf);
+            game.print();
+
+            getRock();
+            repaint();
+            this.madeMove = true;
+        }
+    }
+
+    // Otoci volny kamen o 90*
+    private void rotateFreeRock() {
+        game.rotateFreeCard();
+        getRock();
+        repaint();
     }
 
     // Vytvori akciu po stlaceni "neviditelneho tlacitka"
@@ -241,11 +272,8 @@ public class CreateBoardUI extends JPanel {
         }
 
         public MazeCard type() { return this.type; }
-
         public float x() { return this.x; }
-
         public float y() { return this.y;  }
-
         public void rotate(int n) {
 
         }
@@ -295,63 +323,6 @@ public class CreateBoardUI extends JPanel {
         }
     }
 
-    // Posunie cely stlpec alebo riadok a vlozi volny kamen
-    private void moveLine(int r, int c){
-
-        if(!this.madeMove){
-            MazeField mf = game.get(r, c);
-            System.out.print(mf+"**\n");
-            game.shift(mf);
-            game.print();
-
-            getRock();
-            repaint();
-            this.madeMove = true;
-        }
-    }
-
-    // Otoci volny kamen o 90*
-    private void rotateFreeRock() {
-        game.rotateFreeCard();
-        getRock();
-        repaint();
-    }
-
-    // Vypise hracov do Score:
-    private void createScorePanel() {
-
-        Font font = new Font("Verdana", Font.BOLD, 15);
-        Font fontPlayer = new Font("Verdana", Font.BOLD, 14);
-
-        JTextArea whoGo = new JTextArea("Hráč na ťahu: ");
-        whoGo.setFont(font);
-        whoGo.setOpaque(false);
-        whoGo.setEditable(false);
-        whoGo.setBounds(833, 330, 140, 23);
-        whoGo.setForeground(new Color(0xD74E00));
-        this.add(whoGo);
-
-        JTextArea scoreP = new JTextArea("Score: ");
-        scoreP.setFont(font);
-        scoreP.setOpaque(false);
-        scoreP.setEditable(false);
-        scoreP.setBounds(833, 432, 140, 23);
-        scoreP.setForeground(new Color(0xD74E00));
-        this.add(scoreP);
-
-        this.scorePanel = new JTextPane();
-        this.scorePanel.setBounds(833, 458, 140, 80);
-        this.scorePanel.setEditable(false);
-        this.scorePanel.setOpaque(false);
-        this.add(this.scorePanel);
-
-
-        this.scorePanel.setForeground(new Color(0xFFFFFF));
-        this.scorePanel.setFont(fontPlayer);
-
-        getScore();
-    }
-
     private void getScore(){
 
         SimpleAttributeSet go = new SimpleAttributeSet();
@@ -362,6 +333,7 @@ public class CreateBoardUI extends JPanel {
         StyleConstants.setFontFamily(goNo, "Verdana");
         StyleConstants.setForeground(goNo, new Color(0xFFFFFF));
 
+        Player winner = null;
         boolean end = false;
         this.scorePanel.setText("");
         for(int i=0; i < this.playersNum; i++ ){
@@ -380,10 +352,11 @@ public class CreateBoardUI extends JPanel {
             }
             if(score == this.cardsNum/this.playersNum){
                 end = true;
+                winner = actualPlayer;
             }
-        }
-        if (end){
-            gameOver();
+            if (end){
+                gameOver(winner);
+            }
         }
     }
 
@@ -448,7 +421,7 @@ public class CreateBoardUI extends JPanel {
         getActionMap().put("win", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                gameOver();
+                gameOver(actualPlayer);
             }
         });
     }
@@ -458,36 +431,79 @@ public class CreateBoardUI extends JPanel {
     }
 
     private void undoMove(){
+
         game = GameData.undo(game);
-        getPlayerOnTurn();
+        addPlayers();
+        this.actualPlayer = game.getPlayer(game.getTurn());
         getScore();
         getRock();
         repaint();
+        game.print();
     }
 
     private void redoMove(){
         game = GameData.redo(game);
-        getPlayerOnTurn();
+        addPlayers();
+        this.actualPlayer = game.getPlayer(game.getTurn());
         getScore();
         getRock();
         repaint();
+        game.print();
     }
 
-    private void gameOver(){
-        ImageIcon winIco = new ImageIcon(actualPlayer.getIcon());
-        Object[] options = {"OK"};
-        int n = JOptionPane.showOptionDialog(new JFrame(),
-                "Víťaz je : " + actualPlayer.getName(), "Koniec hry",
-                JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.QUESTION_MESSAGE, winIco
-                , options, options[0]);
+    private void gameOver(Player winner){
+        if(!this.winnerSet){
+            this.winnerSet = true;
+            ImageIcon winIco = new ImageIcon(winner.getIcon());
+            Object[] options = {"OK"};
+            int n = JOptionPane.showOptionDialog(new JFrame(),
+                    "Víťaz je : " + winner.getName(), "Koniec hry",
+                    JOptionPane.PLAIN_MESSAGE,
+                    JOptionPane.QUESTION_MESSAGE, winIco
+                    , options, options[0]);
 
-        JFrame top = (JFrame) getTopLevelAncestor();
-        System.out.print(top);
-        top.dispose();
+            JFrame top = (JFrame) getTopLevelAncestor();
+            System.out.print(top);
+            top.dispose();
 
-        GameUI newgame = new GameUI();
-        newgame.mainWindow();
+            GameUI newgame = new GameUI();
+            newgame.mainWindow();
+        }
+    }
+
+    // Vypise hracov do Score:
+    private void createScorePanel() {
+
+        Font font = new Font("Verdana", Font.BOLD, 15);
+        Font fontPlayer = new Font("Verdana", Font.BOLD, 14);
+
+        JTextArea whoGo = new JTextArea("Hráč na ťahu: ");
+        whoGo.setFont(font);
+        whoGo.setOpaque(false);
+        whoGo.setEditable(false);
+        whoGo.setBounds(833, 330, 140, 23);
+        whoGo.setForeground(new Color(0xD74E00));
+        this.add(whoGo);
+
+        JTextArea scoreP = new JTextArea("Score: ");
+        scoreP.setFont(font);
+        scoreP.setOpaque(false);
+        scoreP.setEditable(false);
+        scoreP.setBounds(833, 432, 140, 23);
+        scoreP.setForeground(new Color(0xD74E00));
+        this.add(scoreP);
+
+        this.scorePanel = new JTextPane();
+        this.scorePanel.setBounds(833, 458, 140, 80);
+        this.scorePanel.setEditable(false);
+        this.scorePanel.setOpaque(false);
+        this.add(this.scorePanel);
+
+
+        this.scorePanel.setForeground(new Color(0xFFFFFF));
+        this.scorePanel.setFont(fontPlayer);
+
+        getScore();
     }
 
     // Napise napovedu.
@@ -1216,10 +1232,10 @@ public class CreateBoardUI extends JPanel {
         }
 
         for (int i = 0; i < num; i++){
-            //this.arrowBtn[i].setFocusPainted(false);
+            this.arrowBtn[i].setOpaque(false);
             this.arrowBtn[i].setBorderPainted(false);
-            this.arrowBtn[i].setOpaque(true);
             this.arrowBtn[i].setContentAreaFilled(false);
+            //this.add(arrowBtn[i]);
             this.add(arrowBtn[i]);
         }
 
