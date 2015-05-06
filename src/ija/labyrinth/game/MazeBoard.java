@@ -166,12 +166,19 @@ public class MazeBoard {
         System.out.print(this.freeCard.getType());
         System.out.print(this.freeCard.getRotation());
         System.out.print("\n");
-        System.out.print("Players:");
+        System.out.println("Players:");
         for (int i=0; i<this.currPlayers; i++) {
+            System.out.print("#");
+            System.out.print(this.players[i].getNum());
             System.out.print(" ");
-            System.out.print(this.players[i].toString());
+            System.out.print(this.players[i].getName());
+            System.out.print(" ");
+            System.out.print(this.players[i].getRow()); System.out.print(":"); System.out.print(this.players[i].getCol());
+            System.out.print(" score: "); System.out.print(this.players[i].getScore());
+            System.out.print(" C:");
+            System.out.print(this.players[i].getCard().toString());
+            System.out.print("\n");
         }
-        System.out.print("\n");
         if (this.pack != null) {
             System.out.print("Cards: ");
             System.out.print(this.pack.toString());
