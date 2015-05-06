@@ -18,11 +18,8 @@ public class Player {
     private String name;
     private TreasureCard currCard;
 
-    private int charIcoNum;
     private BufferedImage charIcon;
     private BufferedImage[] character;
-    private ArrayList<BufferedImage> char_pack;
-    private boolean loaded = false;
 
     Player(String name, int number, MazeField location, MazeBoard board) {
         this.number = number;
@@ -33,10 +30,7 @@ public class Player {
         this.score = 0;
         this.pullCard();
 
-        if(!loaded){
-            setImagesIcon();
-        }
-
+        setImagesIcon();
     }
 
     Player(String name, int number, MazeField location, MazeBoard board, TreasureCard initCard, int initScore) {
@@ -47,9 +41,7 @@ public class Player {
         this.currCard = initCard;
         this.score = initScore;
 
-        if(!loaded){
-            setImagesIcon();
-        }
+        setImagesIcon();
     }
 
     @Override
@@ -187,45 +179,21 @@ public class Player {
         return this.isPathValid(target);
     }
 
-    // Nahodne vybere zo zoznamu jednu postavicku
     public void makeIcon(){
-
-        this.charIcon = this.char_pack.get(0);
-        this.char_pack.remove(0);
-    }
-
-    public int getCharIcoNum(){
-        for (int i = 0; i < 8; i++){
-            if (this.character[i] == this.charIcon){
-                System.out.println("Hrac ma obrazok " + i);
-                return i;
-            }
-        }
-        return 10;
+        this.charIcon = this.character[this.number];
     }
 
     // Nacitam vsetky dostupne postavicky
     private void setImagesIcon(){
 
-        this.loaded = true;
-
-        character = new BufferedImage[8];
-
+        character = new BufferedImage[4];
         try {
             this.character[0] = ImageIO.read(getClass().getResource("/images/chars/char01.png"));
-            this.character[1] = ImageIO.read(getClass().getResource("/images/chars/char02.png"));
-            this.character[2] = ImageIO.read(getClass().getResource("/images/chars/char03.png"));
-            this.character[3] = ImageIO.read(getClass().getResource("/images/chars/char04.png"));
-            this.character[4] = ImageIO.read(getClass().getResource("/images/chars/char05.png"));
-            this.character[5] = ImageIO.read(getClass().getResource("/images/chars/char06.png"));
-            this.character[6] = ImageIO.read(getClass().getResource("/images/chars/char07.png"));
-            this.character[7] = ImageIO.read(getClass().getResource("/images/chars/char08.png"));
+            this.character[1] = ImageIO.read(getClass().getResource("/images/chars/char03.png"));
+            this.character[2] = ImageIO.read(getClass().getResource("/images/chars/char05.png"));
+            this.character[3] = ImageIO.read(getClass().getResource("/images/chars/char08.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        this.char_pack = new ArrayList<>();
-        this.char_pack.addAll(Arrays.asList(this.character).subList(0, 8));
-        Collections.shuffle(this.char_pack);
     }
 }
