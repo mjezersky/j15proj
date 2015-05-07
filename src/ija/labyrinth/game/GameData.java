@@ -4,13 +4,22 @@ import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
 
+/**
+ * 
+ * @author Matouš Jezerský - xjezer01
+ */
 public class GameData {
     
     private static String[] saveStrBuffer;
     private static int ssbIndex = -1; // ukazatel na prvek pro undo
     private static int ssbSize = 0;
     private static int ssbMaxIndex = -1;
-
+    
+    /**
+     * Vrací MD5 hash řetězce.
+     * @param str zdrojový řetězec
+     * @return hash řetězce str
+     */
     private static String getHash(String str) {
         MessageDigest m;
         try {
@@ -30,15 +39,32 @@ public class GameData {
         return hashtext;
     }
     
+    /**
+     * Inicializuje buffer pro undo/redo operace
+     * @param bufferSize velikost bufferu (mak počet operací undo/redo)
+     */
     public static void initBuffer(int bufferSize) {
         GameData.saveStrBuffer = new String[bufferSize];
         GameData.ssbSize = bufferSize;
         GameData.ssbIndex = -1;
     }
     
+    /**
+     *
+     * @return je-li možné provést operaci undo 
+     */
     public static boolean canUndo() { return GameData.ssbIndex > 0; }
+    
+    /**
+     * 
+     * @return je-li možné provést operaci redo
+     */
     public static boolean canRedo() { return GameData.ssbIndex < GameData.ssbMaxIndex; }
     
+    /**
+     * Uloží stav hry (herní desky) pro operace undo/redo.
+     * @param game herní deska
+     */
     public static void store(MazeBoard game) {
         System.out.println("STORE");
         System.out.println(ssbIndex);
@@ -57,7 +83,11 @@ public class GameData {
          
     }
     
-    
+    /**
+     * Vrátí hru (herní desku) do předchozího stavu
+     * @param game herní deska
+     * @return upravená (je-li to možné) nebo neupravená herní deska
+     */
     public static MazeBoard undo(MazeBoard game) {
         System.out.println("UNDO");
         MazeBoard nGame = GameData.undo();
@@ -66,6 +96,10 @@ public class GameData {
         return nGame;
     }
     
+    /**
+     * Vrátí hru (herní desku) do předchozího stavu
+     * @return původní herní deska nebo null
+     */
     public static MazeBoard undo() {
         MazeBoard game;
         if (GameData.canUndo()) {
@@ -76,6 +110,11 @@ public class GameData {
         return null;
     }
     
+    /**
+     * Vrací operaci redo (posune hru/desku do následujícího stavu)
+     * @param game herní deska
+     * @return upravená (je-li to možné) nebo neupravená herní deska
+     */
     public static MazeBoard redo(MazeBoard game) {
         System.out.println("REDO");
         MazeBoard nGame = GameData.redo();
@@ -84,6 +123,10 @@ public class GameData {
         return nGame;
     }
     
+    /**
+     * Vrací operaci redo (posune hru/desku do následujícího stavu)
+     * @return nová herní deska nebo null
+     */
     public static MazeBoard redo(){
         if (GameData.canRedo()) {
             GameData.ssbIndex++;
@@ -92,6 +135,13 @@ public class GameData {
         return null;
     }
 
+    
+    /**
+     * Uloží aktuální stav hry (herní desky) do souboru
+     * @param game herní deska
+     * @param file cílový soubor
+     * @return 
+     */
     public static boolean save(MazeBoard game, File file) {
         System.out.println("saving");
         String saveStr = "";
@@ -115,6 +165,11 @@ public class GameData {
         return true;
     }
     
+    /**
+     * Načte hru z konfiguračního řetězce.
+     * @param loadStr konfigurační řetězec
+     * @return načtená hra
+     */
     private static MazeBoard loadStrConfig(String loadStr) {
         String[] loadParts = loadStr.split("#");
         String boardString = loadParts[0];
@@ -161,6 +216,11 @@ public class GameData {
         return game;
     }
 
+    /**
+     * Načte hru ze souboru
+     * @param file soubor k načtení
+     * @return 
+     */
     public static MazeBoard load(File file) {
         String loadStr = "";
         FileReader reader = null;
@@ -193,6 +253,9 @@ public class GameData {
 
     }
     
+    /**
+     * Vypíše informace o bufferu
+     */
     public static void printReport() {
         System.out.println(ssbSize);
         System.out.println(ssbIndex);

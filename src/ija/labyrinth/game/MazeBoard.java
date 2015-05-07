@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ija.labyrinth.game;
 
 import ija.labyrinth.game.cards.*;
@@ -12,8 +7,9 @@ import java.util.ArrayList;
 
 /**
  *
- *
+ * @author Matouš Jezerský - xjezer01
  */
+
 public class MazeBoard {
     private int size;
     private MazeField[][] board;
@@ -26,6 +22,11 @@ public class MazeBoard {
 
     private MazeCard freeCard = null;
 
+    /**
+     * Metoda vytvářející novou herní desku MazeBoard
+     * @param n velikost strany čtvercové desky
+     * @return nová deska
+     */
     public static MazeBoard createMazeBoard(int n) {
         MazeBoard newboard = new MazeBoard();
         newboard.size = n;
@@ -39,20 +40,51 @@ public class MazeBoard {
         return newboard;
     }
 
+    /**
+     * Getter - aktuální tah (hráč na tahu)
+     * @return číslo hráče, který je na tahu
+     */
     public int getTurn() { return this.turn; }
+    
+    /**
+     * Getter - aktuální balíček karet
+     * @return balíček karet aktuální hry
+     */
     public CardPack getPack() { return this.pack; }
+    
+    /**
+     * Vytvoří a zinicializuje nový balicek karet. Používá se až po newGame.
+     * @param packSize velikost balíčku
+     */
     public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
+    
+    /**
+     * Getter - velikost strany čtvercové herní desky
+     * @return velikost herní desky
+     */
     public int getSize() { return this.size; }
+    
+    /**
+     * Getter - aktuální počet hráčů
+     * @return aktuální počet hráčů
+     */
     public int getPlayerCount() { return this.currPlayers; }
 
 
-    // vraci hrace na tahu
+    /**
+     * Nastaví tah na dalšího hráče
+     * @return nový hráč na tahu
+     */
     public Player nextTurn() {
         this.turn = (this.turn+1)%currPlayers;
         return this.players[this.turn];
     }
 
-    // prida hrace se jmenem
+    /**
+     * Vytvoří nového hráče a přídá ho do seznamu hráčů
+     * @param name jméno hráče
+     * @return nově vytvořený hráč
+     */
     public Player addPlayer(String name) {
         Player newPlayer = null;
         if (name == null) {
@@ -69,6 +101,11 @@ public class MazeBoard {
         return newPlayer;
     }
 
+    /**
+     * Getter - hráč podle indexu v rozsahu 0 až počet_hráčů.
+     * @param playerNo index hráče v seznamu hráču (indexováno od 0)
+     * @return hráč na indexu playerNo
+     */
     public Player getPlayer(int playerNo) {
         if (playerNo < 0 || playerNo > currPlayers-1) {
             System.out.println("Error - MazeBoard.getPlayerRow: player number not in range");
@@ -101,6 +138,11 @@ public class MazeBoard {
         return mbStr;
     }
 
+    /**
+     * Metoda pro konfiguraci herní desky podle konfiguračního řetězce - nastavuje jedno pole MazeField
+     * @param cfg konfigurační řetězec pro 1 MazeField
+     * @return úspěšná konfigurace - true / neúspěšná - false
+     */
     public boolean strConfigBoard(String cfg) {
         if (cfg.length()!=6) {
             System.out.println("Error - MazeBoard.strConfigBoard: bad string");
@@ -121,11 +163,21 @@ public class MazeBoard {
         return true;
     }
 
+    /**
+     * Metoda pro konfiguraci herní desky podle konfiguračního řetězce - nastavuje balíček karet
+     * @param cfg konfigurační řetězec pro balíček karet CardPack
+     * @return úspěšná konfigurace - true / neúspěšná - false
+     */
     public boolean strConfigPack(String cfg) {
         this.pack = new CardPack(0, this);
         return this.pack.strConfig(cfg);
     }
 
+    /**
+     * Metoda pro konfiguraci herní desky podle konfiguračního řetězce - nastavuje hráče
+     * @param cfg konfigurační řetězec pro 1 hráče Player
+     * @return úspěšná konfigurace - true / neúspěšná - false
+     */
     public boolean strConfigPlayer(String cfg) {
         TreasureCard card;
         int num, row, col, nameLen, score;
@@ -150,6 +202,9 @@ public class MazeBoard {
         return true;
     }
 
+    /**
+     * Vypíše informace o herní desce
+     */
     public void print() {
         MazeCard tmpcard;
         for(int r = 0; r < this.size; r++) {
@@ -192,6 +247,9 @@ public class MazeBoard {
         else System.out.println("Cards: NULL");
     }
 
+    /**
+     * Vytvoří novou hru, rozmístí políčka na herní desku
+     */
     public void newGame() {
         turn = -1;
 
@@ -328,6 +386,9 @@ public class MazeBoard {
 
     }
 
+    /**
+     * Rotuje kartu freeCard jednou doprava
+     */
     public void rotateFreeCard() {
         MazeCard tmpCard = getFreeCard();
         tmpCard.turnRight();
@@ -335,14 +396,30 @@ public class MazeBoard {
         this.freeCard = tmpCard;
     }
 
+    /**
+     * Getter - políčko MazeField na zadaných souřadnicích (indexováno od 1)
+     * @param r řádek
+     * @param c sloupec
+     * @return políčko MazeField na souřadnicích r c
+     */
     public MazeField get(int r, int c) {
         if (r<1 || c<1 || r>this.size || c>this.size) return null;
         return this.board[r-1][c-1];
     }
 
+    /**
+     * Getter - volná karta
+     * @return volná karta MazeCard
+     */
     public MazeCard getFreeCard() { return this.freeCard; }
 
-
+    /**
+     * Metoda pro aktualizaci herní desky po posunu políček. Aktualizuje pozice hráčů a pokladu podle umístění vloženáho kamene
+     * @param row řádek vloženého kamene
+     * @param col sloupec vloženého kamene
+     * @param offset posun - záporny doleva/nahoru , kladný doprava/dolů
+     * @param modRow přepinac modifikace řádku: true - posouvá se sloupec nahoru/dolů, false - posouvá se řádek doleva/doprava
+     */
     private void shiftUpdate(int row, int col, int offset, boolean modRow) {
         int pRow, pCol, cRow, cCol;
 
@@ -400,6 +477,10 @@ public class MazeBoard {
         
     }
 
+    /**
+     * Posun kamenů
+     * @param mf místo vložení nového kamene
+     */
     public void shift(MazeField mf) {
         if (mf == null) return;
         MazeCard tmpcard;

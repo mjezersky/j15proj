@@ -45,7 +45,7 @@ public class CardPack {
         if (packSize > 0) Collections.shuffle(this.pack);
         fieldList.clear();
     }
-
+    
     public boolean strConfig(String cfg) {
         if (cfg.length()<2) {
             System.err.println("Error - CardPack.strConfig: bad string");

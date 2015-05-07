@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ija.labyrinth.game;
 
 /**
- *
- *
+ * 
+ * @author Matouš Jezerský - xjezer01
  */
 public class MazeField {
     private int row;
@@ -26,8 +21,6 @@ public class MazeField {
 
     @Override
     public String toString() {
-        // potreba doplnit int rotation a metodu getRotation do MazeCard
-        // rotace se taky musi byt (rot+1)%4 pri otoceni doprava
         String mfStr = ""; // rrccTR | row col Type Rotation
         if (this.row<10) mfStr += "0";
         mfStr += Integer.toString(this.row);
@@ -37,9 +30,29 @@ public class MazeField {
         mfStr += Integer.toString(this.card.getRotation());
         return mfStr;
     }
+    
+    /**
+     * Getter - řádek, na kterém se pole nachází (indexováno od 1)
+     * @return řádek, na kterém se pole nachází
+     */
     public int row() { return this.row; }
+    
+    /**
+     * Getter - sloupec, na kterém se pole nachází (indexováno od 1)
+     * @return sloupec, na kterém se pole nachází
+     */
     public int col() { return this.col; }
+    
+    /**
+     * Vrací kámen na poli
+     * @return kámen na poli
+     */
     public MazeCard getCard() { return this.card; }
+    
+    /**
+     * 
+     * @param c 
+     */
     public void PutCard(MazeCard c) { this.card = c; }
 
 }

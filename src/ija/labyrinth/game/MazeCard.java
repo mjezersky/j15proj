@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ija.labyrinth.game;
 
 /**
- *
- *
+ * 
+ * @author Matouš Jezerský - xjezer01
  */
 public class MazeCard {
 
@@ -48,14 +43,25 @@ public class MazeCard {
         return (this.cardtype.equals(card.getType()) && this.rotation == card.getRotation());
     }
 
+    /**
+     * Getter - typ karty
+     * @return typ karty
+     */
     public String getType() {
         return this.cardtype;
     }
 
+    /**
+     * Getter - rotace karty
+     * @return rotace karty
+     */
     public int getRotation() {
         return this.rotation;
     }
 
+    /**
+     * Otočí kartu doprava
+     */
     public void turnRight() {
         this.rotation = (this.rotation+1)%4;
         for(int i = 0; i < this.directions.length; i++) {
@@ -77,6 +83,11 @@ public class MazeCard {
 
     }
 
+    /**
+     * Zjistí, zda je možné přejít z karty zadaným směrem.
+     * @param dir směr
+     * @return je-li možné přejít zadaným směrem
+     */
     public boolean canGo(MazeCard.CANGO dir) {
         for (MazeCard.CANGO available_dir : this.directions) {
             if (dir.equals(available_dir)) return true;

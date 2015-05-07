@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * 
+ * @author Matouš Jezerský - xjezer01
+ */
 public class Player {
 
     private int number;
