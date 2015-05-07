@@ -145,8 +145,10 @@ public class CreateBoardUI extends JPanel {
         g.drawImage(deckFree, 820, 10, 160, 160, this);
         g.drawImage(this.freeRock.icon(), 865, 54, 70, 70, this);
 
-        g.drawImage(deckFree, 820, 160, 160, 160, this);
-        g.drawImage(game.getPlayer(game.getTurn()).getCard().getCardIcon(), 865, 204, 70, 70, this);
+        if(game.getPack().getSize() != 0){
+            g.drawImage(deckFree, 820, 160, 160, 160, this);
+            g.drawImage(game.getPlayer(game.getTurn()).getCard().getCardIcon(), 865, 204, 70, 70, this);
+        }
 
         g.drawImage(deckPlayer, 865, 335, 70, 70, this);
         g.drawImage(game.getPlayer(game.getTurn()).getIcon(), 865, 335, 70, 70, this);

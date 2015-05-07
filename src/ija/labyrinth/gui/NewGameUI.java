@@ -83,6 +83,14 @@ public class NewGameUI extends JPanel {
         setBoardSize();
         setCardNum();
 
+        boolean lengthMax = false;
+        for (int i = 0; i < this.playersNum; i++){
+            String name = playersNames[i];
+            if (name.length() > 8){
+                lengthMax = true;
+            }
+        }
+
         if(this.playersNum < 2){
             Object[] options = {"OK"};
             int n = JOptionPane.showOptionDialog(new JFrame(),
@@ -107,6 +115,13 @@ public class NewGameUI extends JPanel {
             Object[] options = {"OK"};
             int n = JOptionPane.showOptionDialog(new JFrame(),
                     "Vyberte len jeden počet kariet.", "Chyba",
+                    JOptionPane.PLAIN_MESSAGE,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[0]);
+        } else if (lengthMax == true){
+            Object[] options = {"OK"};
+            int n = JOptionPane.showOptionDialog(new JFrame(),
+                    "Meno hráča môže obsahovať maximálne 8 znakov.", "Chyba",
                     JOptionPane.PLAIN_MESSAGE,
                     JOptionPane.QUESTION_MESSAGE,
                     null, options, options[0]);
@@ -168,7 +183,7 @@ public class NewGameUI extends JPanel {
         add(new Checkbox(null, true, size));
 
         this.five = new JCheckBox();
-        this.five.setBounds(487, 125, 20, 20);
+        this.five.setBounds(487,125, 20,20);
         this.five.setOpaque(false);
         this.five.setSelected(true);
         this.add(this.five);
