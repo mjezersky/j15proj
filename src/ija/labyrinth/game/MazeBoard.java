@@ -55,7 +55,10 @@ public class MazeBoard {
     // prida hrace se jmenem
     public Player addPlayer(String name) {
         Player newPlayer = null;
-        if (this.currPlayers == MazeBoard.maxPlayers) {
+        if (name == null) {
+            System.out.println("Error - MazeBoard.addPlayer: player name is null");
+        }
+        else if (this.currPlayers == MazeBoard.maxPlayers) {
             System.out.println("Error - MazeBoard.addPlayer: max players reached!");
         }
         else {
@@ -376,6 +379,25 @@ public class MazeBoard {
             }
 
         }
+        for (int i=0; i<this.getPack().getSize()-1; i++) {
+            cRow = this.getPack().getCard(i).getLocation().row();
+            cCol = this.getPack().getCard(i).getLocation().col();
+            
+            if (modRow && cCol == col) {
+                cRow += offset;
+                if (cRow < 1) cRow = this.size;
+                else if (cRow > this.size) cRow = 1;
+                this.getPack().getCard(i).moveTo(this.get(cRow, col));
+            }
+            else if (!modRow && cRow == row) {
+                cCol += offset;
+                if (cCol < 1) cCol = this.size;
+                else if (cCol > this.size) cCol = 1;
+                this.getPack().getCard(i).moveTo(this.get(row, cCol));
+            }
+            
+        }
+        
     }
 
     public void shift(MazeField mf) {

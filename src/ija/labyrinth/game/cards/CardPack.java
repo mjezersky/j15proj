@@ -74,6 +74,14 @@ public class CardPack {
     }
 
     public int getSize() { return this.size; }
+    
+    public TreasureCard getCard(int cardIndex) {
+        if (cardIndex<0 || cardIndex>=this.size) {
+            System.err.println("Error - CardPack.getCard: card index out of range");
+            return null;
+        }
+        return this.pack.get(cardIndex);
+    }
 
     public TreasureCard takeCard() {
 
