@@ -57,7 +57,7 @@ public class TreasureCard {
     }
     private void getImagesIcon(){
 
-        cardIco = new BufferedImage[25];
+        cardIco = new BufferedImage[24];
 
         try {
             this.cardIco[0] = ImageIO.read(getClass().getResource("/images/cards/card01.png"));
@@ -84,7 +84,6 @@ public class TreasureCard {
             this.cardIco[21] = ImageIO.read(getClass().getResource("/images/cards/card22.png"));
             this.cardIco[22] = ImageIO.read(getClass().getResource("/images/cards/card23.png"));
             this.cardIco[23] = ImageIO.read(getClass().getResource("/images/cards/card24.png"));
-            this.cardIco[24] = ImageIO.read(getClass().getResource("/images/cards/card25.png"));
 
         } catch (IOException e) {
             e.printStackTrace();

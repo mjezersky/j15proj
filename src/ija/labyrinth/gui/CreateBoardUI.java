@@ -16,6 +16,9 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
+/**
+ * Hlavná trieda pre vytvorenie GUI novej alebo načítanej hry.
+ */
 public class CreateBoardUI extends JPanel {
 
     private int boardSize;
@@ -26,6 +29,7 @@ public class CreateBoardUI extends JPanel {
     private Player actualPlayer;
     private boolean madeMove;
     private boolean winnerSet = false;
+    private boolean load = false;
 
     private static MazeBoard game;
     private Rock[] rock;
@@ -38,13 +42,25 @@ public class CreateBoardUI extends JPanel {
     private BufferedImage deckPlayer;
     private BufferedImage deckScore;
     private ImageIcon[] arrowIco;
-    private BufferedImage[] cardIco;
     private JButton[] arrowBtn;
 
     private JTextPane scorePanel;
 
-
+    /**
+     * Vytvorí nový panel, ktorý bude obsahovať celú hru.
+     * Spustí inicialiyáciu novej hry.
+     *
+     * @param bs velkosť hracej plochy
+     * @param pn počet hráčov
+     * @param cn počet hracích kariet
+     * @param names mená hráčov
+     * @param gameIn obsahuje obsah hry pri load game, inak je to null
+     */
     public CreateBoardUI(int bs, int pn, int cn, String[] names, MazeBoard gameIn) {
+        setSize(1045, 700);
+        setBackground(new Color(0, 0, 0, 0));
+
+        load = false;
         this.boardSize = bs;
         this.playersNum = pn;
         this.playerNames = names;
@@ -54,47 +70,45 @@ public class CreateBoardUI extends JPanel {
             game = MazeBoard.createMazeBoard(boardSize);
             game.newGame();
             game.createPack(cardsNum);
-            game.print();
+            addPlayers();
         } else {
             game = gameIn;
             for(int i = 0; i < this.playersNum; i++){
                 playerNames = new String[playersNum];
                 playerNames[i] = game.getPlayer(i).getName();
+                System.out.println(game.getPlayer(i).getName());
             }
-
+            getPlayers();
+            load = true;
         }
 
-        GameData.initBuffer(3);
-
-
-        setSize(1045, 700);
-        setBackground(new Color(0, 0, 0, 0));
+        GameData.initBuffer(5);
 
         getRock();
         getImages();
         createButtons();
         createButtonsArray();
 
-        addPlayers();
         getPlayerOnTurn();
         createScorePanel();
 
-        GameData.store(game);
+        if(!load){GameData.store(game);}
         game.print();
 
         setKeys();
         writeHelp();
 
-
         setFocusable(true);
         requestFocusInWindow();
-
         setOpaque(false);
         setVisible(true);
         setLayout(null);
-
     }
 
+    /**
+     * Vykreslí celú hru: hraciu dosku, všetky kamene, voľný kameň, hráčov, aktuálnu kartu.
+     * @param g graphics , potrebné pre vykreslenie obrázkov
+     */
     @Override
     protected void paintComponent(Graphics g) {
 
@@ -125,12 +139,12 @@ public class CreateBoardUI extends JPanel {
         g.drawImage(this.freeRock.icon(), 865, 74, 70, 70, this);
 
         g.drawImage(deckFree, 820, 180, 160, 160, this);
-        g.drawImage(this.actualPlayer.getCard().getCardIcon(), 865, 224, 70, 70, this);
+        g.drawImage(game.getPlayer(game.getTurn()).getCard().getCardIcon(), 865, 224, 70, 70, this);
 
         g.drawImage(deckPlayer, 865, 355, 70, 70, this);
-        g.drawImage(this.actualPlayer.getIcon(), 865, 355, 70, 70, this);
+        g.drawImage(game.getPlayer(game.getTurn()).getIcon(), 865, 355, 70, 70, this);
 
-        g.drawImage(deckScore, 833, 453, 140, 80, this);
+        g.drawImage(deckScore, 833, 453, 140, 95, this);
 
         int i = 0;
         int x,y;
@@ -141,17 +155,41 @@ public class CreateBoardUI extends JPanel {
                 g.drawImage(this.rock[i].icon(), xPoint, yPoint, blockSize, blockSize, this);
 
                 for(int pl = 0; pl < this.playersNum; pl++){
-                    y = p[pl].getCol();
-                    x = p[pl].getRow();
+                    if (p[pl] != actualPlayer){
+                        y = p[pl].getCol();
+                        x = p[pl].getRow();
 
-                    if (x == r && y == c){
-                        g.drawImage(p[pl].getIcon(),xPoint,yPoint,blockSize,blockSize,this);
+                        if (x == r && y == c){
+                            g.drawImage(p[pl].getIcon(),xPoint,yPoint,blockSize,blockSize,this);
+                        }
                     }
                 }
 
-                if(actualPlayer.getCard().getLocation().row() == r &&
-                        actualPlayer.getCard().getLocation().col() == c){
-                    g.drawImage(actualPlayer.getCard().getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                for(int pa = 0; pa < game.getPlayerCount(); pa++ ){
+                    if(game.getPlayer(pa).getCard().getLocation().row() == r &&
+                            game.getPlayer(pa).getCard().getLocation().col() == c){
+                        g.drawImage(game.getPlayer(pa).getCard().getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                    }
+                }
+
+
+                for(int ca = 0; ca < game.getPack().getSize(); ca++){
+                    if(game.getPack().getCard(ca).getLocation().row() == r &&
+                            game.getPack().getCard(ca).getLocation().col() == c){
+
+                        g.drawImage(game.getPack().getCard(ca).getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                    }
+                }
+
+                for(int pl = 0; pl < this.playersNum; pl++){
+                    if (p[pl] == actualPlayer){
+                        y = p[pl].getCol();
+                        x = p[pl].getRow();
+
+                        if (x == r && y == c){
+                            g.drawImage(p[pl].getIcon(),xPoint,yPoint,blockSize,blockSize,this);
+                        }
+                    }
                 }
 
                 xPoint += blockSize + 2;
@@ -164,13 +202,12 @@ public class CreateBoardUI extends JPanel {
                 }
             }
         }
-
     }
 
-    public void getNames(String[] names){
-        playerNames = names;
-    }
-
+    /**
+     * Pridá potrebný počet hráčov.
+     * Každému pridá meno, obrázok a presunieho na potrebné miesto.
+     */
     private void addPlayers(){
 
         p = new Player[this.playersNum];
@@ -178,23 +215,42 @@ public class CreateBoardUI extends JPanel {
             game.addPlayer(playerNames[i]);
             this.p[i] = game.getPlayer(i);
             this.p[i].makeIcon();
-            //this.p[i].pullCard();
             if(i == 1){ p[i].moveTo(1,this.boardSize);}
             if(i == 2){ p[i].moveTo(this.boardSize, 1);}
             if(i == 3){ p[i].moveTo(this.boardSize, this.boardSize);}
-
         }
-
     }
 
+    /**
+     * Získa potrebných hráčov z načítanej hry.
+     * Každému pridá meno, obrázok a presunieho na potrebné miesto.
+     */
+    private void getPlayers(){
+
+        p = new Player[this.playersNum];
+        for ( int i=0; i < this.playersNum; i++){
+            this.p[i] = game.getPlayer(i);
+            this.p[i].makeIcon();
+        }
+    }
+
+    /**
+     * Získa aktuálneho háča, ktorý je na ťahu.
+     */
     private void getPlayerOnTurn(){
         this.actualPlayer = game.nextTurn();
         this.madeMove = false;
     }
 
+    /**
+     * Presunie hráča na dané políčko.
+     * @param r číslo riadka
+     * @param c číslo stĺpca
+     */
     private void movePlayer(int r, int c){
         if(this.madeMove){
             if(this.actualPlayer.canMove(r, c)){
+
                 GameData.store(game);
                 this.actualPlayer.moveTo(r, c);
 
@@ -203,19 +259,21 @@ public class CreateBoardUI extends JPanel {
                 getScore();     // Pre vyznacenie hraca na tahu
                 getRock();
                 repaint();
-
+                game.print();
             }
         }
     }
 
-    // Posunie cely stlpec alebo riadok a vlozi volny kamen
+    /**
+     * Ak je možné, tak posunie riadok alebo stĺpec
+     * @param r číslo riadku
+     * @param c číslo stĺpca
+     */
     private void moveLine(int r, int c){
-
         if(!this.madeMove){
             MazeField mf = game.get(r, c);
             System.out.print(mf+"**\n");
             game.shift(mf);
-            game.print();
 
             getRock();
             repaint();
@@ -223,14 +281,20 @@ public class CreateBoardUI extends JPanel {
         }
     }
 
-    // Otoci volny kamen o 90*
+
+    /**
+     * Otočí voľný kameň.
+     */
     private void rotateFreeRock() {
         game.rotateFreeCard();
         getRock();
         repaint();
     }
 
-    // Vytvori akciu po stlaceni "neviditelneho tlacitka"
+    /**
+     * Nastaví tlačítkam nad hracou plochou ich súradnice.
+     * Využitie: hráč otestuje podľa súracníc, či sa môže na dané miesto presunúť.
+     */
     private class ArrBtn {
         public int row;
         public int col;
@@ -258,6 +322,11 @@ public class CreateBoardUI extends JPanel {
         }
     }
 
+
+    /**
+     * Vytvorí kameň ako objekt kvôli lepšiemu spracovaniu.
+     * Ukladá si jeho polohu, typ a smer otočenia.
+     */
     private class Rock {
         public float x;
         public float y;
@@ -300,9 +369,13 @@ public class CreateBoardUI extends JPanel {
             }
             return L1; // Nemoze nastat - nahodne zvoleny obrazok
         }
-
     }
 
+    /**
+     * Získa informácie o vytvorených kameňoch.
+     * Každý kameň sa vytvorí ako objekt.
+     * Uloží sa jeho tvar, poloha a smer otočenia.
+     */
     private void getRock() {
 
         this.rock = new Rock[this.boardSize * this.boardSize + 1];
@@ -318,11 +391,14 @@ public class CreateBoardUI extends JPanel {
 
                 i++;
                 this.rock[i] = new Rock(r, c, tmpCard, tmpCard.getRotation());
-
             }
         }
     }
 
+    /**
+     * Vypíše skóre a meno hráča.
+     * Aktuálny hráč je vypísaný inou farbou.
+     */
     private void getScore(){
 
         SimpleAttributeSet go = new SimpleAttributeSet();
@@ -338,7 +414,7 @@ public class CreateBoardUI extends JPanel {
         this.scorePanel.setText("");
         for(int i=0; i < this.playersNum; i++ ){
             int score = this.p[i].getScore();
-            if(p[i].getName() == actualPlayer.getName()){
+            if(p[i].getName() == this.actualPlayer.getName()){
                 System.out.print("ide "+actualPlayer.getName());
                 int size = this.scorePanel.getDocument().getLength();
                 try {
@@ -350,18 +426,25 @@ public class CreateBoardUI extends JPanel {
                     this.scorePanel.getDocument().insertString(size,"    "+score+" - "+this.p[i].getName()+"\n",goNo);
                 } catch (Exception e) {}
             }
+            System.out.println(score+" "+this.cardsNum+" "+this.playersNum);
             if(score == this.cardsNum/this.playersNum){
                 end = true;
-                winner = actualPlayer;
+                winner = this.actualPlayer;
             }
-            if (end){
-                gameOver(winner);
-            }
+        }
+        if (end){
+            gameOver(winner);
         }
     }
 
-
-    // Nastavi tlacitka
+    /**
+     * Nastaví funkcie na konkrétne tlačítka
+     * R - otočí voľný kameň
+     * Q - ukonči hru
+     * U - krok vzad
+     * I - krok vpred
+     * S - uloží aktuálnu hru do zvoleného súboru
+     */
     private void setKeys() {
 
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "rotate");
@@ -426,31 +509,50 @@ public class CreateBoardUI extends JPanel {
         });
     }
 
+    /**
+     * Uloží hru.
+     * @param save súbor kde sa hra uloží
+     */
     private void saveGameSettings(File save){
-        GameData.save(game, save);
+        if (GameData.save(game, save)) System.out.println("Save OK");
+        else System.out.println("Save FAILED");
     }
 
+    /**
+     * Urobí krok vzad podľa zálohovanej hry.
+     */
     private void undoMove(){
-
         game = GameData.undo(game);
+        //startGame(game.getSize(), game.getPlayerCount(), game.getPack().getSize(), null, game);
         addPlayers();
-        this.actualPlayer = game.getPlayer(game.getTurn());
-        getScore();
+        //this.actualPlayer = game.getPlayer(game.getTurn());
         getRock();
+        addPlayers();
+        getPlayerOnTurn();
+        getScore();
         repaint();
         game.print();
     }
 
+    /**
+     * Urobí krok vpred zo zálohovanej hry.
+     */
     private void redoMove(){
         game = GameData.redo(game);
-        addPlayers();
-        this.actualPlayer = game.getPlayer(game.getTurn());
-        getScore();
+        //startGame(game.getSize(), game.getPlayerCount(), game.getPack().getSize(), null, game);
+//        this.actualPlayer = game.getPlayer(game.getTurn());
         getRock();
+        addPlayers();
+        getPlayerOnTurn();
+        getScore();
         repaint();
         game.print();
     }
 
+    /**
+     * Otvorí nové okno s obrázkom a menom výhercu.
+     * @param winner meno výhercu
+     */
     private void gameOver(Player winner){
         if(!this.winnerSet){
             this.winnerSet = true;
@@ -459,8 +561,8 @@ public class CreateBoardUI extends JPanel {
             int n = JOptionPane.showOptionDialog(new JFrame(),
                     "Víťaz je : " + winner.getName(), "Koniec hry",
                     JOptionPane.PLAIN_MESSAGE,
-                    JOptionPane.QUESTION_MESSAGE, winIco
-                    , options, options[0]);
+                    JOptionPane.QUESTION_MESSAGE, winIco,
+                    options, options[0]);
 
             JFrame top = (JFrame) getTopLevelAncestor();
             System.out.print(top);
@@ -471,7 +573,10 @@ public class CreateBoardUI extends JPanel {
         }
     }
 
-    // Vypise hracov do Score:
+    /**
+     * Vytvorí text Score a Hráč na ťahu.
+     * Pripraví panel na vypisovanie skóre.
+     */
     private void createScorePanel() {
 
         Font font = new Font("Verdana", Font.BOLD, 15);
@@ -494,7 +599,7 @@ public class CreateBoardUI extends JPanel {
         this.add(scoreP);
 
         this.scorePanel = new JTextPane();
-        this.scorePanel.setBounds(833, 458, 140, 80);
+        this.scorePanel.setBounds(833, 455, 140, 90);
         this.scorePanel.setEditable(false);
         this.scorePanel.setOpaque(false);
         this.add(this.scorePanel);
@@ -506,7 +611,9 @@ public class CreateBoardUI extends JPanel {
         getScore();
     }
 
-    // Napise napovedu.
+    /**
+     * Ukaze napovedu k hre v dolnom rohu hry.
+     */
     private void writeHelp(){
         Font fontH = new Font("Arial", Font.BOLD, 14);
 
@@ -524,8 +631,9 @@ public class CreateBoardUI extends JPanel {
         this.add(helpP);
     }
 
-    // Vytvori neviditelne tlacitka nad hracou plochou
-    // Bude potrebne na pohyb panacika
+    /**
+     * Vytvori tlacitka nad hraciu plochu, ktore sluzia na presuvanie postaviciek.
+     */
     private void createButtonsArray(){
 
         int blockSize = 0, maxSize = 0, xPoint = 0, yPoint = 0, num = 0;
@@ -584,10 +692,11 @@ public class CreateBoardUI extends JPanel {
                 }
             }
         }
-
     }
 
-    // Vytvori tlacitka okolo hracej plochy a nastavi ActionEvent
+    /**
+     * Vytvori tlacitka okolo hracej plochy a nastavi ActionEvent pre kazde jedno.
+     */
     private void createButtons() {
         int num =0;
         if (this.boardSize == 5) {
@@ -1228,7 +1337,6 @@ public class CreateBoardUI extends JPanel {
                     moveLine(2, 1);
                 }
             });
-
         }
 
         for (int i = 0; i < num; i++){
@@ -1238,9 +1346,11 @@ public class CreateBoardUI extends JPanel {
             //this.add(arrowBtn[i]);
             this.add(arrowBtn[i]);
         }
-
     }
 
+    /**
+     * Nacitanie potrebnych obrazkov zo subora.
+     */
     private void getImages() {
         try {
             this.C1 = ImageIO.read(getClass().getResource("/images/rocks/C_1_70.png"));
@@ -1277,34 +1387,6 @@ public class CreateBoardUI extends JPanel {
             this.arrowIco[14] = new ImageIcon(getClass().getResource("/images/arrows/up_2_30.png"));
             this.arrowIco[15] = new ImageIcon(getClass().getResource("/images/arrows/d_1_30.png"));
             this.arrowIco[16] = new ImageIcon(getClass().getResource("/images/arrows/d_2_30.png"));
-
-            this.cardIco = new BufferedImage[27];
-            this.cardIco[1] = ImageIO.read(getClass().getResource("/images/cards/card01.png"));
-            this.cardIco[2] = ImageIO.read(getClass().getResource("/images/cards/card02.png"));
-            this.cardIco[3] = ImageIO.read(getClass().getResource("/images/cards/card03.png"));
-            this.cardIco[4] = ImageIO.read(getClass().getResource("/images/cards/card04.png"));
-            this.cardIco[5] = ImageIO.read(getClass().getResource("/images/cards/card05.png"));
-            this.cardIco[6] = ImageIO.read(getClass().getResource("/images/cards/card06.png"));
-            this.cardIco[7] = ImageIO.read(getClass().getResource("/images/cards/card07.png"));
-            this.cardIco[8] = ImageIO.read(getClass().getResource("/images/cards/card08.png"));
-            this.cardIco[9] = ImageIO.read(getClass().getResource("/images/cards/card09.png"));
-            this.cardIco[10] = ImageIO.read(getClass().getResource("/images/cards/card10.png"));
-            this.cardIco[11] = ImageIO.read(getClass().getResource("/images/cards/card11.png"));
-            this.cardIco[12] = ImageIO.read(getClass().getResource("/images/cards/card12.png"));
-            this.cardIco[13] = ImageIO.read(getClass().getResource("/images/cards/card13.png"));
-            this.cardIco[14] = ImageIO.read(getClass().getResource("/images/cards/card14.png"));
-            this.cardIco[15] = ImageIO.read(getClass().getResource("/images/cards/card15.png"));
-            this.cardIco[16] = ImageIO.read(getClass().getResource("/images/cards/card16.png"));
-            this.cardIco[17] = ImageIO.read(getClass().getResource("/images/cards/card17.png"));
-            this.cardIco[18] = ImageIO.read(getClass().getResource("/images/cards/card18.png"));
-            this.cardIco[19] = ImageIO.read(getClass().getResource("/images/cards/card19.png"));
-            this.cardIco[20] = ImageIO.read(getClass().getResource("/images/cards/card20.png"));
-            this.cardIco[21] = ImageIO.read(getClass().getResource("/images/cards/card21.png"));
-            this.cardIco[22] = ImageIO.read(getClass().getResource("/images/cards/card22.png"));
-            this.cardIco[23] = ImageIO.read(getClass().getResource("/images/cards/card23.png"));
-            this.cardIco[24] = ImageIO.read(getClass().getResource("/images/cards/card24.png"));
-            this.cardIco[25] = ImageIO.read(getClass().getResource("/images/cards/card25.png"));
-            this.cardIco[26] = ImageIO.read(getClass().getResource("/images/cards/card26.png"));
 
         } catch (IOException e) {
             e.printStackTrace();

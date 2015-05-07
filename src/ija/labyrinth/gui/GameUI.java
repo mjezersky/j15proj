@@ -60,13 +60,12 @@ public class GameUI extends JFrame implements WindowListener{
 
     @Override
     public void windowClosing(WindowEvent e) {
-        int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukončiť hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
 
         if(result == JOptionPane.YES_OPTION){
             System.exit(0);
         }else{/* Vrati do hry*/ }
     }
-
 
     public void startNewGame(int bs, int pn, int cn, String[] playersNames, MazeBoard gameIn){
 
@@ -99,7 +98,6 @@ public class GameUI extends JFrame implements WindowListener{
         JButton menuHelp = new JButton();
         JButton menuExitGame = new JButton();
 
-
         menuNewGame.setIcon(new ImageIcon(getClass().getResource("/images/NovaHra_btn.png")));
         menuNewGame.setRolloverIcon(new ImageIcon(getClass().getResource("/images/NovaHra_btn2.png")));
         menuNewGame.addActionListener(new ActionListener() {
@@ -126,7 +124,6 @@ public class GameUI extends JFrame implements WindowListener{
         menuLoadGame.setFocusPainted(false);
         menuLoadGame.setContentAreaFilled(false);
 
-
         menuHelp.setIcon(new ImageIcon(getClass().getResource("/images/oHre_btn.png")));
         menuHelp.setRolloverIcon(new ImageIcon(getClass().getResource("/images/oHre_btn2.png")));
         menuHelp.addActionListener(new ActionListener() {
@@ -139,7 +136,6 @@ public class GameUI extends JFrame implements WindowListener{
         menuHelp.setBorderPainted(false);
         menuHelp.setFocusPainted(false);
         menuHelp.setContentAreaFilled(false);
-
 
         menuExitGame.setIcon(new ImageIcon(getClass().getResource("/images/KonecHry_btn.png")));
         menuExitGame.setRolloverIcon(new ImageIcon(getClass().getResource("/images/KonecHry_btn2.png")));
@@ -161,7 +157,6 @@ public class GameUI extends JFrame implements WindowListener{
 
         this.setLayout(null);
     }
-
 
     public void showMenu (ActionEvent e){
         this.mainWindow();
@@ -221,8 +216,6 @@ public class GameUI extends JFrame implements WindowListener{
     }
 
     private void showLoadGame (ActionEvent e){
-        //this.showMenuLoadGame();
-
         JFileChooser openFile = new JFileChooser();
         openFile.setDialogTitle("Načítaj hru");
 
@@ -235,15 +228,14 @@ public class GameUI extends JFrame implements WindowListener{
             loadGame = GameData.load(fileToOpen);
 
             if(loadGame != null){
-
-                GameUI.game = loadGame;
-
-                String[] playerNames;
-                playerNames = new String[2];
-                playerNames[0] = "Maros";
-                playerNames[1] = "Matous";
-
-                this.startNewGame(game.getSize(), game.getPlayerCount(), game.getPack().getSize(), null, game);
+                game = loadGame;
+                int cardPackSize = 0;
+                for(int i = 0; i < game.getPlayerCount(); i++){
+                    cardPackSize += game.getPlayer(i).getScore()+1;
+                }
+                cardPackSize += game.getPack().getSize();
+                System.out.println("Load OK");
+                startNewGame(game.getSize(), game.getPlayerCount(), cardPackSize, null, game);
             }
         }
     }
@@ -277,7 +269,6 @@ public class GameUI extends JFrame implements WindowListener{
         });
 
         this.add(backBtn);
-        //this.pack();
         this.setVisible(true);
     }
 
