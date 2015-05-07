@@ -145,8 +145,8 @@ public class CreateBoardUI extends JPanel {
         g.drawImage(deckFree, 820, 10, 160, 160, this);
         g.drawImage(this.freeRock.icon(), 865, 54, 70, 70, this);
 
-        if(game.getPack().getSize() != 0){
-            g.drawImage(deckFree, 820, 160, 160, 160, this);
+        g.drawImage(deckFree, 820, 160, 160, 160, this);
+        if(game.getPlayer(game.getTurn()).getCard() != null){
             g.drawImage(game.getPlayer(game.getTurn()).getCard().getCardIcon(), 865, 204, 70, 70, this);
         }
 
@@ -175,18 +175,22 @@ public class CreateBoardUI extends JPanel {
                 }
 
                 for(int pa = 0; pa < game.getPlayerCount(); pa++ ){
-                    if(game.getPlayer(pa).getCard().getLocation().row() == r &&
-                            game.getPlayer(pa).getCard().getLocation().col() == c){
-                        g.drawImage(game.getPlayer(pa).getCard().getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                    if(game.getPlayer(pa).getCard() != null){
+                        if(game.getPlayer(pa).getCard().getLocation().row() == r &&
+                                game.getPlayer(pa).getCard().getLocation().col() == c){
+                            g.drawImage(game.getPlayer(pa).getCard().getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                        }
                     }
                 }
 
 
                 for(int ca = 0; ca < game.getPack().getSize(); ca++){
-                    if(game.getPack().getCard(ca).getLocation().row() == r &&
-                            game.getPack().getCard(ca).getLocation().col() == c){
+                    if(game.getPlayer(ca).getCard() != null){
+                        if(game.getPack().getCard(ca).getLocation().row() == r &&
+                                game.getPack().getCard(ca).getLocation().col() == c){
 
-                        g.drawImage(game.getPack().getCard(ca).getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                            g.drawImage(game.getPack().getCard(ca).getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
+                        }
                     }
                 }
 
@@ -668,15 +672,15 @@ public class CreateBoardUI extends JPanel {
      * Ukončí ťah aktuálneho hráča.
      */
     private void endTurn(){
-        GameData.store(game);
-        getScore();     // Pre overenie vyhry
-        getPlayerOnTurn();
-        getScore();     // Pre vyznacenie hraca na tahu
-        getRock();
-        repaint();
-        game.print();
-        showWhatToDo(1);
-        actualPlayer.setTakeCard();
+        if(!getScore()){
+            GameData.store(game);
+            getPlayerOnTurn();
+            getRock();
+            repaint();
+            game.print();
+            showWhatToDo(1);
+            actualPlayer.setTakeCard();
+        }
     }
 
     /**
