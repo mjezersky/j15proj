@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * 
- * @author Matouš Jezerský - xjezer01
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
  */
 public class Player {
 
@@ -21,6 +22,7 @@ public class Player {
     private MazeBoard board;
     private String name;
     private TreasureCard currCard;
+    private boolean takeCard = false;
 
     private BufferedImage charIcon;
     private BufferedImage[] character;
@@ -83,6 +85,8 @@ public class Player {
     public String getName() { return this.name; }
     public int getNum() { return this.number; }
     public BufferedImage getIcon(){ return this.charIcon; }
+    public boolean isTakeCard() { return this.takeCard; }
+    public void setTakeCard() { this.takeCard = false; }
 
     private void pullCard() {
         if (this.board.getPack() == null) {
@@ -118,6 +122,7 @@ public class Player {
         if (this.currCard != null) {
             if (this.location.equals(this.currCard.getLocation())) {
                 this.score += 1;
+                this.takeCard = true;
                 this.pullCard();
             }
         }

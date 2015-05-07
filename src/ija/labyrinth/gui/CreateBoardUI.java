@@ -1,8 +1,6 @@
 package ija.labyrinth.gui;
 
 import ija.labyrinth.game.*;
-import ija.labyrinth.game.cards.TreasureCard;
-import jdk.nashorn.internal.runtime.regexp.joni.CodeRangeBuffer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,12 +10,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 /**
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
+ *
+ *
  * Hlavná trieda pre vytvorenie GUI novej alebo načítanej hry.
+ * Zisťuje sa veľkosť hracej plochy, počet hráčov a ich mená, počet kariet v balíčku.
+ * Po nastavení všetkých parametrov sa hra vykreslí.
  */
 public class CreateBoardUI extends JPanel {
 
@@ -45,10 +49,12 @@ public class CreateBoardUI extends JPanel {
     private JButton[] arrowBtn;
 
     private JTextPane scorePanel;
+    private JTextField move =  new JTextField();
 
     /**
      * Vytvorí nový panel, ktorý bude obsahovať celú hru.
-     * Spustí inicialiyáciu novej hry.
+     * Spustí inicializáciu novej hry.
+     * Po celkovom načítaní sa hra vykreslí na obrazovku.
      *
      * @param bs velkosť hracej plochy
      * @param pn počet hráčov
@@ -91,6 +97,7 @@ public class CreateBoardUI extends JPanel {
 
         getPlayerOnTurn();
         createScorePanel();
+        showWhatToDo(1);
 
         if(!load){GameData.store(game);}
         game.print();
@@ -107,7 +114,7 @@ public class CreateBoardUI extends JPanel {
 
     /**
      * Vykreslí celú hru: hraciu dosku, všetky kamene, voľný kameň, hráčov, aktuálnu kartu.
-     * @param g graphics , potrebné pre vykreslenie obrázkov
+     * @param g graphics  potrebné pre vykreslenie obrázkov
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -135,16 +142,16 @@ public class CreateBoardUI extends JPanel {
             yPoint = 64;
         }
 
-        g.drawImage(deckFree, 820, 30, 160, 160, this);
-        g.drawImage(this.freeRock.icon(), 865, 74, 70, 70, this);
+        g.drawImage(deckFree, 820, 10, 160, 160, this);
+        g.drawImage(this.freeRock.icon(), 865, 54, 70, 70, this);
 
-        g.drawImage(deckFree, 820, 180, 160, 160, this);
-        g.drawImage(game.getPlayer(game.getTurn()).getCard().getCardIcon(), 865, 224, 70, 70, this);
+        g.drawImage(deckFree, 820, 160, 160, 160, this);
+        g.drawImage(game.getPlayer(game.getTurn()).getCard().getCardIcon(), 865, 204, 70, 70, this);
 
-        g.drawImage(deckPlayer, 865, 355, 70, 70, this);
-        g.drawImage(game.getPlayer(game.getTurn()).getIcon(), 865, 355, 70, 70, this);
+        g.drawImage(deckPlayer, 865, 335, 70, 70, this);
+        g.drawImage(game.getPlayer(game.getTurn()).getIcon(), 865, 335, 70, 70, this);
 
-        g.drawImage(deckScore, 833, 453, 140, 95, this);
+        g.drawImage(deckScore, 833, 433, 140, 95, this);
 
         int i = 0;
         int x,y;
@@ -205,8 +212,8 @@ public class CreateBoardUI extends JPanel {
     }
 
     /**
-     * Pridá potrebný počet hráčov.
-     * Každému pridá meno, obrázok a presunieho na potrebné miesto.
+     * Pridá potrebný počet hráčov podľa toho ako sa zadali pri vytváraní novej hry.
+     * Každému hráčovi sa pridá meno, obrázok a presunieho na potrebné miesto.
      */
     private void addPlayers(){
 
@@ -243,29 +250,37 @@ public class CreateBoardUI extends JPanel {
     }
 
     /**
-     * Presunie hráča na dané políčko.
+     * Presunie hráča na zadané políčko.
+     * Po potvrdení ťahu urobí zálohu aktuálnej hry pre krok UNDO.
      * @param r číslo riadka
      * @param c číslo stĺpca
      */
     private void movePlayer(int r, int c){
+        showWhatToDo(2);
         if(this.madeMove){
-            if(this.actualPlayer.canMove(r, c)){
-
+            if(!actualPlayer.isTakeCard()){
+                if(this.actualPlayer.canMove(r, c)){
+                    this.actualPlayer.moveTo(r, c);
+                    repaint();
+                }
+            } else {
                 GameData.store(game);
-                this.actualPlayer.moveTo(r, c);
-
-                getScore();     // Pre overenie vyhry
-                getPlayerOnTurn();
-                getScore();     // Pre vyznacenie hraca na tahu
-                getRock();
-                repaint();
-                game.print();
+                if(!getScore()){
+                    GameData.store(game);
+                    getPlayerOnTurn();
+                    showWhatToDo(1);
+                    getRock();
+                    repaint();
+                    game.print();
+                    actualPlayer.setTakeCard();
+                }
             }
         }
     }
 
     /**
-     * Ak je možné, tak posunie riadok alebo stĺpec
+     * Ak je možné, tak posunie riadok alebo stĺpec.
+     * Po presunutí prekreslí obrazovku.
      * @param r číslo riadku
      * @param c číslo stĺpca
      */
@@ -275,15 +290,16 @@ public class CreateBoardUI extends JPanel {
             System.out.print(mf+"**\n");
             game.shift(mf);
 
+            showWhatToDo(2);
             getRock();
             repaint();
             this.madeMove = true;
         }
     }
 
-
     /**
      * Otočí voľný kameň.
+     * Prekreslí aktuálnu obrazovku.
      */
     private void rotateFreeRock() {
         game.rotateFreeCard();
@@ -343,9 +359,6 @@ public class CreateBoardUI extends JPanel {
         public MazeCard type() { return this.type; }
         public float x() { return this.x; }
         public float y() { return this.y;  }
-        public void rotate(int n) {
-
-        }
 
         public BufferedImage icon() {
             switch (this.type.getType()) {
@@ -398,8 +411,11 @@ public class CreateBoardUI extends JPanel {
     /**
      * Vypíše skóre a meno hráča.
      * Aktuálny hráč je vypísaný inou farbou.
+     * Overuje či hráč nedosiahol požadované skóre.
      */
-    private void getScore(){
+    private boolean getScore(){
+
+        boolean isWinner = false;
 
         SimpleAttributeSet go = new SimpleAttributeSet();
         StyleConstants.setFontFamily(go, "Verdana");
@@ -414,16 +430,17 @@ public class CreateBoardUI extends JPanel {
         this.scorePanel.setText("");
         for(int i=0; i < this.playersNum; i++ ){
             int score = this.p[i].getScore();
+            int scoreToWin = this.cardsNum/this.playersNum;
             if(p[i].getName() == this.actualPlayer.getName()){
                 System.out.print("ide "+actualPlayer.getName());
                 int size = this.scorePanel.getDocument().getLength();
                 try {
-                    this.scorePanel.getDocument().insertString(size,"    "+score+" - "+this.p[i].getName()+"\n",go);
+                    this.scorePanel.getDocument().insertString(size,"   "+score+"/"+scoreToWin+" - "+this.p[i].getName()+"\n",go);
                 } catch (Exception e) {}
             } else {
                 int size = this.scorePanel.getDocument().getLength();
                 try {
-                    this.scorePanel.getDocument().insertString(size,"    "+score+" - "+this.p[i].getName()+"\n",goNo);
+                    this.scorePanel.getDocument().insertString(size,"   "+score+"/"+scoreToWin+" - "+this.p[i].getName()+"\n",goNo);
                 } catch (Exception e) {}
             }
             System.out.println(score+" "+this.cardsNum+" "+this.playersNum);
@@ -434,7 +451,10 @@ public class CreateBoardUI extends JPanel {
         }
         if (end){
             gameOver(winner);
+            return isWinner = true;
         }
+
+        return isWinner;
     }
 
     /**
@@ -443,7 +463,9 @@ public class CreateBoardUI extends JPanel {
      * Q - ukonči hru
      * U - krok vzad
      * I - krok vpred
-     * S - uloží aktuálnu hru do zvoleného súboru
+     * P - uloží aktuálnu hru do zvoleného súboru
+     * W/A/S/D - posun hráča
+     * E - ukonči ťah
      */
     private void setKeys() {
 
@@ -461,13 +483,13 @@ public class CreateBoardUI extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?", "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-                if(result == JOptionPane.YES_OPTION){
+                if (result == JOptionPane.YES_OPTION) {
                     System.exit(0);
-                }else{/* Vrati do hry*/ }
+                } else {/* Vrati do hry*/ }
             }
         });
 
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "save");
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), "save");
         getActionMap().put("save", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -500,17 +522,57 @@ public class CreateBoardUI extends JPanel {
             }
         });
 
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "win");
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0), "win");
         getActionMap().put("win", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 gameOver(actualPlayer);
             }
         });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "go_up");
+        getActionMap().put("go_up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                playerGoUp();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "go_down");
+        getActionMap().put("go_down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                playerGoDown();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "go_left");
+        getActionMap().put("go_left", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                playerGoLeft();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "go_right");
+        getActionMap().put("go_right", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                playerGoRight();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, 0), "takeOk");
+        getActionMap().put("takeOk", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                endTurn();
+            }
+        });
     }
 
     /**
-     * Uloží hru.
+     * Uloží hru do zvoleného súboru.
      * @param save súbor kde sa hra uloží
      */
     private void saveGameSettings(File save){
@@ -520,15 +582,14 @@ public class CreateBoardUI extends JPanel {
 
     /**
      * Urobí krok vzad podľa zálohovanej hry.
+     * Načíta rozloženie kameňov, hráčov a kariet.
+     * Prekreslí aktuálnu obrazovku za novú.
      */
     private void undoMove(){
         game = GameData.undo(game);
-        //startGame(game.getSize(), game.getPlayerCount(), game.getPack().getSize(), null, game);
-        addPlayers();
-        //this.actualPlayer = game.getPlayer(game.getTurn());
+        getPlayers();
         getRock();
-        addPlayers();
-        getPlayerOnTurn();
+        this.actualPlayer = game.getPlayer(game.getTurn());
         getScore();
         repaint();
         game.print();
@@ -536,17 +597,105 @@ public class CreateBoardUI extends JPanel {
 
     /**
      * Urobí krok vpred zo zálohovanej hry.
+     * Načíta rozloženie kameňov, hráčov a kariet.
+     * Prekreslí aktuálnu obrazovku za novú.
      */
     private void redoMove(){
         game = GameData.redo(game);
-        //startGame(game.getSize(), game.getPlayerCount(), game.getPack().getSize(), null, game);
-//        this.actualPlayer = game.getPlayer(game.getTurn());
         getRock();
-        addPlayers();
-        getPlayerOnTurn();
+        getPlayers();
+        this.actualPlayer = game.getPlayer(game.getTurn());
         getScore();
         repaint();
         game.print();
+    }
+
+    /**
+     * Presunie hráča hore, ak je to možné.
+     */
+    private void playerGoUp(){
+        for(int pl = 0; pl < this.playersNum; pl++){
+            if (p[pl] == actualPlayer){
+                int y = p[pl].getCol();
+                int x = p[pl].getRow();
+                movePlayer(x - 1, y);
+            }
+        }
+    }
+
+    /**
+     * Presunie hráča dolu, ak je to možné.
+     */
+    private void playerGoDown(){
+        for(int pl = 0; pl < this.playersNum; pl++){
+            if (p[pl] == actualPlayer){
+                int y = p[pl].getCol();
+                int x = p[pl].getRow();
+                movePlayer(x+1, y);
+            }
+        }
+    }
+
+    /**
+     * Presunie hráča do ľava, ak je to možné.
+     */
+    private void playerGoLeft(){
+        for(int pl = 0; pl < this.playersNum; pl++){
+            if (p[pl] == actualPlayer){
+                int y = p[pl].getCol();
+                int x = p[pl].getRow();
+                movePlayer(x, y-1);
+            }
+        }
+    }
+
+    /**
+     * Presunie hráča do ľava, ak je to možné.
+     */
+    private void playerGoRight(){
+        for(int pl = 0; pl < this.playersNum; pl++){
+            if (p[pl] == actualPlayer){
+                int y = p[pl].getCol();
+                int x = p[pl].getRow();
+                movePlayer(x, y + 1);
+            }
+        }
+    }
+
+    /**
+     * Ukončí ťah aktuálneho hráča.
+     */
+    private void endTurn(){
+        GameData.store(game);
+        getScore();     // Pre overenie vyhry
+        getPlayerOnTurn();
+        getScore();     // Pre vyznacenie hraca na tahu
+        getRock();
+        repaint();
+        game.print();
+        showWhatToDo(1);
+        actualPlayer.setTakeCard();
+    }
+
+    /**
+     * V rohu obrazovky vypíše, čo ma aktuálny hráč urobiť.
+     * @param doWhat čo treba urobiť 1 - rozloženie; 2 - posun hráča
+     */
+    private void showWhatToDo(int doWhat){
+        Font font = new Font("Verdana", Font.BOLD, 14);
+        this.move.setText("");
+        if (doWhat == 1){
+            this.move.setText("Krok: zmeň rozloženie bludiska.");
+        } else if (doWhat == 2){
+            this.move.setText("Krok: posuň postavičku. (WASD/myš)");
+        }
+        this.move.setBounds(5,1,400,25);
+        this.move.setFont(font);
+        this.move.setForeground(new Color(0xFFFFFF));
+        this.move.setBackground(new Color(0x000000));
+        this.move.setEditable(false);
+        this.move.setBorder(null);
+        this.add(this.move);
     }
 
     /**
@@ -586,7 +735,7 @@ public class CreateBoardUI extends JPanel {
         whoGo.setFont(font);
         whoGo.setOpaque(false);
         whoGo.setEditable(false);
-        whoGo.setBounds(833, 330, 140, 23);
+        whoGo.setBounds(833, 305, 140, 23);
         whoGo.setForeground(new Color(0xD74E00));
         this.add(whoGo);
 
@@ -594,12 +743,12 @@ public class CreateBoardUI extends JPanel {
         scoreP.setFont(font);
         scoreP.setOpaque(false);
         scoreP.setEditable(false);
-        scoreP.setBounds(833, 432, 140, 23);
+        scoreP.setBounds(833, 407, 140, 23);
         scoreP.setForeground(new Color(0xD74E00));
         this.add(scoreP);
 
         this.scorePanel = new JTextPane();
-        this.scorePanel.setBounds(833, 455, 140, 90);
+        this.scorePanel.setBounds(833, 435, 140, 90);
         this.scorePanel.setEditable(false);
         this.scorePanel.setOpaque(false);
         this.add(this.scorePanel);
@@ -612,19 +761,21 @@ public class CreateBoardUI extends JPanel {
     }
 
     /**
-     * Ukaze napovedu k hre v dolnom rohu hry.
+     * Ukáže nápovedu k hre v dolnom rohu hry.
+     * Obsahuje ovládanie hry.
      */
     private void writeHelp(){
         Font fontH = new Font("Arial", Font.BOLD, 14);
 
         JTextArea helpP = new JTextArea("NÁPOVEDA: \n");
-        helpP.setBounds(830, 565, 180, 100);
+        helpP.setBounds(830, 535, 210, 150);
         helpP.setEditable(false);
         helpP.setFont(fontH);
         helpP.setOpaque(false);
         helpP.setForeground(new Color(0x4C4C4C));
         helpP.append("R - otočí voľný kameň\n");
-        helpP.append("S - uloží hru\n");
+        helpP.append("E - ukončí ťah\n");
+        helpP.append("P - uloží hru\n");
         helpP.append("U - krok späť\n");
         helpP.append(" I - krok vpred\n");
         helpP.append("Q - ukončí hru\n");
@@ -632,7 +783,8 @@ public class CreateBoardUI extends JPanel {
     }
 
     /**
-     * Vytvori tlacitka nad hraciu plochu, ktore sluzia na presuvanie postaviciek.
+     * Vytvorí tlačítka nad hraciu plochu, ktoré slúžia na presúvanie postavičiek.
+     * Po kliknutí sa hráč skusí presunúť na dané miesto, ak je to možné.
      */
     private void createButtonsArray(){
 
@@ -695,9 +847,37 @@ public class CreateBoardUI extends JPanel {
     }
 
     /**
-     * Vytvori tlacitka okolo hracej plochy a nastavi ActionEvent pre kazde jedno.
+     * Vytvorí tlačítka okolo hracej plochy a nastaví ActionEvent pre každe jedno.
+     * Po kliknutí na šípku sa pounie riadok alebo stĺpec v hre.
      */
     private void createButtons() {
+        final JButton rotateFree = new JButton();
+        rotateFree.setBounds(865, 54, 70, 70);
+        rotateFree.setBorderPainted(false);
+        rotateFree.setOpaque(false);
+        rotateFree.setContentAreaFilled(false);
+        rotateFree.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                rotateFreeRock();
+            }
+        });
+        this.add(rotateFree);
+
+        final JButton endTurn = new JButton();
+        endTurn.setBounds(865, 335, 70, 70);
+        endTurn.setBorderPainted(false);
+        endTurn.setOpaque(false);
+        endTurn.setContentAreaFilled(false);
+        endTurn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                endTurn();
+            }
+        });
+        this.add(endTurn);
+
+
         int num =0;
         if (this.boardSize == 5) {
             num = 8;
@@ -1343,13 +1523,13 @@ public class CreateBoardUI extends JPanel {
             this.arrowBtn[i].setOpaque(false);
             this.arrowBtn[i].setBorderPainted(false);
             this.arrowBtn[i].setContentAreaFilled(false);
-            //this.add(arrowBtn[i]);
             this.add(arrowBtn[i]);
         }
     }
 
     /**
-     * Nacitanie potrebnych obrazkov zo subora.
+     * Načítanie potrebných obrázkov zo súbora.
+     * Obsahuje ikony políčok a šípiek.
      */
     private void getImages() {
         try {

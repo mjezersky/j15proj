@@ -6,6 +6,12 @@ import ija.labyrinth.game.MazeField;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
+/**
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
+ */
 public class CardPack {
     private int size;
     private ArrayList<TreasureCard> pack;
@@ -45,7 +51,7 @@ public class CardPack {
         if (packSize > 0) Collections.shuffle(this.pack);
         fieldList.clear();
     }
-    
+
     public boolean strConfig(String cfg) {
         if (cfg.length()<2) {
             System.err.println("Error - CardPack.strConfig: bad string");
@@ -74,7 +80,7 @@ public class CardPack {
     }
 
     public int getSize() { return this.size; }
-    
+
     public TreasureCard getCard(int cardIndex) {
         if (cardIndex<0 || cardIndex>=this.size) {
             System.err.println("Error - CardPack.getCard: card index out of range");

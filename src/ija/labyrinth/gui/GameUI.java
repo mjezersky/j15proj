@@ -6,7 +6,6 @@ import ija.labyrinth.game.MazeBoard;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import java.awt.*;
@@ -18,21 +17,37 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
+ *
+ *
+ * GUI pre hlavné menu hry.
+ * Obsahuje tlačítka Nová hra, Načítať hru, O hre, Koniec hry.
+ * Podľa vybratej voľby sa generuje nový obsah.
+ */
 public class GameUI extends JFrame implements WindowListener{
 
     private BufferedImage bgImage;
     private Container currentCont;
 
     private static MazeBoard game;
-    private static int gameSize;
 
     final static String LOOKANDFEEL = "System";
-    final static String THEME = "Test";
 
+    /**
+     * Inicializácia hlavného okna s obsahom menu.
+     */
     public GameUI(){
         this.mainWindow();
     }
 
+    /**
+     * Hlavné okno, ktoré obsahuje všetky tlačítka.
+     * Je využívaný JFrame s nastaveným pozadím a velkosťou.
+     * Okno sa nedá rozširovať manuálne.
+     */
     public void mainWindow(){
         initLookAndFeel();
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -52,12 +67,17 @@ public class GameUI extends JFrame implements WindowListener{
         }
 
         this.addWindowListener(this);
-
         this.menuButtons();
         this.pack();
         this.setVisible(true);
     }
 
+    /**
+     * Výstražné okno, ktoré vyskočí pri pokuse o ukončení hry pomocou krížika.
+     * Treba potvrdiť voľbu ukončnia.
+     * Pri zrušní sa vráti do menu.
+     * @param e WindowEvent čaká na stlačenie X
+     */
     @Override
     public void windowClosing(WindowEvent e) {
         int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukončiť hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
@@ -67,8 +87,17 @@ public class GameUI extends JFrame implements WindowListener{
         }else{/* Vrati do hry*/ }
     }
 
+    /**
+     * Vytvorí novú hru podľa zadaných parametrov získaných od užívateľa.
+     * Do aktuálneho okna sa pridá nový JPanel s obsahom hry.
+     *
+     * @param bs board size - veľkosť hracej plochy
+     * @param pn player number - počet hráčov
+     * @param cn card number - počet kariet v balíčku
+     * @param playersNames - mená hráčov
+     * @param gameIn - vstupná hra (iba pri načítaní uloženej hry, inak null)
+     */
     public void startNewGame(int bs, int pn, int cn, String[] playersNames, MazeBoard gameIn){
-
         this.currentCont = this.getContentPane();
         this.currentCont.removeAll();
 
@@ -91,6 +120,10 @@ public class GameUI extends JFrame implements WindowListener{
         this.setVisible(true);
     }
 
+    /**
+     * Vytvorí tlačítka v hlavnom menu a nastaví im akciu po stlačení.
+     * Tlačítka majú nastavené 2 obrázky, jeden ako hlavný a druhý sa zmení po prejdení myšou.
+     */
     private void menuButtons() {
 
         JButton menuNewGame = new JButton();
@@ -158,10 +191,19 @@ public class GameUI extends JFrame implements WindowListener{
         this.setLayout(null);
     }
 
+    /**
+     * Zobrazí hlavné menu.
+     * @param e ActionEvent
+     */
     public void showMenu (ActionEvent e){
         this.mainWindow();
     }
 
+    /**
+     * Načíta triedu NewGameUI kde sa nachádza nastavenie novej hry, ktoré si zvolí užívateľ.
+     * Podľa zadaných parametrov pošle žiadosť o vytvorenie novej hry.
+     * @param e ActionEvent
+     */
     private void showNewGame(ActionEvent e){
 
         this.currentCont = this.getContentPane();
@@ -215,6 +257,11 @@ public class GameUI extends JFrame implements WindowListener{
         this.setVisible(true);
     }
 
+    /**
+     * Zobrazí nové okno, kde si užívateľ zvolí súbor na načítanie uloženej hry.
+     * Po načítaní sa pošle žiadosť na spustenie hry s aktuálnym obsahom.
+     * @param e ActionEvent
+     */
     private void showLoadGame (ActionEvent e){
         JFileChooser openFile = new JFileChooser();
         openFile.setDialogTitle("Načítaj hru");
@@ -240,6 +287,10 @@ public class GameUI extends JFrame implements WindowListener{
         }
     }
 
+    /**
+     * Zobrazí informácie o hre.
+     * @param e ActionEvent
+     */
     private void showAbout(ActionEvent e){
         this.currentCont = this.getContentPane();
         this.currentCont.removeAll();
@@ -272,7 +323,10 @@ public class GameUI extends JFrame implements WindowListener{
         this.setVisible(true);
     }
 
-    // Nevyuzivaju sa, ale musia byt kvoli WindowListener
+    /**
+     * Funkcie potrebné pre WindowListener, ale v našom projekte sa nevyužívajú, no musia byť implementované pre správnu funkčnosť.
+     * @param e WindowEvent
+     */
     @Override
     public void windowOpened(WindowEvent e) {
 
@@ -303,49 +357,36 @@ public class GameUI extends JFrame implements WindowListener{
 
     }
 
+    /**
+     * Zistí podľa operačného systému Look And Feel (vzhľad).
+     * Nastaví potrebnú tému, pre správne zobrazovanie.
+     */
     private static void initLookAndFeel() {
         String lookAndFeel = null;
 
         if (LOOKANDFEEL != null) {
             if (LOOKANDFEEL.equals("Metal")) {
                 lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
-                //  an alternative way to set the Metal L&F is to replace the
-                // previous line with:
-                // lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
 
             }
-
             else if (LOOKANDFEEL.equals("System")) {
                 lookAndFeel = UIManager.getSystemLookAndFeelClassName();
             }
-
             else if (LOOKANDFEEL.equals("Motif")) {
                 lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
             }
-
             else if (LOOKANDFEEL.equals("GTK")) {
                 lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
             }
-
             else {
                 System.err.println("Unexpected value of LOOKANDFEEL specified: "
                         + LOOKANDFEEL);
                 lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
             }
-
             try {
-
-
                 UIManager.setLookAndFeel(lookAndFeel);
-
-                // If L&F = "Metal", set the theme
-
                 if (LOOKANDFEEL.equals("Metal")) {
-                    if (THEME.equals("DefaultMetal"))
-                        MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
-                    else
-                        MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-
+                    MetalLookAndFeel.setCurrentTheme(new OceanTheme());
                     UIManager.setLookAndFeel(new MetalLookAndFeel());
                 }
             }
@@ -374,14 +415,10 @@ public class GameUI extends JFrame implements WindowListener{
         }
     }
 
+    /**
+     * Spustí vytvorenie hlavného menu s jeho obsahom.
+     */
     public static void main(String[] args) {
-        //Set Look and Feel
-        /*try {UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}
-        catch (ClassNotFoundException e) {}
-        catch (InstantiationException e) {}
-        catch (IllegalAccessException e) {}
-        catch (UnsupportedLookAndFeelException e) {}*/
-
         new GameUI().setVisible(true);
     }
 }

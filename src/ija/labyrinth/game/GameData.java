@@ -5,16 +5,17 @@ import java.math.BigInteger;
 import java.security.*;
 
 /**
- * 
- * @author Matouš Jezerský - xjezer01
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
  */
 public class GameData {
-    
+
     private static String[] saveStrBuffer;
     private static int ssbIndex = -1; // ukazatel na prvek pro undo
     private static int ssbSize = 0;
     private static int ssbMaxIndex = -1;
-    
+
     /**
      * Vrací MD5 hash řetězce.
      * @param str zdrojový řetězec
@@ -38,7 +39,7 @@ public class GameData {
         }
         return hashtext;
     }
-    
+
     /**
      * Inicializuje buffer pro undo/redo operace
      * @param bufferSize velikost bufferu (mak počet operací undo/redo)
@@ -48,19 +49,19 @@ public class GameData {
         GameData.ssbSize = bufferSize;
         GameData.ssbIndex = -1;
     }
-    
+
     /**
      *
      * @return je-li možné provést operaci undo 
      */
     public static boolean canUndo() { return GameData.ssbIndex > 0; }
-    
+
     /**
-     * 
+     *
      * @return je-li možné provést operaci redo
      */
     public static boolean canRedo() { return GameData.ssbIndex < GameData.ssbMaxIndex; }
-    
+
     /**
      * Uloží stav hry (herní desky) pro operace undo/redo.
      * @param game herní deska
@@ -78,11 +79,11 @@ public class GameData {
             for (int i=0; i<GameData.ssbSize-1; i++) {
                 GameData.saveStrBuffer[i] = GameData.saveStrBuffer[i+1];
             }
-            GameData.saveStrBuffer[GameData.ssbIndex] = game.toString(); 
+            GameData.saveStrBuffer[GameData.ssbIndex] = game.toString();
         }
-         
+
     }
-    
+
     /**
      * Vrátí hru (herní desku) do předchozího stavu
      * @param game herní deska
@@ -95,7 +96,7 @@ public class GameData {
         System.out.println("OK");
         return nGame;
     }
-    
+
     /**
      * Vrátí hru (herní desku) do předchozího stavu
      * @return původní herní deska nebo null
@@ -109,7 +110,7 @@ public class GameData {
         }
         return null;
     }
-    
+
     /**
      * Vrací operaci redo (posune hru/desku do následujícího stavu)
      * @param game herní deska
@@ -122,7 +123,7 @@ public class GameData {
         System.out.println("OK");
         return nGame;
     }
-    
+
     /**
      * Vrací operaci redo (posune hru/desku do následujícího stavu)
      * @return nová herní deska nebo null
@@ -130,17 +131,17 @@ public class GameData {
     public static MazeBoard redo(){
         if (GameData.canRedo()) {
             GameData.ssbIndex++;
-            return GameData.loadStrConfig(GameData.saveStrBuffer[GameData.ssbIndex]);           
+            return GameData.loadStrConfig(GameData.saveStrBuffer[GameData.ssbIndex]);
         }
         return null;
     }
 
-    
+
     /**
      * Uloží aktuální stav hry (herní desky) do souboru
      * @param game herní deska
      * @param file cílový soubor
-     * @return 
+     * @return
      */
     public static boolean save(MazeBoard game, File file) {
         System.out.println("saving");
@@ -164,7 +165,7 @@ public class GameData {
         }
         return true;
     }
-    
+
     /**
      * Načte hru z konfiguračního řetězce.
      * @param loadStr konfigurační řetězec
@@ -181,7 +182,7 @@ public class GameData {
             System.out.println("Error - GameData.load: invalid save file");
             return null;
         }
-        
+
         int gSize;
         try { gSize = Integer.parseInt(boardString.substring(2,4)); }
         catch (NumberFormatException e) {
@@ -208,18 +209,18 @@ public class GameData {
                 return null;
             }
         }
-        
+
         for (int i=-1; i<currTurn; i++) { // turn defaultne zacina na -1
             game.nextTurn();
         }
-        
+
         return game;
     }
 
     /**
      * Načte hru ze souboru
      * @param file soubor k načtení
-     * @return 
+     * @return
      */
     public static MazeBoard load(File file) {
         String loadStr = "";
@@ -252,7 +253,7 @@ public class GameData {
         return loadStrConfig(loadStr);
 
     }
-    
+
     /**
      * Vypíše informace o bufferu
      */

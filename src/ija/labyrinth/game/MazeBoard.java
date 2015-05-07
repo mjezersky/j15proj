@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.ArrayList;
 
 /**
- *
- * @author Matouš Jezerský - xjezer01
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
  */
-
 public class MazeBoard {
     private int size;
     private MazeField[][] board;
@@ -45,25 +45,25 @@ public class MazeBoard {
      * @return číslo hráče, který je na tahu
      */
     public int getTurn() { return this.turn; }
-    
+
     /**
      * Getter - aktuální balíček karet
      * @return balíček karet aktuální hry
      */
     public CardPack getPack() { return this.pack; }
-    
+
     /**
      * Vytvoří a zinicializuje nový balicek karet. Používá se až po newGame.
      * @param packSize velikost balíčku
      */
     public void createPack(int packSize) { this.pack = new CardPack(packSize, this); }
-    
+
     /**
      * Getter - velikost strany čtvercové herní desky
      * @return velikost herní desky
      */
     public int getSize() { return this.size; }
-    
+
     /**
      * Getter - aktuální počet hráčů
      * @return aktuální počet hráčů
@@ -224,7 +224,7 @@ public class MazeBoard {
         System.out.print(this.freeCard.getType());
         System.out.print(this.freeCard.getRotation());
         System.out.print(" Turn: ");
-        System.out.print(this.getTurn()); 
+        System.out.print(this.getTurn());
         System.out.print("\n");
         System.out.println("Players:");
         for (int i=0; i<this.currPlayers; i++) {
@@ -459,7 +459,7 @@ public class MazeBoard {
         for (int i=0; i<this.getPack().getSize()-1; i++) {
             cRow = this.getPack().getCard(i).getLocation().row();
             cCol = this.getPack().getCard(i).getLocation().col();
-            
+
             if (modRow && cCol == col) {
                 cRow += offset;
                 if (cRow < 1) cRow = this.size;
@@ -472,9 +472,9 @@ public class MazeBoard {
                 else if (cCol > this.size) cCol = 1;
                 this.getPack().getCard(i).moveTo(this.get(row, cCol));
             }
-            
+
         }
-        
+
     }
 
     /**

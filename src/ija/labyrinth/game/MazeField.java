@@ -1,8 +1,9 @@
 package ija.labyrinth.game;
 
 /**
- * 
- * @author Matouš Jezerský - xjezer01
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
  */
 public class MazeField {
     private int row;
@@ -30,28 +31,28 @@ public class MazeField {
         mfStr += Integer.toString(this.card.getRotation());
         return mfStr;
     }
-    
+
     /**
      * Getter - řádek, na kterém se pole nachází (indexováno od 1)
      * @return řádek, na kterém se pole nachází
      */
     public int row() { return this.row; }
-    
+
     /**
      * Getter - sloupec, na kterém se pole nachází (indexováno od 1)
      * @return sloupec, na kterém se pole nachází
      */
     public int col() { return this.col; }
-    
+
     /**
      * Vrací kámen na poli
      * @return kámen na poli
      */
     public MazeCard getCard() { return this.card; }
-    
+
     /**
-     * 
-     * @param c 
+     *
+     * @param c
      */
     public void PutCard(MazeCard c) { this.card = c; }
 

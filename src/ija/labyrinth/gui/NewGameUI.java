@@ -4,8 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-
+/**
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
+ *
+ * Vytvorí GUI pre nastavenie novej hry užívateľom.
+ * Ten si zvolí počet hráčov podľa zadaných mien, veľkosť hracej plochy a počet kariet.
+ * Každému hráčovi bude pridelená ikona postavičky automaticky, tú si voliť nemôže.
+ */
 public class NewGameUI extends JPanel {
 
     private JTextField player1, player2, player3, player4;
@@ -18,6 +28,10 @@ public class NewGameUI extends JPanel {
 
     private String[] playersNames;
 
+    /**
+     * Vytvorí nový panel ktorý sa vloží do hlavného okna.
+     * Panel obsahuje celý obsah tohto menu.
+     */
     public NewGameUI(){
 
         setSize(1050, 700);
@@ -34,11 +48,35 @@ public class NewGameUI extends JPanel {
         setLayout(null);
     }
 
+    /**
+     * Vracia mená všetkých pridaných hráčov.
+     * @return zoznam hráčov
+     */
     public String[] getPlayersNames() { return this.playersNames; }
+
+    /**
+     * Vracia počet zadaných hráčov.
+     * @return počet hráčov
+     */
     public int getPlayersNum(){ return this.playersNum; }
+
+    /**
+     * Vracia velkosť hracej plochy.
+     * @return velkosť hracej plochy
+     */
     public int getBoardSize() {return this.boardSize; }
+
+    /**
+     * Vracia počet zvolených kariet.
+     * @return počet kariet v balíčku
+     */
     public int getCardNum() { return this.cardNum; }
 
+    /**
+     * Overuje, či boli všetky parametre správne.
+     * Pri nájdeni chybz vypíše, presne čo je zle zadané.
+     * @return true - ak je všetko OK; false - chyba
+     */
     public boolean checkSettings(){
 
         setPlayerNames();
@@ -74,24 +112,35 @@ public class NewGameUI extends JPanel {
                     null, options, options[0]);
         }
 
-        else {
-            //GameUI startIt = new GameUI();
-            //startIt.mainWindow();
-            //startIt.startNewGame(getBoardSize(), getPlayersNum(), getCardNum(), getPlayersNames(), null);
-            return true;
-        }
-
+        else { return true; }
         return false;
     }
 
+    /**
+     * Vytvorí textové polia, kde užívateľ zadá mená hráčov.
+     * Prvé dve mená sú pridelené automaticky, ale po kliknutí na ne sa zmažu a užívateľ si môže zadať vlastné.
+     */
     private void choosePlayers(){
 
         Font font = new Font("Arial", Font.PLAIN, 14);
 
-        this.player1 = new JTextField();
-        this.player2 = new JTextField();
+        this.player1 = new JTextField("Player1");
+        this.player2 = new JTextField("Player2");
         this.player3 = new JTextField();
         this.player4 = new JTextField();
+
+        this.player1.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                player1.setText("");
+            }
+        });
+        this.player2.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                player2.setText("");
+            }
+        });
 
         this.player1.setFont(font);
         this.player2.setFont(font);
@@ -109,47 +158,60 @@ public class NewGameUI extends JPanel {
         this.add(this.player4);
     }
 
-    // Zistim velkost dosky
+    /**
+     * Vytvorí zaškrtávacie okienka pre výber veľkosti hracej plochy.
+     * Musí byť zaškrtnuté vždy len jedno.
+     */
     private void chooseBoardSize(){
 
+        CheckboxGroup size = new CheckboxGroup();
+        add(new Checkbox(null, true, size));
+
         this.five = new JCheckBox();
-        this.five.setBounds(558,180, 20,20);
+        this.five.setBounds(487, 125, 20, 20);
         this.five.setOpaque(false);
+        this.five.setSelected(true);
         this.add(this.five);
 
         this.seven = new JCheckBox();
-        this.seven.setBounds(662,180, 20,20);
+        this.seven.setBounds(591,125, 20,20);
         this.seven.setOpaque(false);
         this.add(this.seven);
 
         this.nine = new JCheckBox();
-        this.nine.setBounds(761,180, 20,20);
+        this.nine.setBounds(692,125, 20,20);
         this.nine.setOpaque(false);
         this.add(this.nine);
 
         this.eleven = new JCheckBox();
-        this.eleven.setBounds(855,180, 20,20);
+        this.eleven.setBounds(784,125, 20,20);
         this.eleven.setOpaque(false);
         this.add(this.eleven);
-
     }
 
-    // Zistim pocet kariet
+    /**
+     * Vytvorí zaškrtávacie okienka pre výber počtu kariet v balíčku.
+     * Musí byť zaškrtnuté vždy len jedno.
+     */
     private void chooseCardNum(){
 
         this.c12 = new JCheckBox();
-        this.c12.setBounds(609,412,20,20);
+        this.c12.setBounds(567,336,20,20);
         this.c12.setOpaque(false);
+        this.c12.setSelected(true);
         this.add(c12);
 
         this.c24 = new JCheckBox();
-        this.c24.setBounds(712,412,20,20);
+        this.c24.setBounds(670,336,20,20);
         this.c24.setOpaque(false);
         this.add(c24);
 
     }
 
-    // Ziskam pocet a mena hracov
+    /**
+     * Vytvorí hráčov podľa zadaných mien od užívateľa.
+     * Tento zoznam sa dalej posiela do vytvorenia novej hry.
+     */
     private void setPlayerNames(){
         this.playersNum = 0;
 
@@ -179,7 +241,10 @@ public class NewGameUI extends JPanel {
 
     }
 
-
+    /**
+     * Nastaví sa veľkosť balíčka karit.
+     * Táto veľkosť sa posiela do vytvorenia novej hry.
+     */
     private void setCardNum(){
         int num = 0;
         this.cardNum = 0;
@@ -199,6 +264,10 @@ public class NewGameUI extends JPanel {
         }
     }
 
+    /**
+     * Nastaví sa veľkosťhracej plochy.
+     * Táto veľkosť sa posiela do vytvorenia novej hry.
+     */
     private void setBoardSize() {
         int num = 0;
         this.boardSize = 0;
@@ -227,6 +296,4 @@ public class NewGameUI extends JPanel {
             this.boardSize = 0;
         }
     }
-
-
 }

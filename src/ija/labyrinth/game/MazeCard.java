@@ -1,8 +1,9 @@
 package ija.labyrinth.game;
 
 /**
- * 
- * @author Matouš Jezerský - xjezer01
+ * IJA 2015 - Projekt Labyrinth
+ * Autori:  Maroš Janota
+ *          Matouš Jezerský
  */
 public class MazeCard {
 
