@@ -80,11 +80,13 @@ public class GameUI extends JFrame implements WindowListener{
      */
     @Override
     public void windowClosing(WindowEvent e) {
-        int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukončiť hru?","Exit",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+        String[] options = new String[] {"Áno", "Nie"};
+        int result = JOptionPane.showOptionDialog(null, "Naozaj chcete ukončiť hru?", "Exit", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, options, options[0]);
 
-        if(result == JOptionPane.YES_OPTION){
+        if (result == 0) {
             System.exit(0);
-        }else{/* Vrati do hry*/ }
+        } else {/* Vrati do hry*/ }
     }
 
     /**

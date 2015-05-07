@@ -488,11 +488,62 @@ public class CreateBoardUI extends JPanel {
         getActionMap().put("quit", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int result = JOptionPane.showConfirmDialog(null, "Naozaj chcete ukoncit hru?", "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                String[] options = new String[] {"Áno", "Nie", "Návrat do menu"};
+                int result = JOptionPane.showOptionDialog(null, "Naozaj chcete ukončiť hru?", "Exit", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                        null, options, options[0]);
 
-                if (result == JOptionPane.YES_OPTION) {
-                    System.exit(0);
-                } else {/* Vrati do hry*/ }
+                if (result == 0) {
+                    String[] save = new String[] {"Áno", "Nie"};
+                    int result2 = JOptionPane.showOptionDialog(null, "Chcete hru uložiť pred ukončením?", "Exit", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                            null, save, save[0]);
+
+                    if (result2 == 0) {
+                        JFileChooser saveFile = new JFileChooser();
+                        saveFile.setDialogTitle("Uložiť hru");
+
+                        int selectFile = saveFile.showSaveDialog(null);
+                        if (selectFile == JFileChooser.APPROVE_OPTION) {
+                            File fileToSave = saveFile.getSelectedFile();  //Subor kde sa bude ukladat
+                            System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+                            saveGameSettings(fileToSave);
+                        }
+                        System.exit(0);
+                    }  else if (result2 == 1){
+                        System.exit(0);
+                    }
+
+                } else if (result == 1){/* Vrati do hry*/ }
+                else if (result == 2){
+                    String[] save = new String[] {"Áno", "Nie"};
+                    int result2 = JOptionPane.showOptionDialog(null, "Chcete hru uložiť pred ukončením?", "Exit", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                            null, save, save[0]);
+
+                    if (result2 == 0) {
+                        JFileChooser saveFile = new JFileChooser();
+                        saveFile.setDialogTitle("Uložiť hru");
+
+                        int selectFile = saveFile.showSaveDialog(null);
+                        if (selectFile == JFileChooser.APPROVE_OPTION) {
+                            File fileToSave = saveFile.getSelectedFile();  //Subor kde sa bude ukladat
+                            System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+                            saveGameSettings(fileToSave);
+                        }
+                        JFrame top = (JFrame) getTopLevelAncestor();
+                        System.out.print(top);
+                        top.dispose();
+
+                        GameUI newgame = new GameUI();
+                        newgame.mainWindow();
+
+                    } else if (result2 == 1){
+                        JFrame top = (JFrame) getTopLevelAncestor();
+                        System.out.print(top);
+                        top.dispose();
+
+                        GameUI newgame = new GameUI();
+                        newgame.mainWindow();
+                    }
+                }
             }
         });
 
@@ -786,7 +837,7 @@ public class CreateBoardUI extends JPanel {
         helpP.append("P - uloží hru\n");
         helpP.append("U - krok späť\n");
         helpP.append(" I - krok vpred\n");
-        helpP.append("Q - ukončí hru\n");
+        helpP.append("Q - koniec/návrat do menu\n");
         this.add(helpP);
     }
 
