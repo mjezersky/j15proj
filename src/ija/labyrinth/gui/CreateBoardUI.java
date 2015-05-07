@@ -185,13 +185,13 @@ public class CreateBoardUI extends JPanel {
 
 
                 for(int ca = 0; ca < game.getPack().getSize(); ca++){
-                    if(game.getPlayer(ca).getCard() != null){
-                        if(game.getPack().getCard(ca).getLocation().row() == r &&
-                                game.getPack().getCard(ca).getLocation().col() == c){
+                    //if(game.getPlayer(ca).getCard() != null){
+                    if(game.getPack().getCard(ca).getLocation().row() == r &&
+                            game.getPack().getCard(ca).getLocation().col() == c){
 
-                            g.drawImage(game.getPack().getCard(ca).getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
-                        }
+                        g.drawImage(game.getPack().getCard(ca).getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
                     }
+                    //}
                 }
 
                 for(int pl = 0; pl < this.playersNum; pl++){
@@ -274,6 +274,7 @@ public class CreateBoardUI extends JPanel {
                 if(!getScore()){
                     GameData.store(game);
                     getPlayerOnTurn();
+                    getScore();
                     showWhatToDo(1);
                     getRock();
                     repaint();
@@ -437,8 +438,8 @@ public class CreateBoardUI extends JPanel {
         for(int i=0; i < this.playersNum; i++ ){
             int score = this.p[i].getScore();
             int scoreToWin = this.cardsNum/this.playersNum;
-            if(p[i].getName() == this.actualPlayer.getName()){
-                System.out.print("ide "+actualPlayer.getName());
+            if(p[i].getName() == game.getPlayer(game.getTurn()).getName()){
+                //if(p[i].getName() == this.actualPlayer.getName()){
                 int size = this.scorePanel.getDocument().getLength();
                 try {
                     this.scorePanel.getDocument().insertString(size,"  "+score+"/"+scoreToWin+" "+this.p[i].getName()+"\n",go);
@@ -675,6 +676,7 @@ public class CreateBoardUI extends JPanel {
         if(!getScore()){
             GameData.store(game);
             getPlayerOnTurn();
+            getScore();
             getRock();
             repaint();
             game.print();
