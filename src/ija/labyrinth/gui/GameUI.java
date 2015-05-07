@@ -109,10 +109,6 @@ public class GameUI extends JFrame implements WindowListener{
             e.printStackTrace();
         }
 
-        System.out.print("Velkost hracej dosky je nastaveny na : " + bs + "\n");
-        System.out.print("Pocet kariet je nastaveny na: " + cn + "\n");
-        System.out.print("Pocet hracov je nastaveny na: " + pn + "\n");
-
         CreateBoardUI newBoard = new CreateBoardUI(bs, pn, cn, playersNames, gameIn);
         this.add(newBoard);
 

@@ -256,8 +256,8 @@ public class CreateBoardUI extends JPanel {
      * @param c číslo stĺpca
      */
     private void movePlayer(int r, int c){
-        showWhatToDo(2);
         if(this.madeMove){
+            showWhatToDo(2);
             if(!actualPlayer.isTakeCard()){
                 if(this.actualPlayer.canMove(r, c)){
                     this.actualPlayer.moveTo(r, c);
@@ -435,12 +435,12 @@ public class CreateBoardUI extends JPanel {
                 System.out.print("ide "+actualPlayer.getName());
                 int size = this.scorePanel.getDocument().getLength();
                 try {
-                    this.scorePanel.getDocument().insertString(size,"   "+score+"/"+scoreToWin+" - "+this.p[i].getName()+"\n",go);
+                    this.scorePanel.getDocument().insertString(size,"  "+score+"/"+scoreToWin+" "+this.p[i].getName()+"\n",go);
                 } catch (Exception e) {}
             } else {
                 int size = this.scorePanel.getDocument().getLength();
                 try {
-                    this.scorePanel.getDocument().insertString(size,"   "+score+"/"+scoreToWin+" - "+this.p[i].getName()+"\n",goNo);
+                    this.scorePanel.getDocument().insertString(size,"  "+score+"/"+scoreToWin+" "+this.p[i].getName()+"\n",goNo);
                 } catch (Exception e) {}
             }
             System.out.println(score+" "+this.cardsNum+" "+this.playersNum);
