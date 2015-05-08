@@ -35,7 +35,6 @@ public class CreateBoardUI extends JPanel {
     private Player actualPlayer;
     private boolean madeMove;
     private boolean winnerSet = false;
-    private BufferedImage charIcon;
     private BufferedImage[] character;
     private ArrayList<BufferedImage> card_icons;
 

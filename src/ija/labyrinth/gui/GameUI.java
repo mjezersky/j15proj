@@ -16,6 +16,8 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 /**
  * IJA 2015 - Projekt Labyrinth
@@ -40,7 +42,7 @@ public class GameUI extends JFrame implements WindowListener{
      * Inicializácia hlavného okna s obsahom menu.
      */
     public GameUI(){
-        this.mainWindow();
+        mainWindow();
     }
 
     /**
@@ -49,6 +51,7 @@ public class GameUI extends JFrame implements WindowListener{
      * Okno sa nedá rozširovať manuálne.
      */
     public void mainWindow(){
+
         initLookAndFeel();
         JFrame.setDefaultLookAndFeelDecorated(true);
 
@@ -58,13 +61,11 @@ public class GameUI extends JFrame implements WindowListener{
         this.setLocationRelativeTo(this);
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        try {
-            bgImage = ImageIO.read(getClass().getResource("/images/bgImage.png"));
-            JLabel bg = new JLabel(new ImageIcon(bgImage));
-            this.setContentPane(bg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        URL gifImg = getClass().getResource("/images/intro.gif");
+        ImageIcon imageIcon = new ImageIcon(gifImg);
+        JLabel label = new JLabel(imageIcon);
+        this.setContentPane(label);
+
 
         this.addWindowListener(this);
         this.menuButtons();
