@@ -85,32 +85,40 @@ public class Player {
      * @return aktualní skóre
      */
     public int getScore() { return this.score; }
-    
+
     /**
      * Getter - karta hráče ukazující cílový poklad
      * @return karta hráče
      */
     public TreasureCard getCard() { return this.currCard; }
-    
+
     /**
      * Getter - jméno hráče
      * @return jméno hráče
      */
     public String getName() { return this.name; }
-    
+
     /**
      * Getter - číslo hráče
      * @return číslo hráče
      */
     public int getNum() { return this.number; }
-    
+
     /**
      * Getter - ikona hráče
      * @return ikona hráče
      */
     public BufferedImage getIcon(){ return this.charIcon; }
-    
+
+    /**
+     * Vracia či hráč zobral aktálny predmet alebo nie.
+     * @return
+     */
     public boolean isTakeCard() { return this.takeCard; }
+
+    /**
+     * Nastaví pri novom predmete, že ho hráš ešte nezobral.
+     */
     public void setTakeCard() { this.takeCard = false; }
 
     /**
@@ -169,7 +177,7 @@ public class Player {
 
     }
 
-    
+
     /**
      * Ověřuje platnost trasy z pozice hráče do místa target.
      * @param target cílová pozice
@@ -221,7 +229,7 @@ public class Player {
      * @param row cílový řádek
      * @param col cílový sloupec
      * @see isPathValid
-     * @return 
+     * @return
      */
     public boolean canMove(int row, int col) {
         if (this.board == null) {
@@ -248,7 +256,9 @@ public class Player {
         this.charIcon = this.character[this.number];
     }
 
-    // Nacitam vsetky dostupne postavicky
+    /**
+     * Načíta potrebné obrázky zo súboru.
+     */
     private void setImagesIcon(){
 
         character = new BufferedImage[4];

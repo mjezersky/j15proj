@@ -317,7 +317,7 @@ public class CreateBoardUI extends JPanel {
     }
 
     /**
-     * Nastaví tlačítkam nad hracou plochou ich súradnice.
+     * Nastaví tlačítkam nad hracou plochou a ich súradnice.
      * Využitie: hráč otestuje podľa súracníc, či sa môže na dané miesto presunúť.
      */
     private class ArrBtn {

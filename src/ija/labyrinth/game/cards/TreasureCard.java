@@ -44,7 +44,7 @@ public class TreasureCard {
         setCardIco();
     }
 
-    
+
     /**
      * Přesune kartu na cílové políčko.
      * @param mf políčko
@@ -61,7 +61,7 @@ public class TreasureCard {
         return this.location.equals(tc.location);
     }
 
-    
+
     /**
      * Getter - pozice karty
      * @return pozice karty
@@ -75,10 +75,22 @@ public class TreasureCard {
     public int getId() { return this.identifier; }
 
 
+    /**
+     * Získa obrázok daného predmetu.
+     * @return vrati obrázok predmetu
+     */
     public BufferedImage getCardIcon() { return this.cardIcon; }
+
+    /**
+     * Nastaví obrázok predmetu podľa jeho čísla.
+     */
     public void setCardIco(){
         this.cardIcon = this.cardIco[identifier];
     }
+
+    /**
+     * Načíta potrebné obrázky pre predmety.
+     */
     private void getImagesIcon(){
 
         cardIco = new BufferedImage[24];
