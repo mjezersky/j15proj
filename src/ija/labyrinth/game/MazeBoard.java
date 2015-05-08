@@ -17,6 +17,8 @@ public class MazeBoard {
     private int currPlayers = 0;
     private int turn;
     private CardPack pack;
+    
+    public static final MazeField freeCardField = new MazeField(0, 0);
 
     private static final int maxPlayers = 4; // default max pocet hracu
 
@@ -241,8 +243,16 @@ public class MazeBoard {
         }
         if (this.pack != null) {
             System.out.print("Cards: ");
-            System.out.print(this.pack.toString());
-            System.out.print("\n");
+            for (int i=0; i<this.pack.getSize(); i++) {
+                System.out.print("#");
+                System.out.print(this.pack.getCard(i).getId());
+                System.out.print(" ");
+                if (this.pack.getCard(i).getLocation().row() == 0 ) System.out.print("@freeCard ");
+                System.out.print(this.pack.getCard(i).getLocation().row());
+                System.out.print(":");
+                System.out.print(this.pack.getCard(i).getLocation().col());
+                System.out.print("\n");
+            }
         }
         else System.out.println("Cards: NULL");
     }
@@ -403,6 +413,7 @@ public class MazeBoard {
      * @return políčko MazeField na souřadnicích r c
      */
     public MazeField get(int r, int c) {
+        if (r==0 && c==0) return MazeBoard.freeCardField;
         if (r<1 || c<1 || r>this.size || c>this.size) return null;
         return this.board[r-1][c-1];
     }
@@ -444,33 +455,41 @@ public class MazeBoard {
 
             if (modRow && cCol == col) {
                 cRow += offset;
-                if (cRow < 1) cRow = this.size;
-                else if (cRow > this.size) cRow = 1;
-                this.players[i].getCard().moveTo(this.get(cRow, col));
+                if (cRow < 1) this.players[i].getCard().moveTo(MazeBoard.freeCardField);
+                else if (cRow > this.size) this.players[i].getCard().moveTo(MazeBoard.freeCardField);
+                else this.players[i].getCard().moveTo(this.get(cRow, col));
             }
             else if (!modRow && cRow == row) {
                 cCol += offset;
-                if (cCol < 1) cCol = this.size;
-                else if (cCol > this.size) cCol = 1;
-                this.players[i].getCard().moveTo(this.get(row, cCol));
+                if (cCol < 1) this.players[i].getCard().moveTo(MazeBoard.freeCardField);
+                else if (cCol > this.size) this.players[i].getCard().moveTo(MazeBoard.freeCardField);
+                else this.players[i].getCard().moveTo(this.get(row, cCol));
+            }
+            // jestli se jedna o kartu na freeCard - umistim ji na misto kde shiftuju
+            else if (cRow == 0 && cCol == 0) {
+                this.players[i].getCard().moveTo(this.get(row, col));
             }
 
         }
-        for (int i=0; i<this.getPack().getSize()-1; i++) {
+        for (int i=0; i<this.getPack().getSize(); i++) {
             cRow = this.getPack().getCard(i).getLocation().row();
             cCol = this.getPack().getCard(i).getLocation().col();
 
             if (modRow && cCol == col) {
                 cRow += offset;
-                if (cRow < 1) cRow = this.size;
-                else if (cRow > this.size) cRow = 1;
-                this.getPack().getCard(i).moveTo(this.get(cRow, col));
+                if (cRow < 1) this.getPack().getCard(i).moveTo(MazeBoard.freeCardField);
+                else if (cRow > this.size) this.getPack().getCard(i).moveTo(MazeBoard.freeCardField);
+                else this.getPack().getCard(i).moveTo(this.get(cRow, col));
             }
             else if (!modRow && cRow == row) {
                 cCol += offset;
-                if (cCol < 1) cCol = this.size;
-                else if (cCol > this.size) cCol = 1;
-                this.getPack().getCard(i).moveTo(this.get(row, cCol));
+                if (cCol < 1) this.getPack().getCard(i).moveTo(MazeBoard.freeCardField);
+                else if (cCol > this.size) this.getPack().getCard(i).moveTo(MazeBoard.freeCardField);
+                else this.getPack().getCard(i).moveTo(this.get(row, cCol));
+            }
+            // jestli se jedna o kartu na freeCard - umistim ji na misto kde shiftuju
+            else if (cRow == 0 && cCol == 0) {
+                this.getPack().getCard(i).moveTo(this.get(row, col));
             }
 
         }
