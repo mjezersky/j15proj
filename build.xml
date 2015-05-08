@@ -3,12 +3,20 @@
     <target name="clean">
         <delete dir="build"/>
 		<delete dir="dest-client"/>
+		<delete dir="doc"/>
     </target>
 
     <target name="compile">
         <mkdir dir="build"/>
-		<mkdir dir="dest-client"/>
-        <javac srcdir="src" destdir="build" encoding="utf8"/>
+        <copy todir="build/images">
+           <fileset dir="src/images"/>
+        </copy>
+        <javac includeantruntime="false" srcdir="src" destdir="build" encoding="utf8"/>
+        
+        <mkdir dir="doc"/>
+        <javadoc sourcepath="src" destdir="doc"/>
+        
+        <mkdir dir="dest-client"/>
 		<jar destfile="dest-client/ija2015-client.jar" basedir="build">
             <manifest>
                 <attribute name="Main-Class" value="ija.labyrinth.gui.GameUI"/>
