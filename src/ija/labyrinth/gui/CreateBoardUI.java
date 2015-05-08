@@ -33,7 +33,6 @@ public class CreateBoardUI extends JPanel {
     private Player actualPlayer;
     private boolean madeMove;
     private boolean winnerSet = false;
-    private boolean load = false;
 
     private static MazeBoard game;
     private Rock[] rock;
@@ -67,7 +66,6 @@ public class CreateBoardUI extends JPanel {
         setSize(1045, 700);
         setBackground(new Color(0, 0, 0, 0));
 
-        load = false;
         this.boardSize = bs;
         this.playersNum = pn;
         this.playerNames = names;
@@ -86,7 +84,6 @@ public class CreateBoardUI extends JPanel {
                 System.out.println(game.getPlayer(i).getName());
             }
             getPlayers();
-            load = true;
         }
 
         GameData.initBuffer(5);
@@ -100,7 +97,7 @@ public class CreateBoardUI extends JPanel {
         createScorePanel();
         showWhatToDo(1);
 
-        if(!load){GameData.store(game);}
+        GameData.store(game);
         game.print();
 
         setKeys();
