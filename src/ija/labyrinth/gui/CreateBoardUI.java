@@ -177,7 +177,11 @@ public class CreateBoardUI extends JPanel {
 
                 for(int pa = 0; pa < game.getPlayerCount(); pa++ ){
                     if(game.getPlayer(pa).getCard() != null){
-                        if(game.getPlayer(pa).getCard().getLocation().row() == r &&
+                        if(game.getPlayer(pa).getCard().getLocation().row() == 0 &&
+                                game.getPlayer(pa).getCard().getLocation().col() == 0){
+                            g.drawImage(game.getPlayer(pa).getCard().getCardIcon(), 865, 54, 70, 70, this);
+                        }
+                        else if(game.getPlayer(pa).getCard().getLocation().row() == r &&
                                 game.getPlayer(pa).getCard().getLocation().col() == c){
                             g.drawImage(game.getPlayer(pa).getCard().getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
                         }
