@@ -50,6 +50,7 @@ public class CreateBoardUI extends JPanel {
 
     private JTextPane scorePanel;
     private JTextField move =  new JTextField();
+    private JTextField undo =  new JTextField();
 
     /**
      * Vytvorí nový panel, ktorý bude obsahovať celú hru.
@@ -185,13 +186,14 @@ public class CreateBoardUI extends JPanel {
 
 
                 for(int ca = 0; ca < game.getPack().getSize(); ca++){
-                    //if(game.getPlayer(ca).getCard() != null){
-                    if(game.getPack().getCard(ca).getLocation().row() == r &&
+                    if(game.getPack().getCard(ca).getLocation().row() == 0 &&
+                            game.getPack().getCard(ca).getLocation().col() == 0){
+                        g.drawImage(game.getPack().getCard(ca).getCardIcon(), 865, 54, 70, 70, this);
+                    }
+                    else if(game.getPack().getCard(ca).getLocation().row() == r &&
                             game.getPack().getCard(ca).getLocation().col() == c){
-
                         g.drawImage(game.getPack().getCard(ca).getCardIcon(), xPoint, yPoint, blockSize, blockSize, this );
                     }
-                    //}
                 }
 
                 for(int pl = 0; pl < this.playersNum; pl++){
@@ -644,13 +646,15 @@ public class CreateBoardUI extends JPanel {
      * Prekreslí aktuálnu obrazovku za novú.
      */
     private void undoMove(){
-        game = GameData.undo(game);
-        getPlayers();
-        getRock();
-        this.actualPlayer = game.getPlayer(game.getTurn());
-        getScore();
-        repaint();
-        game.print();
+        if(!this.madeMove){
+            game = GameData.undo(game);
+            getPlayers();
+            getRock();
+            this.actualPlayer = game.getPlayer(game.getTurn());
+            getScore();
+            repaint();
+            game.print();
+        }
     }
 
     /**
@@ -659,13 +663,15 @@ public class CreateBoardUI extends JPanel {
      * Prekreslí aktuálnu obrazovku za novú.
      */
     private void redoMove(){
-        game = GameData.redo(game);
-        getRock();
-        getPlayers();
-        this.actualPlayer = game.getPlayer(game.getTurn());
-        getScore();
-        repaint();
-        game.print();
+        if(!this.madeMove){
+            game = GameData.redo(game);
+            getRock();
+            getPlayers();
+            this.actualPlayer = game.getPlayer(game.getTurn());
+            getScore();
+            repaint();
+            game.print();
+        }
     }
 
     /**
@@ -748,13 +754,28 @@ public class CreateBoardUI extends JPanel {
         } else if (doWhat == 2){
             this.move.setText("Krok: posuň postavičku. (WASD/myš)");
         }
-        this.move.setBounds(5,1,400,25);
+        this.move.setBounds(5,1,400,20);
         this.move.setFont(font);
         this.move.setForeground(new Color(0xFFFFFF));
         this.move.setBackground(new Color(0x000000));
         this.move.setEditable(false);
         this.move.setBorder(null);
         this.add(this.move);
+
+        this.undo.setText("");
+        if (doWhat == 1){
+            this.undo.setText("Undo: povolené");
+        } else if (doWhat == 2){
+            this.undo.setText("Undo: zakázané");
+        }
+        this.undo.setBounds(5,19,200,20);
+        this.undo.setFont(font);
+        this.undo.setForeground(new Color(0xFFFFFF));
+        this.undo.setBackground(new Color(0x000000));
+        this.undo.setEditable(false);
+        this.undo.setBorder(null);
+        this.add(this.undo);
+
     }
 
     /**
