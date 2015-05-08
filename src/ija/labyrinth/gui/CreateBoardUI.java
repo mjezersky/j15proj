@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * IJA 2015 - Projekt Labyrinth
@@ -33,6 +35,9 @@ public class CreateBoardUI extends JPanel {
     private Player actualPlayer;
     private boolean madeMove;
     private boolean winnerSet = false;
+    private BufferedImage charIcon;
+    private BufferedImage[] character;
+    private ArrayList<BufferedImage> card_icons;
 
     private static MazeBoard game;
     private Rock[] rock;
@@ -71,6 +76,8 @@ public class CreateBoardUI extends JPanel {
         this.playerNames = names;
         this.cardsNum = cn;
 
+        getImages();
+
         if (gameIn == null){
             game = MazeBoard.createMazeBoard(boardSize);
             game.newGame();
@@ -89,7 +96,6 @@ public class CreateBoardUI extends JPanel {
         GameData.initBuffer(5);
 
         getRock();
-        getImages();
         createButtons();
         createButtonsArray();
 
@@ -230,7 +236,7 @@ public class CreateBoardUI extends JPanel {
         for ( int i=0; i < this.playersNum; i++){
             game.addPlayer(playerNames[i]);
             this.p[i] = game.getPlayer(i);
-            this.p[i].makeIcon();
+            this.p[i].makeIcon(this.card_icons.get(i));
             if(i == 1){ p[i].moveTo(1,this.boardSize);}
             if(i == 2){ p[i].moveTo(this.boardSize, 1);}
             if(i == 3){ p[i].moveTo(this.boardSize, this.boardSize);}
@@ -246,7 +252,7 @@ public class CreateBoardUI extends JPanel {
         p = new Player[this.playersNum];
         for ( int i=0; i < this.playersNum; i++){
             this.p[i] = game.getPlayer(i);
-            this.p[i].makeIcon();
+            this.p[i].makeIcon(this.card_icons.get(i));
         }
     }
 
@@ -829,7 +835,7 @@ public class CreateBoardUI extends JPanel {
         this.add(scoreP);
 
         this.scorePanel = new JTextPane();
-        this.scorePanel.setBounds(833, 435, 140, 90);
+        this.scorePanel.setBounds(833, 438, 140, 90);
         this.scorePanel.setEditable(false);
         this.scorePanel.setOpaque(false);
         this.add(this.scorePanel);
@@ -1613,6 +1619,9 @@ public class CreateBoardUI extends JPanel {
      * Obsahuje ikony políčok a šípiek.
      */
     private void getImages() {
+        card_icons  = new ArrayList<>();
+        character = new BufferedImage[8];
+
         try {
             this.C1 = ImageIO.read(getClass().getResource("/images/rocks/C_1_70.png"));
             this.C2 = ImageIO.read(getClass().getResource("/images/rocks/C_2_70.png"));
@@ -1649,9 +1658,24 @@ public class CreateBoardUI extends JPanel {
             this.arrowIco[15] = new ImageIcon(getClass().getResource("/images/arrows/d_1_30.png"));
             this.arrowIco[16] = new ImageIcon(getClass().getResource("/images/arrows/d_2_30.png"));
 
+            this.character[0] = ImageIO.read(getClass().getResource("/images/chars/char01.png"));
+            this.character[1] = ImageIO.read(getClass().getResource("/images/chars/char02.png"));
+            this.character[2] = ImageIO.read(getClass().getResource("/images/chars/char03.png"));
+            this.character[3] = ImageIO.read(getClass().getResource("/images/chars/char04.png"));
+            this.character[4] = ImageIO.read(getClass().getResource("/images/chars/char05.png"));
+            this.character[5] = ImageIO.read(getClass().getResource("/images/chars/char06.png"));
+            this.character[6] = ImageIO.read(getClass().getResource("/images/chars/char07.png"));
+            this.character[7] = ImageIO.read(getClass().getResource("/images/chars/char08.png"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        for (int i = 0; i < 8; i++){
+            card_icons.add(character[i]);
+        }
+        Collections.shuffle(card_icons);
+        System.out.println(card_icons);
     }
 }
 

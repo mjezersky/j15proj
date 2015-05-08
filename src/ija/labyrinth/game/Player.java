@@ -25,7 +25,6 @@ public class Player {
     private boolean takeCard = false;
 
     private BufferedImage charIcon;
-    private BufferedImage[] character;
 
     Player(String name, int number, MazeField location, MazeBoard board) {
         this.number = number;
@@ -35,8 +34,6 @@ public class Player {
         this.currCard = null;
         this.score = 0;
         this.pullCard();
-
-        setImagesIcon();
     }
 
     Player(String name, int number, MazeField location, MazeBoard board, TreasureCard initCard, int initScore) {
@@ -46,8 +43,6 @@ public class Player {
         this.board = board;
         this.currCard = initCard;
         this.score = initScore;
-
-        setImagesIcon();
     }
 
     @Override
@@ -228,7 +223,7 @@ public class Player {
      * Ověření, zda se hráč může posunout na cílové souřadnice, využívá metody isPathValid .
      * @param row cílový řádek
      * @param col cílový sloupec
-     * @see isPathValid
+     * @see "isPathValid"
      * @return
      */
     public boolean canMove(int row, int col) {
@@ -252,23 +247,8 @@ public class Player {
     /**
      * Přiřadí hráci ikonu (GUI)
      */
-    public void makeIcon(){
-        this.charIcon = this.character[this.number];
+    public void makeIcon(BufferedImage icon){
+        this.charIcon = icon;
     }
 
-    /**
-     * Načíta potrebné obrázky zo súboru.
-     */
-    private void setImagesIcon(){
-
-        character = new BufferedImage[4];
-        try {
-            this.character[0] = ImageIO.read(getClass().getResource("/images/chars/char01.png"));
-            this.character[1] = ImageIO.read(getClass().getResource("/images/chars/char03.png"));
-            this.character[2] = ImageIO.read(getClass().getResource("/images/chars/char05.png"));
-            this.character[3] = ImageIO.read(getClass().getResource("/images/chars/char08.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
