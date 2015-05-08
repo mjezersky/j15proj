@@ -1,0 +1,23 @@
+<project>
+
+    <target name="clean">
+        <delete dir="build"/>
+		<delete dir="dest-client"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build"/>
+		<mkdir dir="dest-client"/>
+        <javac srcdir="src" destdir="build" encoding="utf8"/>
+		<jar destfile="dest-client/ija2015-client.jar" basedir="build">
+            <manifest>
+                <attribute name="Main-Class" value="ija.labyrinth.gui.GameUI"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run">
+        <java jar="dest-client/ija2015-client.jar" fork="true"/>
+    </target>
+
+</project>
