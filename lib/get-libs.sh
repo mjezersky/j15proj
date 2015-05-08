@@ -1,5 +1,8 @@
-wget http://www.stud.fit.vutbr.cz/~xjanot01/images.tgz
+#!/bin/bash
 
-tar -xvzf images.tgz images
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-rm images.tgz
+wget http://www.stud.fit.vutbr.cz/~xjanot01/images.tgz -P $DIR
+tar -xvzf $DIR/images.tgz -C $DIR
+
+rm -f $DIR/images.tgz
