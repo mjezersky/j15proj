@@ -14,7 +14,7 @@
         <javac includeantruntime="false" srcdir="src" destdir="build" encoding="utf8"/>
         
         <mkdir dir="doc"/>
-        <javadoc sourcepath="src" destdir="doc"/>
+        <javadoc sourcepath="src" destdir="doc" encoding="utf8"  charset="utf8"/>
         
         <mkdir dir="dest-client"/>
 		<jar destfile="dest-client/ija2015-client.jar" basedir="build">
