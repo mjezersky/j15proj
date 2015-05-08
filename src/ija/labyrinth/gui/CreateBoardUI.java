@@ -99,11 +99,11 @@ public class CreateBoardUI extends JPanel {
         createButtons();
         createButtonsArray();
 
+        GameData.store(game);
         getPlayerOnTurn();
         createScorePanel();
         showWhatToDo(1);
 
-        GameData.store(game);
         game.print();
 
         setKeys();
