@@ -30,7 +30,12 @@ public class GameData {
             return "";
         }
         m.reset();
-        m.update(str.getBytes());
+        try {
+            m.update(str.getBytes("utf-8"));
+        } catch (UnsupportedEncodingException ex) {
+            System.out.println("Error - GameData.save: java.security unsupported encoding");
+            return "";
+        }
         byte[] digest = m.digest();
         BigInteger bigInt = new BigInteger(1,digest);
         String hashtext = bigInt.toString(16);
@@ -224,17 +229,18 @@ public class GameData {
      */
     public static MazeBoard load(File file) {
         String loadStr = "";
-        FileReader reader = null;
+        BufferedReader in = null;
         try {
-            reader = new FileReader(file);
-            char[] chars = new char[(int) file.length()];
-            reader.read(chars);
-            loadStr = new String(chars);
+            in = new BufferedReader( new InputStreamReader( new FileInputStream(file), "UTF8"));
+            String str;
+            while ((str = in.readLine()) != null) {
+		loadStr += str;
+            }
         } catch (IOException e) {
             System.out.println("Error - GameData.load: cannot read file");
             return null;
         } finally {
-            try {if (reader!=null) reader.close();} catch (Exception ex) {}
+            try { if (in!=null) in.close(); } catch (Exception ex) {}
         }
 
         System.out.println("loading");
