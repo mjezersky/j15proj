@@ -19,8 +19,8 @@ import java.awt.event.MouseEvent;
 public class NewGameUI extends JPanel {
 
     private JTextField player1, player2, player3, player4;
-    private JCheckBox five, seven, nine, eleven;
-    private JCheckBox c12, c24;
+    private JRadioButton c12, c24;
+    private JRadioButton five, seven, nine, eleven;
 
     private int playersNum;
     private int boardSize;
@@ -101,24 +101,7 @@ public class NewGameUI extends JPanel {
 
             this.playersNum = 0;
         }
-
-        else if (this.boardSize == 0){
-            Object[] options = {"OK"};
-            int n = JOptionPane.showOptionDialog(new JFrame(),
-                    "Vyberte len jednu velkosť hracej plochy.", "Chyba",
-                    JOptionPane.PLAIN_MESSAGE,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null, options, options[0]);
-        }
-
-        else if (this.cardNum == 0){
-            Object[] options = {"OK"};
-            int n = JOptionPane.showOptionDialog(new JFrame(),
-                    "Vyberte len jeden počet kariet.", "Chyba",
-                    JOptionPane.PLAIN_MESSAGE,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null, options, options[0]);
-        } else if (lengthMax == true){
+        else if (lengthMax == true){
             Object[] options = {"OK"};
             int n = JOptionPane.showOptionDialog(new JFrame(),
                     "Meno hráča môže obsahovať maximálne 8 znakov.", "Chyba",
@@ -182,26 +165,33 @@ public class NewGameUI extends JPanel {
         CheckboxGroup size = new CheckboxGroup();
         add(new Checkbox(null, true, size));
 
-        this.five = new JCheckBox();
+        this.five = new JRadioButton();
         this.five.setBounds(487,125, 20,20);
         this.five.setOpaque(false);
         this.five.setSelected(true);
         this.add(this.five);
 
-        this.seven = new JCheckBox();
+        this.seven = new JRadioButton();
         this.seven.setBounds(591,125, 20,20);
         this.seven.setOpaque(false);
         this.add(this.seven);
 
-        this.nine = new JCheckBox();
+        this.nine = new JRadioButton();
         this.nine.setBounds(692,125, 20,20);
         this.nine.setOpaque(false);
         this.add(this.nine);
 
-        this.eleven = new JCheckBox();
+        this.eleven = new JRadioButton();
         this.eleven.setBounds(784,125, 20,20);
         this.eleven.setOpaque(false);
         this.add(this.eleven);
+
+        ButtonGroup boardBtns = new ButtonGroup();
+        boardBtns.add(five);
+        boardBtns.add(seven);
+        boardBtns.add(nine);
+        boardBtns.add(eleven);
+
     }
 
     /**
@@ -210,17 +200,21 @@ public class NewGameUI extends JPanel {
      */
     private void chooseCardNum(){
 
-        this.c12 = new JCheckBox();
+        this.c12 = new JRadioButton();
         this.c12.setBounds(567,336,20,20);
         this.c12.setOpaque(false);
         this.c12.setSelected(true);
         this.add(c12);
 
-        this.c24 = new JCheckBox();
+        this.c24 = new JRadioButton();
         this.c24.setBounds(670,336,20,20);
         this.c24.setOpaque(false);
         this.add(c24);
 
+        ButtonGroup cardBtn = new ButtonGroup();
+        cardBtn.add(c12);
+        cardBtn.add(c24);
+        ;
     }
 
     /**
