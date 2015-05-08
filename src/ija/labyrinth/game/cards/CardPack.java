@@ -31,6 +31,11 @@ public class CardPack {
         return tmp;
     }
 
+    /**
+     * Vytvoří nový balíček karet.
+     * @param packSize velikost balíčku
+     * @param board hra, ke které se balíček vytváří
+     */
     public CardPack(int packSize, MazeBoard board) {
         this.pack = new ArrayList<>();
         this.size = packSize;
@@ -52,6 +57,11 @@ public class CardPack {
         fieldList.clear();
     }
 
+    /**
+     * Načte nastavení z konfiguračního řetězce.
+     * @param cfg konfigurační řetězec
+     * @return úspěšnost operace
+     */
     public boolean strConfig(String cfg) {
         if (cfg.length()<2) {
             System.err.println("Error - CardPack.strConfig: bad string");
@@ -79,8 +89,17 @@ public class CardPack {
         return true;
     }
 
+    /**
+     * Getter - velikost (počet karet) balíčku
+     * @return velikost balíčku
+     */
     public int getSize() { return this.size; }
 
+    /**
+     * Getter - karta z balíčku na indexu.
+     * @param cardIndex index karty
+     * @return karta
+     */
     public TreasureCard getCard(int cardIndex) {
         if (cardIndex<0 || cardIndex>=this.size) {
             System.err.println("Error - CardPack.getCard: card index out of range");
@@ -89,6 +108,10 @@ public class CardPack {
         return this.pack.get(cardIndex);
     }
 
+    /**
+     * Vyjme kartu z balíčku.
+     * @return karta
+     */
     public TreasureCard takeCard() {
 
         if (this.size <= 0) {

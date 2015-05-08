@@ -31,6 +31,11 @@ public class TreasureCard {
         return tmp;
     }
 
+    /**
+     * Vytvoří novou kartu.
+     * @param id id karty
+     * @param field pozice karty
+     */
     public TreasureCard(int id, MazeField field) {
         this.identifier = id;
         this.location = field;
@@ -39,6 +44,11 @@ public class TreasureCard {
         setCardIco();
     }
 
+    
+    /**
+     * Přesune kartu na cílové políčko.
+     * @param mf políčko
+     */
     public void moveTo(MazeField mf) {
         if (mf == null) {
             System.out.println("Error - TreasureCard.moveTo: target location is null");
@@ -51,8 +61,17 @@ public class TreasureCard {
         return this.location.equals(tc.location);
     }
 
+    
+    /**
+     * Getter - pozice karty
+     * @return pozice karty
+     */
     public MazeField getLocation() { return this.location; }
 
+    /**
+     * Getter - id karty
+     * @return id karty
+     */
     public int getId() { return this.identifier; }
 
 

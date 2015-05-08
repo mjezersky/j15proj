@@ -51,8 +51,8 @@ public class MazeField {
     public MazeCard getCard() { return this.card; }
 
     /**
-     *
-     * @param c
+     * Nastaví kámen na poli.
+     * @param c kámen
      */
     public void PutCard(MazeCard c) { this.card = c; }
 

@@ -80,14 +80,42 @@ public class Player {
     }
 
 
+    /**
+     * Getter - skóre hráče
+     * @return aktualní skóre
+     */
     public int getScore() { return this.score; }
+    
+    /**
+     * Getter - karta hráče ukazující cílový poklad
+     * @return karta hráče
+     */
     public TreasureCard getCard() { return this.currCard; }
+    
+    /**
+     * Getter - jméno hráče
+     * @return jméno hráče
+     */
     public String getName() { return this.name; }
+    
+    /**
+     * Getter - číslo hráče
+     * @return číslo hráče
+     */
     public int getNum() { return this.number; }
+    
+    /**
+     * Getter - ikona hráče
+     * @return ikona hráče
+     */
     public BufferedImage getIcon(){ return this.charIcon; }
+    
     public boolean isTakeCard() { return this.takeCard; }
     public void setTakeCard() { this.takeCard = false; }
 
+    /**
+     * Hráč vyjme další kartu z balíčku.
+     */
     private void pullCard() {
         if (this.board.getPack() == null) {
             System.out.println("Error - Player.pullCard: board.pack is null");
@@ -96,6 +124,10 @@ public class Player {
         this.currCard = this.board.getPack().takeCard();
     }
 
+    /**
+     * Getter - pozice hráče - řádek
+     * @return řádek na kterém se hráč nachází
+     */
     public int getRow() {
         if (this.location == null) {
             System.out.println("Error - Player.getRow: location is null");
@@ -104,7 +136,10 @@ public class Player {
         return this.location.row();
     }
 
-
+    /**
+     * Getter - pozice hráče - sloupec
+     * @return sloupec na kterém se hráč nachází
+     */
     public int getCol() {
         if (this.location == null) {
             System.out.println("Error - Player.getCol: location is null");
@@ -113,6 +148,11 @@ public class Player {
         return this.location.col();
     }
 
+    /**
+     * Posune hráče na cílové sořadnice.
+     * @param row cílový řádek
+     * @param col cílový sloupec
+     */
     public void moveTo(int row, int col) {
         if (this.board == null) {
             System.out.println("Error - Player.place: board is null");
@@ -129,6 +169,12 @@ public class Player {
 
     }
 
+    
+    /**
+     * Ověřuje platnost trasy z pozice hráče do místa target.
+     * @param target cílová pozice
+     * @return zda existuje cesta z pozice hráče do pozice target
+     */
     private boolean isPathValid(MazeField target) {
         if (this.location.row() == target.row() && this.location.col() == target.col()) return true;
 
@@ -170,6 +216,13 @@ public class Player {
         return false;
     }
 
+    /**
+     * Ověření, zda se hráč může posunout na cílové souřadnice, využívá metody isPathValid .
+     * @param row cílový řádek
+     * @param col cílový sloupec
+     * @see isPathValid
+     * @return 
+     */
     public boolean canMove(int row, int col) {
         if (this.board == null) {
             System.out.println("Error - Player.canMove: board is null");
@@ -188,6 +241,9 @@ public class Player {
         return this.isPathValid(target);
     }
 
+    /**
+     * Přiřadí hráci ikonu (GUI)
+     */
     public void makeIcon(){
         this.charIcon = this.character[this.number];
     }
