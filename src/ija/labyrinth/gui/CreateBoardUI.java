@@ -145,9 +145,6 @@ public class CreateBoardUI extends JPanel {
             yPoint = 64;
         }
 
-        g.drawRect(0,0,400,40);
-        g.setColor(new Color(0x000000));
-
         g.drawImage(deckFree, 820, 10, 160, 160, this);
         g.drawImage(this.freeRock.icon(), 865, 54, 70, 70, this);
 
@@ -766,7 +763,7 @@ public class CreateBoardUI extends JPanel {
         this.move.setBounds(5,1,400,20);
         this.move.setFont(font);
         this.move.setOpaque(false);
-        this.move.setForeground(new Color(0xFFFFFF));
+        this.move.setForeground(new Color(0x6F6F6F));
         this.move.setEditable(false);
         this.move.setBorder(null);
         this.add(this.move);
@@ -780,7 +777,7 @@ public class CreateBoardUI extends JPanel {
         this.undo.setBounds(5,19,200,20);
         this.undo.setFont(font);
         this.undo.setOpaque(false);
-        this.undo.setForeground(new Color(0xFFFFFF));
+        this.undo.setForeground(new Color(0x6F6F6F));
         this.undo.setEditable(false);
         this.undo.setBorder(null);
         this.add(this.undo);
