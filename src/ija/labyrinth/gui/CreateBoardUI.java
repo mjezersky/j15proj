@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -764,11 +765,12 @@ public class CreateBoardUI extends JPanel {
             this.move.setText("Krok: posuň postavičku. (WASD/myš)");
         }
         this.move.setBounds(5,1,400,20);
+        this.move.setBackground(new Color(0, 0, 0, 0));
         this.move.setFont(font);
-        this.move.setOpaque(false);
         this.move.setForeground(new Color(0xFFFFFF));
         this.move.setEditable(false);
         this.move.setBorder(null);
+        this.move.setOpaque(false);
         this.add(this.move);
 
         this.undo.setText("");
@@ -778,11 +780,12 @@ public class CreateBoardUI extends JPanel {
             this.undo.setText("Undo: zakázané");
         }
         this.undo.setBounds(5,19,200,20);
+        this.undo.setBackground(new Color(0, 0, 0, 0));
         this.undo.setFont(font);
-        this.undo.setOpaque(false);
         this.undo.setForeground(new Color(0xFFFFFF));
         this.undo.setEditable(false);
         this.undo.setBorder(null);
+        this.undo.setOpaque(false);
         this.add(this.undo);
 
     }
