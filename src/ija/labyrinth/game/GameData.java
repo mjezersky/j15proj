@@ -146,7 +146,7 @@ public class GameData {
      * Uloží aktuální stav hry (herní desky) do souboru
      * @param game herní deska
      * @param file cílový soubor
-     * @return
+     * @return úspěšnost operace
      */
     public static boolean save(MazeBoard game, File file) {
         System.out.println("saving");
@@ -225,7 +225,7 @@ public class GameData {
     /**
      * Načte hru ze souboru
      * @param file soubor k načtení
-     * @return
+     * @return úspěšnost operace
      */
     public static MazeBoard load(File file) {
         String loadStr = "";

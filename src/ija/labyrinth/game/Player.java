@@ -106,8 +106,8 @@ public class Player {
     public BufferedImage getIcon(){ return this.charIcon; }
 
     /**
-     * Vracia či hráč zobral aktálny predmet alebo nie.
-     * @return
+     * Vracia či hráč zobral aktuálny predmet alebo nie.
+     * @return či hráč zobral aktuálny predmet alebo nie
      */
     public boolean isTakeCard() { return this.takeCard; }
 
@@ -224,7 +224,7 @@ public class Player {
      * @param row cílový řádek
      * @param col cílový sloupec
      * @see "isPathValid"
-     * @return
+     * @return existuje-li platná cesta do [row,col]
      */
     public boolean canMove(int row, int col) {
         if (this.board == null) {
@@ -250,5 +250,4 @@ public class Player {
     public void makeIcon(BufferedImage icon){
         this.charIcon = icon;
     }
-
 }
