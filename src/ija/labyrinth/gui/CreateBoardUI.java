@@ -52,8 +52,8 @@ public class CreateBoardUI extends JPanel {
     private JButton[] arrowBtn;
 
     private JTextPane scorePanel;
-    private JTextField move =  new JTextField();
-    private JTextField undo =  new JTextField();
+    private JTextArea move =  new JTextArea();
+    private JTextArea undo =  new JTextArea();
 
     /**
      * Vytvorí nový panel, ktorý bude obsahovať celú hru.
