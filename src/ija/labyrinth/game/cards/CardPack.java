@@ -44,7 +44,12 @@ public class CardPack {
         ArrayList<MazeField> fieldList = new ArrayList<>();
         for (int r=1; r<=this.board.getSize(); r++) {
             for (int c=1; c<=this.board.getSize(); c++) {
-                fieldList.add(this.board.get(r, c));
+                if (!( // umisteni pokladu mimo rohy
+                        (r==1 && c==1) ||
+                        (r==1 && c==this.board.getSize()) ||
+                        (r==this.board.getSize()&& c==1) ||
+                        (r==this.board.getSize() && c==this.board.getSize())
+                    )) fieldList.add(this.board.get(r, c));
             }
         }
         Collections.shuffle(fieldList);
