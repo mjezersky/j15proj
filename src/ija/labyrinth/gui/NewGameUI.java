@@ -109,6 +109,14 @@ public class NewGameUI extends JPanel {
                     JOptionPane.QUESTION_MESSAGE,
                     null, options, options[0]);
         }
+        else if (this.five.isSelected() && this.c24.isSelected()){
+            Object[] options = {"OK"};
+            int n = JOptionPane.showOptionDialog(new JFrame(),
+                    "Pre plochu 5x5 nie je možné zvoliť 24 kariet.\n" + "Zmente veľkosť balíčka na 12 kariet.", "Chyba",
+                    JOptionPane.PLAIN_MESSAGE,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[0]);
+        }
 
         else { return true; }
         return false;
